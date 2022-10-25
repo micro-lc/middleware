@@ -1,0 +1,17 @@
+{
+  "theming": {
+    "header": {
+      "pageTitle": "Microlc",
+      "favicon": "https://www.mia-platform.eu/static/img/favicon/apple-icon-60x60.png"
+    },
+    "logo": {
+      "alt": "Logo",
+      "url_light_image": "https://www.mia-platform.eu/static/img/favicon/apple-icon-60x60.png"
+    },
+    "variables": {
+      "primaryColor": "#294C9D"
+    },
+    "menuLocation": "fixedSideBar"
+  },
+  "plugins": []
+}
