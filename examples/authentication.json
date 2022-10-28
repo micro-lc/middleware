@@ -1,5 +1,0 @@
-{
-  "isAuthNecessary": true,
-  "userInfoUrl": "/userinfo",
-  "userLogoutUrl": "/logout?redirect=/web-login?redirect=/"
-}
