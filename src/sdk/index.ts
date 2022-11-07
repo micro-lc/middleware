@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import type { FromSchema } from 'json-schema-to-ts'
+// import { evaluateAcl } from './evaluate-acl'
+// import { resolveReferences } from './resolve-references'
+//
+// export { evaluateAcl, resolveReferences }
 
-export const environmentVariablesSchema = {
-  properties: {
-    RESOURCES_DIRECTORY_PATH: {
-      description: 'Absolute path of the directory containing resources to be served',
-      type: 'string',
-    },
-  },
-  required: ['RESOURCES_DIRECTORY_PATH'],
-  type: 'object',
-} as const
-
-export type EnvironmentVariables = FromSchema<typeof environmentVariablesSchema> & Record<string, string>
+export * from './evaluate-acl'
+export * from './resolve-references'

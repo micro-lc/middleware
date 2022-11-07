@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Mia srl
+ * Copyright 2022 Mia srl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,17 @@
  * limitations under the License.
  */
 
-import customService, {DecoratedFastify} from '@mia-platform/custom-plugin-lib'
+import type { AsyncInitFunction } from '@mia-platform/custom-plugin-lib'
+import customService from '@mia-platform/custom-plugin-lib'
 
-import {AUTHENTICATION_ENDPOINT, CONFIGURATION_ENDPOINT, CONFIGURATION_FILE_ENDPOINT} from './constants'
-import {authenticationApiHandlerBuilder, authenticationApiSchema} from './apis/authenticationApi'
-import {configurationApiHandlerBuilder, configurationApiSchema} from './apis/configurationApi'
-import {environmentVariablesSchema} from './schemas/environmentVariablesSchema'
-import {configurationFileApiHandlerBuilder, configurationFileApiSchema} from './apis/configurationFileApi'
+import { registerRoutes } from './lib/serve-files'
+import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
+import { environmentVariablesSchema } from './schemas/environmentVariablesSchema'
 
-module.exports = customService(environmentVariablesSchema)(async function index(service: DecoratedFastify) {
-  const authenticationApiHandler = await authenticationApiHandlerBuilder(service)
-  const configurationApiHandler = await configurationApiHandlerBuilder(service)
-  const configurationFileApiHandler = configurationFileApiHandlerBuilder(service)
-  service.addRawCustomPlugin<any>(
-    // @ts-ignore
-    AUTHENTICATION_ENDPOINT.METHOD, AUTHENTICATION_ENDPOINT.PATH, authenticationApiHandler, authenticationApiSchema
-  )
-  service.addRawCustomPlugin<any>(
-    // @ts-ignore
-    CONFIGURATION_ENDPOINT.METHOD, CONFIGURATION_ENDPOINT.PATH, configurationApiHandler, configurationApiSchema
-  )
-  service.addRawCustomPlugin<any>(
-    // @ts-ignore
-    CONFIGURATION_FILE_ENDPOINT.METHOD, CONFIGURATION_FILE_ENDPOINT.PATH, configurationFileApiHandler, configurationFileApiSchema
-  )
-})
+const initFunction: AsyncInitFunction<EnvironmentVariables> = async service => {
+  await registerRoutes
+    .call(service)
+    .catch(console.error)
+}
+
+module.exports = customService<EnvironmentVariables>(environmentVariablesSchema)(initFunction) as unknown

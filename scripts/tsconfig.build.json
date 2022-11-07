@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/tsconfig.json",
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "noEmit": false,
+    "outDir": "../dist",
+    "sourceMap": true
+  },
+  "include": ["../src"],
+  "exclude": ["../src/**/test/*", "../src/**/mocks/**/*", "../src/utils/test-utils.ts"]
+}

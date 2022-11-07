@@ -153,7 +153,7 @@ module.exports = {
     'func-call-spacing': 'off',
     'func-name-matching': 'error',
     'func-names': ['error', 'as-needed'],
-    'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
+    'func-style': 'off',
     'generator-star-spacing': 'error',
     'getter-return': 'error',
     'global-require': 'error',

@@ -1,9 +1,7 @@
 FROM node:gallium-alpine
 
-LABEL name="mia-microlc-config-manager" \
-      description="The Mia-Platform micro fontend solution configuration manager" \
-      eu.mia-platform.url="https://www.mia-platform.eu" \
-      eu.mia-platform.version="0.8.1"
+LABEL name="servo" \
+      description=""
 
 ENV LOG_LEVEL=info
 ENV SERVICE_PREFIX=/
@@ -23,6 +21,7 @@ RUN yarn install --immutable
 
 COPY src ./src
 COPY tsconfig.json ./tsconfig.json
+COPY scripts ./scripts
 
 RUN yarn build
 

@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import type { FromSchema } from 'json-schema-to-ts'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import fastify from 'fastify'
 
-export const environmentVariablesSchema = {
-  properties: {
-    RESOURCES_DIRECTORY_PATH: {
-      description: 'Absolute path of the directory containing resources to be served',
-      type: 'string',
-    },
-  },
-  required: ['RESOURCES_DIRECTORY_PATH'],
-  type: 'object',
-} as const
+import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
 
-export type EnvironmentVariables = FromSchema<typeof environmentVariablesSchema> & Record<string, string>
+declare module 'fastify' {
+  interface FastifyInstance {
+    config: EnvironmentVariables
+  }
+}

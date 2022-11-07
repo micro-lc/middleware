@@ -1,7 +1,7 @@
 # servo
 
-from Australian slang, `servo`, which stands for service station 😌,
-is a server implementing parsing and acl utils for json configuration files.
+from Australian slang, `servo`, which stands for service station 😌, is a server implementing parsing and acl utils for
+json configuration files.
 
 ## how to install and run
 
