@@ -13,5 +13,9 @@
     "resolveJsonModule": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
 }

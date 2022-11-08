@@ -64,7 +64,15 @@ const loadYamlFile: FileLoader = async fileAbsPath => {
 
 const manipulateJson = (json: Json, aclGroups: string[], aclPermissions: string[]): Json => {
   const filteredContent = evaluateAcl(json, aclGroups, aclPermissions)
-  return resolveReferences(filteredContent)
+  const resolvedJson = resolveReferences(filteredContent)
+
+  try {
+    delete (resolvedJson as { $ref?: unknown }).$ref
+  } catch (_) {
+    /* no-op */
+  }
+
+  return resolvedJson
 }
 
 const dumpToJson: JsonDumper = json => json

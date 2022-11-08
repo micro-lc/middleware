@@ -34,8 +34,8 @@ describe('Resolve references', () => {
     },
     {
       expected: {
-        replaced: true,
-        shouldKeep: true,
+        $ref: { test: { replaced: true } },
+        content: { replaced: true, shouldKeep: true },
       },
       input: {
         $ref: { test: { replaced: true } },
@@ -44,9 +44,12 @@ describe('Resolve references', () => {
     },
     {
       expected: {
-        otherObject: { replaced: true },
-        replaced: true,
-        shouldKeep: true,
+        $ref: { test: { replaced: true } },
+        content: {
+          otherObject: { replaced: true },
+          replaced: true,
+          shouldKeep: true,
+        },
       },
       input: {
         $ref: { test: { replaced: true } },
@@ -59,14 +62,17 @@ describe('Resolve references', () => {
     },
     {
       expected: {
-        objectArray: [
-          { replaced: true, test: true },
-          { replaced: true, test: false },
-        ],
-        otherObject: {
-          replaced: true,
+        $ref: { test: { replaced: true } },
+        content: {
+          objectArray: [
+            { replaced: true, test: true },
+            { replaced: true, test: false },
+          ],
+          otherObject: {
+            replaced: true,
+          },
+          shouldKeep: true,
         },
-        shouldKeep: true,
       },
       input: {
         $ref: { test: { replaced: true } },
@@ -81,7 +87,10 @@ describe('Resolve references', () => {
       },
     },
     {
-      expected: { shouldKeep: true },
+      expected: {
+        $ref: { test: { replaced: true } },
+        content: { shouldKeep: true },
+      },
       input: {
         $ref: { test: { replaced: true } },
         content: { $ref: 'invalid', shouldKeep: true },
