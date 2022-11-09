@@ -36,7 +36,6 @@ jobs:
     needs:
       - tests
       - lint
-      - build
 
     name: Release package on npm
     runs-on: ubuntu-latest
@@ -49,6 +48,12 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           cache: yarn
+
+      - name: Install
+        run: yarn install --immutable
+
+      - name: Build
+        run: yarn build:cli
 
       - name: Publish
         run: yarn npm publish
