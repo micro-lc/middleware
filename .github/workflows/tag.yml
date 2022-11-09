@@ -23,4 +23,4 @@ jobs:
       version: ${GITHUB_REF#refs/tags/}
     secrets:
       username: ${{ secrets.BOT_DOCKER_USERNAME }}
-      password: ${{ secrets.BOT_DOCKER_TOKEN }}
+      token: ${{ secrets.BOT_DOCKER_TOKEN }}

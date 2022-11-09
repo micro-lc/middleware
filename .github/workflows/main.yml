@@ -30,4 +30,4 @@ jobs:
     uses: micro-lc/servo/.github/workflows/docker-build.yml@main
     secrets:
       username: ${{ secrets.BOT_DOCKER_USERNAME }}
-      password: ${{ secrets.BOT_DOCKER_TOKEN }}
+      token: ${{ secrets.BOT_DOCKER_TOKEN }}
