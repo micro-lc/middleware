@@ -1,5 +1,8 @@
 name: Tag
 
+env:
+  NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
 on:
   push:
     tags:
@@ -28,3 +31,24 @@ jobs:
     secrets:
       username: ${{ secrets.BOT_DOCKER_USERNAME }}
       token: ${{ secrets.BOT_DOCKER_TOKEN }}
+
+  npm-publish:
+    needs:
+      - tests
+      - lint
+      - build
+
+    name: Release package on npm
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ inputs.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: yarn
+
+      - name: Publish
+        run: yarn npm publish
