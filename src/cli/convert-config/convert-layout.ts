@@ -20,10 +20,18 @@ import type {
   Component as V2Component,
   ArrayContent as V2ArrayContent,
 } from '@micro-lc/interfaces/v2'
+import type {
+  GroupMenuItem,
+  Head,
+  HelpMenu,
+  Icon,
+  Logo,
+  MenuItem,
+  Mode,
+  UserMenu,
+} from '@micro-lc/layout/dist/types/web-components/mlc-layout/types'
 
 import type { WithAcl } from '../types'
-
-import type { GroupMenuItem, Head, HelpMenu, Icon, Logo, MenuItem, Mode, UserMenu } from './tmp-layout-types'
 
 import type { V1AuthConfig } from './index'
 
@@ -55,7 +63,7 @@ const buildMenuItemIcon = (input: string | undefined): Icon | undefined => {
 
   return {
     library: inputSegments[0] === 'fas' ? '@fortawesome/free-solid-svg-icons' : '@fortawesome/free-regular-svg-icons',
-    selector: inputSegments[1],
+    selector: inputSegments[1].replace(/-./g, x => x[1].toUpperCase()),
   }
 }
 

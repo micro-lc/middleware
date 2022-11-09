@@ -39,7 +39,7 @@ const convertQiankunPlugin = (
   if (isComposableApplication) {
     return {
       ...(aclExpression && { aclExpression }),
-      config: `./api/v1/microlc/configuration/${props?.configurationName as string}.json`,
+      config: `/api/v1/microlc/configuration/${props?.configurationName as string}.json`,
       integrationMode: 'compose',
       route: pluginRoute as string,
     }

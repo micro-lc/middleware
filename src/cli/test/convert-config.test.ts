@@ -110,7 +110,7 @@ describe('Convert configuration', () => {
     const expectedOutput = {
       applications: {
         'compose-1': {
-          config: './api/v1/microlc/configuration/configuration_name.json',
+          config: '/api/v1/microlc/configuration/configuration_name.json',
           integrationMode: 'compose',
           route: '/compose',
         },
@@ -157,7 +157,7 @@ describe('Convert configuration', () => {
                 {
                   icon: {
                     library: '@fortawesome/free-solid-svg-icons',
-                    selector: 'fa-home',
+                    selector: 'faHome',
                   },
                   id: 'qiankun_id_1',
                   label: 'label',
@@ -173,7 +173,7 @@ describe('Convert configuration', () => {
                           href: 'url',
                           icon: {
                             library: '@fortawesome/free-regular-svg-icons',
-                            selector: 'fa-window-maximize',
+                            selector: 'faWindowMaximize',
                           },
                           id: 'href_1',
                           label: 'label',
@@ -184,7 +184,7 @@ describe('Convert configuration', () => {
                           aclExpression: 'acl_expression',
                           icon: {
                             library: '@fortawesome/free-solid-svg-icons',
-                            selector: 'fa-asterisk',
+                            selector: 'faAsterisk',
                           },
                           id: 'iframe-1',
                           label: 'label',
@@ -198,7 +198,7 @@ describe('Convert configuration', () => {
                     {
                       icon: {
                         library: '@fortawesome/free-regular-svg-icons',
-                        selector: 'fa-react',
+                        selector: 'faReact',
                       },
                       id: 'compose-1',
                       label: 'compose',
@@ -207,7 +207,7 @@ describe('Convert configuration', () => {
                   ],
                   icon: {
                     library: '@fortawesome/free-solid-svg-icons',
-                    selector: 'fa-box-open',
+                    selector: 'faBoxOpen',
                   },
                   id: 'menu-container',
                   label: 'label',

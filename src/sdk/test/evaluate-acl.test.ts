@@ -30,15 +30,34 @@ describe('Evaluate ACL', () => {
 
   const tests: Test[] = [
     {
-      expected: [{ aclExpression: 'groups.admin && groups.ceo' }],
+      expected: [{ expr: 'groups.admin && groups.ceo' }],
       groups: ['ceo', 'admin', 'developer'],
-      json: [{ aclExpression: 'groups.admin && groups.ceo' }, { aclExpression: '!groups.developer' }],
+      json: [
+        {
+          aclExpression: 'groups.admin && groups.ceo',
+          expr: 'groups.admin && groups.ceo',
+        },
+        {
+          aclExpression: '!groups.developer',
+          expr: '!groups.developer',
+        },
+      ],
       permissions: [],
     },
     {
-      expected: [{}, { aclExpression: '!groups.developer' }],
+      expected: [{}, { expr: '!groups.developer' }],
       groups: ['po', 'reviewer'],
-      json: [{}, { aclExpression: '!groups.developer' }, { aclExpression: 'groups.admin && groups.ceo' }],
+      json: [
+        {},
+        {
+          aclExpression: '!groups.developer',
+          expr: '!groups.developer',
+        },
+        {
+          aclExpression: 'groups.admin && groups.ceo',
+          expr: 'groups.admin && groups.ceo',
+        },
+      ],
       permissions: [],
     },
     {
@@ -66,7 +85,7 @@ describe('Evaluate ACL', () => {
       permissions: [],
     },
     {
-      expected: { test: { nested: { aclExpression: 'groups.admin && groups.ceo', object: {} } } },
+      expected: { test: { nested: { object: {} } } },
       groups: ['ceo', 'admin'],
       json: { test: { nested: { aclExpression: 'groups.admin && groups.ceo', object: {} } } },
       permissions: [],
@@ -99,50 +118,92 @@ describe('Evaluate ACL', () => {
       permissions: [],
     },
     {
-      expected: [{ aclExpression: 'groups.superadmin || groups.admin || groups.doctor' }],
+      expected: [{ expr: 'groups.superadmin || groups.admin || groups.doctor' }],
       groups: ['doctor'],
       json: [
-        { aclExpression: 'groups.superadmin || groups.admin || groups.secretary' },
-        { aclExpression: 'groups.superadmin || groups.admin || groups.doctor' },
-        { aclExpression: 'groups.superadmin || groups.admin' },
+        {
+          aclExpression: 'groups.superadmin || groups.admin || groups.secretary',
+          expr: 'groups.superadmin || groups.admin || groups.secretary',
+        },
+        {
+          aclExpression: 'groups.superadmin || groups.admin || groups.doctor',
+          expr: 'groups.superadmin || groups.admin || groups.doctor',
+        },
+        {
+          aclExpression: 'groups.superadmin || groups.admin',
+          expr: 'groups.superadmin || groups.admin',
+        },
       ],
       permissions: [],
     },
     {
       expected: [
-        { aclExpression: 'permissions.api.test-crud.all || permissions.api.test-crud.get' },
-        { aclExpression: 'groups.superadmin || groups.admin || groups.doctor' },
+        { expr: 'permissions.api.test-crud.all || permissions.api.test-crud.get' },
+        { expr: 'groups.superadmin || groups.admin || groups.doctor' },
       ],
       groups: ['doctor'],
       json: [
-        { aclExpression: 'permissions.api.test-crud.all || permissions.api.test-crud.get' },
-        { aclExpression: 'groups.superadmin || groups.admin || groups.secretary' },
-        { aclExpression: 'groups.superadmin || groups.admin || groups.doctor' },
-        { aclExpression: 'groups.superadmin || groups.admin' },
+        {
+          aclExpression: 'permissions.api.test-crud.all || permissions.api.test-crud.get',
+          expr: 'permissions.api.test-crud.all || permissions.api.test-crud.get',
+        },
+        {
+          aclExpression: 'groups.superadmin || groups.admin || groups.secretary',
+          expr: 'groups.superadmin || groups.admin || groups.secretary',
+        },
+        {
+          aclExpression: 'groups.superadmin || groups.admin || groups.doctor',
+          expr: 'groups.superadmin || groups.admin || groups.doctor',
+        },
+        {
+          aclExpression: 'groups.superadmin || groups.admin',
+          expr: 'groups.superadmin || groups.admin',
+        },
       ],
       permissions: ['api.users.get', 'api.users.post', 'api.test-crud.all'],
     },
     {
-      expected: [{ aclExpression: 'permissions.api.users.count.get' }],
+      expected: [{ expr: 'permissions.api.users.count.get' }],
       groups: [],
       json: [
-        { aclExpression: 'permissions.api' },
-        { aclExpression: 'permissions.api.users.count.get' },
-        { aclExpression: 'permissions.api.companies' },
+        {
+          aclExpression: 'permissions.api',
+          expr: 'permissions.api',
+        },
+        {
+          aclExpression: 'permissions.api.users.count.get',
+          expr: 'permissions.api.users.count.get',
+        },
+        {
+          aclExpression: 'permissions.api.companies',
+          expr: 'permissions.api.companies',
+        },
       ],
       permissions: ['api.users.post', 'api.users.count.get'],
     },
     {
       expected: [
-        { aclExpression: '(groups.doctor && !permissions.api.users.post) || permissions.api.users.count.get' },
-        { aclExpression: '(groups.doctor === true && permissions.api.users.post === true)' },
+        { expr: '(groups.doctor && !permissions.api.users.post) || permissions.api.users.count.get' },
+        { expr: '(groups.doctor === true && permissions.api.users.post === true)' },
       ],
       groups: ['doctor'],
       json: [
-        { aclExpression: '(groups.doctor && !permissions.api.users.post) || permissions.api.users.count.get' },
-        { aclExpression: '(groups.doctor === true && permissions.api.users.post === true)' },
-        { aclExpression: '(groups.doctor === false && permissions.api.users.post === true)' },
-        { aclExpression: '(groups.doctor && permissions.api.users.post === false)' },
+        {
+          aclExpression: '(groups.doctor && !permissions.api.users.post) || permissions.api.users.count.get',
+          expr: '(groups.doctor && !permissions.api.users.post) || permissions.api.users.count.get',
+        },
+        {
+          aclExpression: '(groups.doctor === true && permissions.api.users.post === true)',
+          expr: '(groups.doctor === true && permissions.api.users.post === true)',
+        },
+        {
+          aclExpression: '(groups.doctor === false && permissions.api.users.post === true)',
+          expr: '(groups.doctor === false && permissions.api.users.post === true)',
+        },
+        {
+          aclExpression: '(groups.doctor && permissions.api.users.post === false)',
+          expr: '(groups.doctor && permissions.api.users.post === false)',
+        },
       ],
       permissions: ['api.users.post', 'api.users.count.get'],
     },

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { Operation } from 'fast-json-patch'
 import { applyOperation, deepClone } from 'fast-json-patch'
 import { JSONPath } from 'jsonpath-plus'
 
@@ -77,17 +76,13 @@ const evaluatePluginExpression = (userGroupsObject: UserGroupsObject, userPermis
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-const jsonPathCallback = (valuesToAvoid: string[], expressionEvaluator: Function) =>
-  (payload: string, _: unknown, fullPayload: { value: unknown }) => {
+const jsonPathCallback = (valuesToAvoid: string[], expressionEvaluator: Function) => {
+  return (payload: string, _: unknown, fullPayload: { value: unknown }) => {
     if (!expressionEvaluator(fullPayload.value)) {
       valuesToAvoid.push(payload)
     }
   }
-
-const patchCreator = (valueToAvoid: string): Operation => ({
-  op: 'remove',
-  path: valueToAvoid,
-})
+}
 
 export const evaluateAcl = (jsonToFilter: Json, userGroups: string[], userPermissions: string[]) => {
   const clonedJsonToFilter = deepClone(jsonToFilter) as Json
@@ -102,10 +97,25 @@ export const evaluateAcl = (jsonToFilter: Json, userGroups: string[], userPermis
   do {
     valuesToAvoid.splice(0)
     JSONPath({ callback: pathCallback, json: clonedJsonToFilter, path: '$..aclExpression^', resultType: 'pointer' })
+
     const [patchToApply] = valuesToAvoid
 
-    patchToApply && applyOperation(clonedJsonToFilter, patchCreator(patchToApply))
+    patchToApply && applyOperation(clonedJsonToFilter, { op: 'remove', path: patchToApply })
   } while (valuesToAvoid.length !== 0)
+
+  const pathsToNodesWithAclExpression: string[] = []
+
+  JSONPath({
+    callback: (payload: string) => pathsToNodesWithAclExpression.push(payload),
+    json: clonedJsonToFilter,
+    path: '$..aclExpression^',
+    resultType: 'pointer',
+  })
+
+  pathsToNodesWithAclExpression.forEach(pathToNodeWithAclExpression => {
+    const pathToAclExpression = `${pathToNodeWithAclExpression}/aclExpression`
+    applyOperation(clonedJsonToFilter, { op: 'remove', path: pathToAclExpression })
+  })
 
   return clonedJsonToFilter
 }
