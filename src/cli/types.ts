@@ -16,6 +16,7 @@ export type Converter = (ctx: CliContext) => Promise<void>
 
 export interface CliOptions {
   dir?: string
+  elementComposerUrlRegex?: RegExp
   from: Version
   mode: ConversionMode
   quiet?: boolean

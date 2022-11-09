@@ -62,8 +62,9 @@ const findDefaultUrl = (sortedPlugins: V1Plugin[]): string | undefined => {
     return !plugin.content && plugin.integrationMode && plugin.integrationMode !== 'href'
   })
 
-  // TODO: is it correct to prepend a dot?
-  return firstPlugin?.pluginUrl ? `.${firstPlugin.pluginUrl}` : undefined
+  if (firstPlugin?.pluginRoute) {
+    return firstPlugin.pluginRoute.startsWith('.') ? firstPlugin.pluginRoute : `.${firstPlugin.pluginRoute}`
+  }
 }
 
 const convertShared = (input: V1Config['shared']): V2Config['shared'] => {
@@ -74,7 +75,7 @@ const convertShared = (input: V1Config['shared']): V2Config['shared'] => {
   return { properties: props, ...rest }
 }
 
-export const convertConfig = (v1Auth: V1AuthConfig, v1Config: V1Config): V2Config => {
+export const convertConfig = (v1Auth: V1AuthConfig, v1Config: V1Config, elementComposerUrlRegex?: RegExp): V2Config => {
   const output: V2Config = { version: 2 }
 
   const oShared = convertShared(v1Config.shared)
@@ -85,12 +86,12 @@ export const convertConfig = (v1Auth: V1AuthConfig, v1Config: V1Config): V2Confi
 
   output.settings = { defaultUrl: findDefaultUrl(iSortedPlugins) }
   output.layout = buildLayout(v1Config, v1Auth, iSortedPlugins)
-  output.applications = buildApplications(v1Config)
+  output.applications = buildApplications(v1Config, elementComposerUrlRegex)
 
   return output
 }
 
-export const convertConfigFiles: Converter = async ({ logger, fileAbsPaths, dir: outDir }) => {
+export const convertConfigFiles: Converter = async ({ logger, fileAbsPaths, dir: outDir, elementComposerUrlRegex }) => {
   const [v1Auth, v1Config] = await Promise
     .all([importAuthConfig(fileAbsPaths[0]), importConfig(fileAbsPaths[1])])
     .catch((err: unknown) => {
@@ -98,11 +99,11 @@ export const convertConfigFiles: Converter = async ({ logger, fileAbsPaths, dir:
       throw err
     })
 
-  const v2Config = convertConfig(v1Auth, v1Config)
+  const v2Config = convertConfig(v1Auth, v1Config, elementComposerUrlRegex)
   const jsonConfig = JSON.stringify(v2Config, null, 2)
 
   if (outDir) {
-    const outputFilePath = path.join(outDir, 'configuration.v2.json')
+    const outputFilePath = path.join(outDir, 'config.json')
     await fs.writeFile(outputFilePath, jsonConfig)
 
     logger.success(`Successfully converted configurations file to ${outputFilePath}`)

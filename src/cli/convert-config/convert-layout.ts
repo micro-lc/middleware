@@ -149,7 +149,7 @@ const buildSlotContent = (input: V1Config['rightMenu'], accSources: string[]): V
 }
 
 const buildThemeManager = (iConfig: V1Config, accSources: string[]): V2Component | undefined => {
-  if (!iConfig.theming?.variables) { return undefined }
+  if (!iConfig.theming?.variables.primaryColor) { return undefined }
 
   accSources.push('https://cdn.jsdelivr.net/npm/@micro-lc/layout@latest/dist/mlc-antd-theme-manager.js')
 

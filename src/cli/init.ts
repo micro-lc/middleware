@@ -16,6 +16,17 @@ const options: Record<keyof CliOptions, Option> = {
     'Absolute or relative path of the output directory',
     value => toAbsolute(value),
   ],
+  elementComposerUrlRegex: [
+    '-e --elementComposerUrlRegex <value>',
+    'Regex to match against v1 plugins property "pluginUrl" to identify them as v2 composable applications',
+    value => {
+      try {
+        return new RegExp(value)
+      } catch (_) {
+        throw new InvalidOptionArgumentError('Not a valid regular expression')
+      }
+    },
+  ],
   from: [
     '-f, --from <version>',
     `Input files version. Chose between ${Object.values(Version).join(', ')}`,

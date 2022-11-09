@@ -1,20 +1,47 @@
 import type { Config as V1Config, InternalPlugin as V1InternalPlugin, Plugin as V1Plugin } from '@micro-lc/interfaces/v1'
-import type { Application as V2Application, Config as V2Config } from '@micro-lc/interfaces/v2'
+import type {
+  Application as V2Application,
+  ComposableApplication2,
+  Config as V2Config,
+  ParcelApplication2,
+} from '@micro-lc/interfaces/v2'
 
-const pluginToApplication = (input: V1Plugin | V1InternalPlugin): V2Application | undefined => {
-  const { integrationMode, pluginRoute, pluginUrl, props } = input
+const convertQiankunPlugin = (
+  input: V1Plugin | V1InternalPlugin,
+  elementComposerUrlRegex?: RegExp
+): ParcelApplication2 | ComposableApplication2 => {
+  const { pluginRoute, pluginUrl, props } = input
+
+  const isComposableApplication = Boolean(
+    elementComposerUrlRegex
+    && pluginUrl?.match(elementComposerUrlRegex)
+    && props?.configurationName
+  )
+
+  if (isComposableApplication) {
+    return {
+      config: `./api/v1/microlc/configuration/${props?.configurationName as string}.json`,
+      integrationMode: 'compose',
+      route: pluginRoute as string,
+    }
+  }
+
+  return {
+    entry: pluginUrl as string,
+    integrationMode: 'parcel',
+    properties: props,
+    route: pluginRoute as string,
+  }
+}
+
+const pluginToApplication = (input: V1Plugin | V1InternalPlugin, elementComposerUrlRegex?: RegExp): V2Application | undefined => {
+  const { integrationMode, pluginRoute, pluginUrl } = input
 
   if (!pluginUrl || !pluginRoute) { return undefined }
 
   switch (integrationMode) {
-  // TODO: should separate compose app?
   case 'qiankun': {
-    return {
-      entry: pluginUrl,
-      integrationMode: 'parcel',
-      properties: props,
-      route: pluginRoute,
-    }
+    return convertQiankunPlugin(input, elementComposerUrlRegex)
   }
   case 'iframe': {
     return {
@@ -29,9 +56,13 @@ const pluginToApplication = (input: V1Plugin | V1InternalPlugin): V2Application 
   }
 }
 
-const applicationsIterator = (acc: Exclude<V2Config['applications'], undefined>, plugin: V1Plugin | V1InternalPlugin) => {
+const applicationsIterator = (
+  acc: Exclude<V2Config['applications'], undefined>,
+  plugin: V1Plugin | V1InternalPlugin,
+  elementComposerUrlRegex?: RegExp
+) => {
   if (plugin.integrationMode) {
-    const application = pluginToApplication(plugin)
+    const application = pluginToApplication(plugin, elementComposerUrlRegex)
     if (application) { acc[plugin.id] = application }
     return
   }
@@ -41,13 +72,13 @@ const applicationsIterator = (acc: Exclude<V2Config['applications'], undefined>,
   }
 }
 
-export const buildApplications = (input: V1Config): V2Config['applications'] => {
+export const buildApplications = (input: V1Config, elementComposerUrlRegex?: RegExp): V2Config['applications'] => {
   const { plugins: iPlugins = [], internalPlugins: iInternalPlugins = [] } = input
 
   const applications: Exclude<V2Config['applications'], undefined> = {}
 
-  iInternalPlugins.forEach(plugin => { applicationsIterator(applications, plugin) })
-  iPlugins.forEach(plugin => { applicationsIterator(applications, plugin) })
+  iInternalPlugins.forEach(plugin => { applicationsIterator(applications, plugin, elementComposerUrlRegex) })
+  iPlugins.forEach(plugin => { applicationsIterator(applications, plugin, elementComposerUrlRegex) })
 
   return applications
 }
