@@ -1,4 +1,4 @@
-name: Servo Tag Push
+name: Tag
 
 on:
   push:
