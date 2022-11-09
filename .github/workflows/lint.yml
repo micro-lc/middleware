@@ -1,4 +1,4 @@
-name: Tests
+name: Linting
 
 on:
   workflow_call:
@@ -7,9 +7,6 @@ on:
         default: 16.x
         required: false
         type: string
-    secrets:
-      token:
-        required: true
 
 jobs:
   tests:
@@ -27,13 +24,5 @@ jobs:
       - name: Install
         run: yarn install --immutable
 
-      - name: Run Coverage
-        run: yarn coverage
-
-      - name: Collect Coveralls coverage
-        if: ${{ inputs.node-version == '16.x' }}
-        uses: coverallsapp/github-action@master
-        continue-on-error: true
-        with:
-          github-token: ${{ secrets.token }}
-          path-to-lcov: './coverage/lcov.info'
+      - name: Check linting
+        run: yarn lint

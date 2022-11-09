@@ -1,7 +1,7 @@
 FROM node:gallium-alpine
 
 LABEL name="servo" \
-      description=""
+      description="Acl + $ref configuration parser for micro-lc"
 
 ENV LOG_LEVEL=info
 ENV SERVICE_PREFIX=/
