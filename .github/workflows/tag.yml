@@ -1,0 +1,26 @@
+name: Servo Tag Push
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  tests:
+    uses: micro-lc/servo/.github/workflows/tests.yml@main
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    uses: micro-lc/servo/.github/workflows/build.yml@main
+
+  docker-build:
+    needs:
+      - tests
+      - build
+    uses: micro-lc/servo/.github/workflows/docker-build.yml@main
+    with:
+      version: ${GITHUB_REF#refs/tags/}
+    secrets:
+      username: ${{ secrets.BOT_DOCKER_USERNAME }}
+      password: ${{ secrets.BOT_DOCKER_TOKEN }}

@@ -1,0 +1,42 @@
+name: Tests
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        default: 16.x
+        required: false
+        type: string
+    secrets:
+      token:
+        required: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ inputs.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: yarn
+
+      - name: Install
+        run: yarn install --immutable
+
+      - name: Check linting
+        run: yarn lint
+
+      - name: Run Coverage
+        run: yarn coverage
+
+      - name: Collect Coveralls coverage
+        if: ${{ inputs.node-version == '16.x' }}
+        uses: coverallsapp/github-action@master
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.token }}
+          path-to-lcov: './coverage/lcov.info'
