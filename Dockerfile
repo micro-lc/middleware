@@ -23,7 +23,7 @@ COPY src ./src
 COPY tsconfig.json ./tsconfig.json
 COPY scripts ./scripts
 
-RUN yarn build
+RUN yarn build:server
 
 USER node
 

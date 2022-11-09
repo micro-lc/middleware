@@ -19,6 +19,7 @@ import { JSONPath } from 'jsonpath-plus'
 import type { Json } from './types'
 
 export interface JsonWithReferences {
+  [key: string]: unknown
   $ref: Record<string, unknown>
   content: Record<string, unknown>
 }
@@ -28,9 +29,9 @@ const mutateCallback = ($ref: JsonWithReferences['$ref']) => (payload: { $ref?: 
   delete payload.$ref
 }
 
-const replace = ({ $ref, content }: JsonWithReferences): Json => {
+const replace = ({ $ref, content, ...rest }: JsonWithReferences): Json => {
   JSONPath({ callback: mutateCallback($ref), json: content, path: '$..$ref^' })
-  return content
+  return { $ref, content, ...rest }
 }
 
 export const resolveReferences = (configuration: Json | JsonWithReferences) : Json => {
