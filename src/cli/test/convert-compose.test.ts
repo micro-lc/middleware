@@ -234,7 +234,7 @@ describe('Convert compose configuration', () => {
     expect(result).to.deep.equal(expectedOutput)
   })
 
-  it('should convert configuration without acl', () => {
+  it('should convert configuration with acl', () => {
     const input = {
       $ref: {
         schema: {

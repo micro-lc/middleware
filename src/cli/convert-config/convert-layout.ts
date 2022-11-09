@@ -5,6 +5,8 @@ import type {
   ArrayContent as V2ArrayContent,
 } from '@micro-lc/interfaces/v2'
 
+import type { WithAcl } from '../types'
+
 import type { GroupMenuItem, Head, HelpMenu, Icon, Logo, MenuItem, Mode, UserMenu } from './tmp-layout-types'
 
 import type { V1AuthConfig } from './index'
@@ -41,9 +43,12 @@ const buildMenuItemIcon = (input: string | undefined): Icon | undefined => {
   }
 }
 
-const buildMenuItem = (input: V1Plugin): MenuItem | undefined => {
+const buildMenuItem = (input: WithAcl<V1Plugin>): WithAcl<MenuItem> | undefined => {
+  const { aclExpression } = input
+
   if (input.integrationMode === 'href' && input.externalLink) {
     return {
+      ...(aclExpression && { aclExpression }),
       href: input.externalLink.url,
       icon: buildMenuItemIcon(input.icon),
       id: input.id,
@@ -55,6 +60,7 @@ const buildMenuItem = (input: V1Plugin): MenuItem | undefined => {
 
   if (input.integrationMode === 'qiankun' || input.integrationMode === 'iframe') {
     return {
+      ...(aclExpression && { aclExpression }),
       icon: buildMenuItemIcon(input.icon),
       id: input.id,
       label: input.label,
@@ -84,6 +90,7 @@ const buildMenuItem = (input: V1Plugin): MenuItem | undefined => {
       })
 
       const group: GroupMenuItem = {
+        ...(aclExpression && { aclExpression }),
         children: groupChildren,
         id: curKey.split(' ').join('_'),
         label: curKey,
@@ -99,6 +106,7 @@ const buildMenuItem = (input: V1Plugin): MenuItem | undefined => {
     })
 
     return {
+      ...(aclExpression && { aclExpression }),
       children,
       icon: buildMenuItemIcon(input.icon),
       id: input.id,

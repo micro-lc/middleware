@@ -6,11 +6,13 @@ import type {
   ParcelApplication2,
 } from '@micro-lc/interfaces/v2'
 
+import type { WithAcl } from '../types'
+
 const convertQiankunPlugin = (
-  input: V1Plugin | V1InternalPlugin,
+  input: WithAcl<V1Plugin> | WithAcl<V1InternalPlugin>,
   elementComposerUrlRegex?: RegExp
-): ParcelApplication2 | ComposableApplication2 => {
-  const { pluginRoute, pluginUrl, props } = input
+): WithAcl<ParcelApplication2> | WithAcl<ComposableApplication2> => {
+  const { pluginRoute, pluginUrl, props, aclExpression } = input
 
   const isComposableApplication = Boolean(
     elementComposerUrlRegex
@@ -20,6 +22,7 @@ const convertQiankunPlugin = (
 
   if (isComposableApplication) {
     return {
+      ...(aclExpression && { aclExpression }),
       config: `./api/v1/microlc/configuration/${props?.configurationName as string}.json`,
       integrationMode: 'compose',
       route: pluginRoute as string,
@@ -27,6 +30,7 @@ const convertQiankunPlugin = (
   }
 
   return {
+    ...(aclExpression && { aclExpression }),
     entry: pluginUrl as string,
     integrationMode: 'parcel',
     properties: props,
@@ -34,8 +38,11 @@ const convertQiankunPlugin = (
   }
 }
 
-const pluginToApplication = (input: V1Plugin | V1InternalPlugin, elementComposerUrlRegex?: RegExp): V2Application | undefined => {
-  const { integrationMode, pluginRoute, pluginUrl } = input
+const pluginToApplication = (
+  input: WithAcl<V1Plugin> | WithAcl<V1InternalPlugin>,
+  elementComposerUrlRegex?: RegExp
+): WithAcl<V2Application> | undefined => {
+  const { integrationMode, pluginRoute, pluginUrl, aclExpression } = input
 
   if (!pluginUrl || !pluginRoute) { return undefined }
 
@@ -45,6 +52,7 @@ const pluginToApplication = (input: V1Plugin | V1InternalPlugin, elementComposer
   }
   case 'iframe': {
     return {
+      ...(aclExpression && { aclExpression }),
       integrationMode: 'iframe',
       route: pluginRoute,
       src: pluginUrl,
@@ -68,7 +76,7 @@ const applicationsIterator = (
   }
 
   if ((plugin as V1Plugin).content) {
-    (plugin as V1Plugin).content!.forEach(subPlugin => { applicationsIterator(acc, subPlugin) })
+    (plugin as V1Plugin).content!.forEach(subPlugin => { applicationsIterator(acc, subPlugin, elementComposerUrlRegex) })
   }
 }
 
