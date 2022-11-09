@@ -1,9 +1,11 @@
 import { convertComposeConfigFiles } from './convert-compose'
+import { convertConfigFiles } from './convert-config'
 import { parseArgs } from './init'
 import type { Converter, Permutation } from './types'
 
 const permutationToConverterMap: { [key in Permutation]?: Converter } = {
   v1v2compose: convertComposeConfigFiles,
+  v1v2config: convertConfigFiles,
 }
 
 const cli = async () => {

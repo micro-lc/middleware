@@ -113,17 +113,17 @@ const convertComposeConfigFile = async (logger: Logger, fileAbsPath: string, out
   }
 
   const output = convertCompose(input as V1Compose)
+  const jsonOutput = JSON.stringify(output, null, 2)
 
-  let outputFilePath: string
-  if (outDir && outDir !== pathSegments.dir) {
-    outputFilePath = `${outDir}/${pathSegments.name}${pathSegments.ext}`
-  } else {
-    outputFilePath = `${pathSegments.dir}/${pathSegments.name}.v2${pathSegments.ext}`
+  if (outDir) {
+    const outputFilePath = `${outDir}/${pathSegments.name}${pathSegments.ext}`
+    await fs.writeFile(outputFilePath, jsonOutput)
+
+    logger.success(`Successfully converted file ${fileAbsPath} to ${outputFilePath}`)
+    return
   }
 
-  await fs.writeFile(outputFilePath, JSON.stringify(output, null, 2))
-
-  logger.success(`Successfully converted file ${fileAbsPath} to ${outputFilePath}`)
+  console.log(`Converted file ${fileAbsPath}. Output:\n${jsonOutput}`)
 }
 
 export const convertComposeConfigFiles: Converter = async ({ logger, fileAbsPaths, dir }) => {
