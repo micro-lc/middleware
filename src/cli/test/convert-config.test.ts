@@ -216,10 +216,7 @@ describe('Convert configuration', () => {
               ],
               mode: 'topBar',
               userMenu: {
-                logout: {
-                  method: 'GET',
-                  url: '/user-logout',
-                },
+                logout: { redirectUrl: '/user-logout' },
                 userInfoUrl: '/user-info',
               },
             },
@@ -232,6 +229,7 @@ describe('Convert configuration', () => {
                 'micro-lc',
                 'microlc',
                 'back-kit',
+                'ant',
               ],
             },
             tag: 'mlc-antd-theme-manager',

@@ -152,7 +152,7 @@ const buildUserMenu = (input: V1AuthConfig): UserMenu | undefined => {
   if (!input.isAuthNecessary || !input.userInfoUrl) { return undefined }
 
   return {
-    logout: { method: 'GET', url: input.userLogoutUrl },
+    logout: { redirectUrl: input.userLogoutUrl },
     userInfoUrl: input.userInfoUrl,
   }
 }
@@ -174,7 +174,7 @@ const buildSlotContent = (input: V1Config['rightMenu'], accSources: string[]): V
   })
 
   return {
-    attributes: { style: 'display: flex; align-items: center;' },
+    attributes: { slot: 'top-bar', style: 'display: flex; align-items: center;' },
     content,
     tag: 'div',
   }
@@ -188,7 +188,7 @@ const buildThemeManager = (iConfig: V1Config, accSources: string[]): V2Component
   return {
     properties: {
       primaryColor: iConfig.theming.variables.primaryColor,
-      varsPrefix: ['micro-lc', 'microlc', 'back-kit'],
+      varsPrefix: ['micro-lc', 'microlc', 'back-kit', 'ant'],
     },
     tag: 'mlc-antd-theme-manager',
   }
