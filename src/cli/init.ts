@@ -86,7 +86,7 @@ export const parseArgs = (): CliContext => {
 
   program
     .name('Servo conversion CLI')
-    .description('TODO')
+    .description('Convert configuration files from one micro-lc version to another')
     .version(packageFile.version)
 
   Object.values(options).forEach(option => program.option(...option))
