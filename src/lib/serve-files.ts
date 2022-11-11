@@ -62,17 +62,9 @@ const loadYamlFile: FileLoader = async fileAbsPath => {
   return yaml.load(rawContent) as Json
 }
 
-const manipulateJson = (json: Json, aclGroups: string[], aclPermissions: string[]): Json => {
+const manipulateJson = async (json: Json, aclGroups: string[], aclPermissions: string[]): Promise<Json> => {
   const filteredContent = evaluateAcl(json, aclGroups, aclPermissions)
-  const resolvedJson = resolveReferences(filteredContent)
-
-  try {
-    delete (resolvedJson as { $ref?: unknown }).$ref
-  } catch (_) {
-    /* no-op */
-  }
-
-  return resolvedJson
+  return resolveReferences(filteredContent)
 }
 
 const dumpToJson: JsonDumper = json => json
@@ -113,7 +105,7 @@ export async function registerRoutes(this: DecoratedFastify<EnvironmentVariables
       const json = await fileLoader(fileAbsPath)
 
       const aclContext = extractAclContext(this, request)
-      const manipulatedJson = manipulateJson(json, aclContext.groups, aclContext.permissions)
+      const manipulatedJson = await manipulateJson(json, aclContext.groups, aclContext.permissions)
 
       const payload = contentDumper(manipulatedJson)
 

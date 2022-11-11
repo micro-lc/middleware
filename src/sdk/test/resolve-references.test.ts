@@ -15,93 +15,97 @@
  */
 
 import { expect } from 'chai'
+import * as chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 
-import type { JsonWithReferences } from '../resolve-references'
 import { resolveReferences } from '../resolve-references'
 import type { Json } from '../types'
 
 describe('Resolve references', () => {
-  interface Test {
-    expected: Json
-    input : Json | JsonWithReferences
-    message?: string
-  }
+  chai.use(chaiAsPromised)
 
-  const tests: Test[] = [
-    {
-      expected: { test: true },
-      input: { test: true },
-    },
-    {
-      expected: {
-        $ref: { test: { replaced: true } },
-        content: { replaced: true, shouldKeep: true },
+  describe('Successful parsing', () => {
+    interface Test {
+      expected: Json
+      input : Json
+      message?: string
+    }
+
+    const tests: Test[] = [
+      {
+        expected: { test: true },
+        input: { test: true },
       },
-      input: {
-        $ref: { test: { replaced: true } },
-        content: { $ref: 'test', shouldKeep: true },
-      },
-    },
-    {
-      expected: {
-        $ref: { test: { replaced: true } },
-        content: {
-          otherObject: { replaced: true },
-          replaced: true,
-          shouldKeep: true,
+      {
+        expected: {
+          content: { replaced: true, shouldKeep: true },
+          definitions: { test: { replaced: true } },
+        },
+        input: {
+          content: { $ref: '#/definitions/test', shouldKeep: true },
+          definitions: { test: { replaced: true } },
         },
       },
-      input: {
-        $ref: { test: { replaced: true } },
-        content: {
-          $ref: 'test',
-          otherObject: { $ref: 'test' },
-          shouldKeep: true,
+      {
+        expected: {
+          content: { otherObject: { replaced: true }, replaced: true, shouldKeep: true },
+          definitions: { test: { replaced: true } },
+        },
+        input: {
+          content: { $ref: '#/definitions/test', otherObject: { $ref: '#/definitions/test' }, shouldKeep: true },
+          definitions: { test: { replaced: true } },
         },
       },
-    },
-    {
-      expected: {
-        $ref: { test: { replaced: true } },
-        content: {
-          objectArray: [
-            { replaced: true, test: true },
-            { replaced: true, test: false },
-          ],
-          otherObject: {
-            replaced: true,
+      {
+        expected: {
+          content: {
+            objectArray: [{ replaced: true, test: true }, { replaced: true, test: false }],
+            otherObject: { replaced: true },
+            shouldKeep: true,
           },
-          shouldKeep: true,
+          definitions: { test: { replaced: true } },
+        },
+        input: {
+          content: {
+            objectArray: [{ $ref: '#/definitions/test', test: true }, { $ref: '#/definitions/test', test: false }],
+            otherObject: { $ref: '#/definitions/test' },
+            shouldKeep: true,
+          },
+          definitions: { test: { replaced: true } },
         },
       },
-      input: {
-        $ref: { test: { replaced: true } },
-        content: {
-          objectArray: [
-            { $ref: 'test', test: true },
-            { $ref: 'test', test: false },
-          ],
-          otherObject: { $ref: 'test' },
-          shouldKeep: true,
+      {
+        expected: {
+          content: { replaced: true, shouldKeep: true },
+          foo: { test: { replaced: true } },
+        },
+        input: {
+          content: { $ref: '#/foo/test', shouldKeep: true },
+          foo: { test: { replaced: true } },
         },
       },
-    },
-    {
-      expected: {
-        $ref: { test: { replaced: true } },
-        content: { shouldKeep: true },
-      },
-      input: {
-        $ref: { test: { replaced: true } },
-        content: { $ref: 'invalid', shouldKeep: true },
-      },
-    },
-  ]
+    ]
 
-  tests.forEach(({ expected, input, message }, idx) => {
-    it(`#${idx}${message ? `- ${message}` : ''}`, () => {
-      const result = resolveReferences(input)
-      expect(result).to.deep.equal(expected)
+    tests.forEach(({ expected, input, message }, idx) => {
+      it(`#${idx}${message ? `- ${message}` : ''}`, async () => {
+        const result = await resolveReferences(input)
+        expect(result).to.deep.equal(expected)
+      })
     })
+  })
+
+  it('should return input if type not supported', async () => {
+    expect(await resolveReferences(3)).to.equal(3)
+    expect(await resolveReferences(true)).to.equal(true)
+    expect(await resolveReferences(null)).to.equal(null)
+  })
+
+  it('should throw if reference is not found', async () => {
+    const input: Json = {
+      content: { $ref: '#/definitions/invalid', shouldKeep: true },
+      definitions: { test: { replaced: true } },
+    }
+
+    await expect(resolveReferences(input)).to.be.rejectedWith('Token "invalid" does not exist.')
   })
 })

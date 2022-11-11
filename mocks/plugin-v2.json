@@ -1,5 +1,5 @@
 {
-  "$ref": {
+  "definitions": {
     "customMessageOnAbsentLookup": {
       "en": "⚠ Not found",
       "it": "⚠ Non trovato"
@@ -383,7 +383,7 @@
           {
             "properties": {
               "dataSchema": {
-                "$ref": "dataSchema"
+                "$ref": "#/definitions/dataSchema"
               },
               "filters": []
             },
@@ -403,10 +403,10 @@
               {
                 "properties": {
                   "customMessageOnAbsentLookup": {
-                    "$ref": "customMessageOnAbsentLookup"
+                    "$ref": "#/definitions/customMessageOnAbsentLookup"
                   },
                   "dataSchema": {
-                    "$ref": "dataSchema"
+                    "$ref": "#/definitions/dataSchema"
                   },
                   "rowActions": {
                     "kind": "cta",
@@ -456,7 +456,7 @@
               {
                 "properties": {
                   "customMessageOnAbsentLookup": {
-                    "$ref": "customMessageOnAbsentLookup"
+                    "$ref": "#/definitions/customMessageOnAbsentLookup"
                   },
                   "allowNavigation": false,
                   "requireConfirm": {
@@ -465,7 +465,7 @@
                   },
                   "width": "560",
                   "dataSchema": {
-                    "$ref": "dataSchema"
+                    "$ref": "#/definitions/dataSchema"
                   },
                   "customLabels": {
                     "create": {
@@ -496,7 +496,7 @@
               {
                 "properties": {
                   "dataSchema": {
-                    "$ref": "dataSchema"
+                    "$ref": "#/definitions/dataSchema"
                   },
                   "width": "500"
                 },
@@ -528,7 +528,7 @@
               {
                 "properties": {
                   "dataSchema": {
-                    "$ref": "dataSchema"
+                    "$ref": "#/definitions/dataSchema"
                   }
                 },
                 "tag": "bk-bulk-actions",
@@ -664,7 +664,7 @@
         "properties": {
           "basePath": "/v2/orders",
           "dataSchema": {
-            "$ref": "dataSchema"
+            "$ref": "#/definitions/dataSchema"
           }
         },
         "tag": "bk-crud-client",
@@ -674,7 +674,7 @@
         "properties": {
           "basePath": "/v2",
           "dataSchema": {
-            "$ref": "dataSchema"
+            "$ref": "#/definitions/dataSchema"
           }
         },
         "tag": "bk-crud-lookup-client",
@@ -694,7 +694,7 @@
           "basePath": "/v2/orders/export",
           "streamSaverIFrameSrc": "/back-kit/{{BACK_KIT_VERSION}}/export-service-worker.html",
           "dataSchema": {
-            "$ref": "dataSchema"
+            "$ref": "#/definitions/dataSchema"
           }
         },
         "tag": "bk-export",

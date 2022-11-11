@@ -25,6 +25,8 @@ import type {
   PluginConfiguration as V2Plugin,
 } from '@micro-lc/interfaces/v2'
 
+import { JSONPath } from 'jsonpath-plus'
+
 import type { Converter, WithAcl } from './types'
 import type { Logger } from './utils'
 
@@ -39,7 +41,7 @@ export type V1Compose = V1ComposeWithRef | WithAcl<V1Component>
 
 export type V1Content = WithAcl<V1Component> | WithAcl<V1Component>[] | string | number
 
-export type V2PluginWithRef = V2Plugin & { $ref?: RefBlock }
+export type V2PluginWithRef = V2Plugin & { definitions?: RefBlock }
 
 const isValidV1ComposeConfig = (input: unknown): boolean => {
   const validTypes = ['row', 'column', 'element']
@@ -108,8 +110,14 @@ export const convertCompose = (input: V1Compose): V2PluginWithRef => {
   const sources: string[] = []
   const content = convertContent(inputContent, sources)
 
+  JSONPath({
+    callback: (payload: { $ref: string }) => { payload.$ref = `#/definitions/${payload.$ref}` },
+    json: content,
+    path: '$..$ref^',
+  })
+
   return {
-    ...(inputRef && { $ref: inputRef }),
+    ...(inputRef && { definitions: inputRef }),
     content,
     sources,
   }

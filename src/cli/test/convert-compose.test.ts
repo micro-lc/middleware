@@ -141,7 +141,12 @@ describe('Convert compose configuration', () => {
         attributes: { style: 'height: 100%;' },
         content: [
           {
-            properties: { customProperty: 'custom-property' },
+            properties: {
+              customProperty: 'custom-property',
+              schema: {
+                $ref: 'schema',
+              },
+            },
             tag: 'custom-element-1',
             type: 'element',
             url: '/custom-element-1',
@@ -188,20 +193,18 @@ describe('Convert compose configuration', () => {
     }
 
     const expectedOutput: V2PluginWithRef = {
-      $ref: {
-        schema: {
-          properties: { foo: { type: 'string' } },
-          type: 'object',
-        },
-        string: 'foo',
-      },
       content: {
         attributes: { style: 'display: flex; flex-direction: column; height: 100%;' },
         content: [
           {
             attributes: {},
             content: undefined,
-            properties: { customProperty: 'custom-property' },
+            properties: {
+              customProperty: 'custom-property',
+              schema: {
+                $ref: '#/definitions/schema',
+              },
+            },
             tag: 'custom-element-1',
           },
           {
@@ -242,6 +245,13 @@ describe('Convert compose configuration', () => {
           },
         ],
         tag: 'div',
+      },
+      definitions: {
+        schema: {
+          properties: { foo: { type: 'string' } },
+          type: 'object',
+        },
+        string: 'foo',
       },
       sources: ['/custom-element-1', '/custom-element-4'],
     }
@@ -323,14 +333,6 @@ describe('Convert compose configuration', () => {
     }
 
     const expectedOutput = {
-      $ref: {
-        schema: {
-          aclExpression: '!groups.user',
-          properties: { foo: { type: 'string' } },
-          type: 'object',
-        },
-        string: 'foo',
-      },
       content: {
         attributes: { style: 'display: flex; flex-direction: column; height: 100%;' },
         content: [
@@ -390,6 +392,14 @@ describe('Convert compose configuration', () => {
           },
         ],
         tag: 'div',
+      },
+      definitions: {
+        schema: {
+          aclExpression: '!groups.user',
+          properties: { foo: { type: 'string' } },
+          type: 'object',
+        },
+        string: 'foo',
       },
       sources: ['/custom-element-1', '/custom-element-4'],
     }

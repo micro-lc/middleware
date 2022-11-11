@@ -14,29 +14,14 @@
  * limitations under the License.
  */
 
-import { JSONPath } from 'jsonpath-plus'
+import $RefParser from '@apidevtools/json-schema-ref-parser'
 
 import type { Json } from './types'
 
-export interface JsonWithReferences {
-  [key: string]: unknown
-  $ref: Record<string, unknown>
-  content: Record<string, unknown>
-}
+export const resolveReferences = async (json: Json) : Promise<Json> => {
+  if (!json || typeof json === 'number' || typeof json === 'boolean') {
+    return json
+  }
 
-const mutateCallback = ($ref: JsonWithReferences['$ref']) => (payload: { $ref?: string }) => {
-  Object.assign(payload, $ref[payload.$ref as string])
-  delete payload.$ref
-}
-
-const replace = ({ $ref, content, ...rest }: JsonWithReferences): Json => {
-  JSONPath({ callback: mutateCallback($ref), json: content, path: '$..$ref^' })
-  return { $ref, content, ...rest }
-}
-
-export const resolveReferences = (configuration: Json | JsonWithReferences) : Json => {
-  const isConfigurationObject = configuration && typeof configuration === 'object'
-  const isReplaceable = isConfigurationObject && '$ref' in configuration && 'content' in configuration
-
-  return isReplaceable ? replace(configuration as JsonWithReferences) : configuration
+  return $RefParser.dereference(json)
 }
