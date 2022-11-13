@@ -20,7 +20,7 @@
     "build": "run-p build:server build:cli",
     "bump": "bash ./scripts/version.sh",
     "start": "lc39 dist/server.js",
-    "start:local": "yarn start --env-path ./default.env --log-level trace",
+    "start:local": "yarn start --env-path ./default.env --log-level trace --port 3001",
     "cli": "yarn ts-node ./src/cli"
   },
   "dependencies": {

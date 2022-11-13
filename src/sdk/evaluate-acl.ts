@@ -84,8 +84,16 @@ const jsonPathCallback = (valuesToAvoid: string[], expressionEvaluator: Function
   }
 }
 
-export const evaluateAcl = (jsonToFilter: Json, userGroups: string[], userPermissions: string[]) => {
-  const clonedJsonToFilter = deepClone(jsonToFilter) as Json
+/**
+ * This method [evaluates](#acl-application) `aclExpression` keys in input JSON. It does not modify the input object.
+ *
+ * @param {(string | number | boolean | Object | Array | null)} json - Input JSON with ACL rules to be evaluated.
+ * @param {string[]} userGroups - List of caller's groups.
+ * @param {string[]} userPermissions - List of caller's permissions.
+ * @returns {Promise<string | number | boolean | Object | Array | null>} JSON with ACL rules evaluated.
+ */
+export const evaluateAcl = (json: Json, userGroups: string[], userPermissions: string[]): Json => {
+  const clonedJsonToFilter = deepClone(json) as Json
 
   const userGroupsObject = userGroupsObjectBuilder(userGroups)
   const userPermissionsObject = userPermissionsObjectBuilder(userPermissions)

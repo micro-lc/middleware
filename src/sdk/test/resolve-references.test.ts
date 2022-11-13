@@ -108,4 +108,15 @@ describe('Resolve references', () => {
 
     await expect(resolveReferences(input)).to.be.rejectedWith('Token "invalid" does not exist.')
   })
+
+  it('should not tamper input', () => {
+    const input: Json = {
+      content: { $ref: '#/definitions/test', shouldKeep: true },
+      definitions: { test: { replaced: true } },
+    }
+
+    const result = resolveReferences(input)
+
+    expect(result).not.to.equal(input)
+  })
 })

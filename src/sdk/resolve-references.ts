@@ -18,6 +18,14 @@ import $RefParser from '@apidevtools/json-schema-ref-parser'
 
 import type { Json } from './types'
 
+/**
+ * This method resolves the references in a JSON object. It does not modify the input object.
+ *
+ * The method **throws** if a reference cannot be found.
+ *
+ * @param {(string | number | boolean | Object | Array | null)} json - Input JSON with references to be resolved
+ * @returns {Promise<string | number | boolean | Object | Array | null>} JSON with references resolved
+ */
 export const resolveReferences = async (json: Json) : Promise<Json> => {
   if (!json || typeof json === 'number' || typeof json === 'boolean') {
     return json

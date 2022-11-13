@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-// import { evaluateAcl } from './evaluate-acl'
-// import { resolveReferences } from './resolve-references'
-//
-// export { evaluateAcl, resolveReferences }
+export type { Json } from './types'
 
 export * from './evaluate-acl'
 export * from './resolve-references'
