@@ -48,8 +48,11 @@ jobs:
       - name: Install
         run: yarn install --immutable
 
-      - name: Build
+      - name: Build CLI
         run: yarn build:cli
+
+      - name: Build SDK
+        run: yarn build:sdk
 
       - name: Publish
         run: yarn npm publish

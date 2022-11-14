@@ -1,0 +1,6 @@
+{
+  "name": "@micro-lc/servo/sdk",
+  "main": "../dist/sdk/index.js",
+  "types": "../dist/types/sdk/index.d.ts",
+  "module": "../dist/esm/sdk/index.js"
+}

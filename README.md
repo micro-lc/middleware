@@ -1,6 +1,6 @@
 <h1 align="center">⛽ Servo</h1>
 
-From Australian slang _servo_, which stands for service station, Servo backend middleware responsible for serving
+From Australian slang _servo_, which stands for service station, Servo is a backend middleware responsible for serving
 [micro-lc](https://github.com/micro-lc/micro-lc) configuration files, applying some useful parsing logic before
 returning their content. This logic is also distributed through an SDK to ease the process of building custom
 configurations serves.
