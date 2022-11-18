@@ -25,7 +25,7 @@ import * as yaml from 'js-yaml'
 
 import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
 import { evaluateAcl, resolveReferences } from '../sdk'
-import type { Json } from '../sdk/types'
+import type { Json } from '../sdk'
 
 import { extractAclContext } from './extract-acl-context'
 
@@ -64,7 +64,13 @@ const loadYamlFile: FileLoader = async fileAbsPath => {
 
 const manipulateJson = async (json: Json, aclGroups: string[], aclPermissions: string[]): Promise<Json> => {
   const filteredContent = evaluateAcl(json, aclGroups, aclPermissions)
-  return resolveReferences(filteredContent)
+  const resolvedJson = await resolveReferences(filteredContent)
+
+  if (resolvedJson && typeof resolvedJson === 'object' && 'definitions' in resolvedJson) {
+    delete (resolvedJson as { definitions?: unknown }).definitions
+  }
+
+  return resolvedJson
 }
 
 const dumpToJson: JsonDumper = json => json

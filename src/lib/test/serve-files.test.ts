@@ -20,6 +20,7 @@ import type { DecoratedFastify } from '@mia-platform/custom-plugin-lib'
 import { expect } from 'chai'
 import type { LightMyRequestResponse } from 'fastify'
 import * as yaml from 'js-yaml'
+import type { SinonStub } from 'sinon'
 import { createSandbox } from 'sinon'
 
 import type { EnvironmentVariables } from '../../schemas/environmentVariablesSchema'
@@ -30,14 +31,15 @@ import { baseVariables, setupFastify } from '../../utils/test-utils'
 describe('Serve files', () => {
   const sandbox = createSandbox()
 
-  const evaluateAclStub = sandbox.stub(evaluateAcl, 'evaluateAcl')
-    .returns({ evaluate: 'acl' })
-  const resolveReferencesStub = sandbox.stub(resolveReferences, 'resolveReferences')
-    .returns({ resolve: 'references' })
+  let evaluateAclStub: SinonStub
+  let resolveReferencesStub: SinonStub
 
   let fastify: DecoratedFastify<EnvironmentVariables>
 
   before(async () => {
+    evaluateAclStub = sandbox.stub(evaluateAcl, 'evaluateAcl').returns({ evaluate: 'acl' })
+    resolveReferencesStub = sandbox.stub(resolveReferences, 'resolveReferences').resolves({ resolve: 'references' })
+
     fastify = await setupFastify({
       RESOURCES_DIRECTORY_PATH: path.join(__dirname, './mocks'),
     })
@@ -127,6 +129,31 @@ describe('Serve files', () => {
 
     expect(payload).to.deep.equal(yaml.dump({ resolve: 'references' }))
     expect(headers['content-type']).to.equal('text/yaml; charset=utf-8')
+
+    expect(evaluateAclStub.calledOnce).to.be.true
+    expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
+
+    expect(resolveReferencesStub.calledOnce).to.be.true
+    expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'acl' }])
+  })
+
+  it('should remove "definitions" key from manipulated file', async () => {
+    resolveReferencesStub.resolves({
+      definitions: { ffp: 'bar' },
+      resolve: 'references',
+    })
+
+    const { payload, headers } = await fastify.inject({
+      headers: {
+        [baseVariables.GROUPS_HEADER_KEY]: 'admin,user',
+        [baseVariables.USER_PROPERTIES_HEADER_KEY]: JSON.stringify({ permissions: ['users.post.write'] }),
+      },
+      method: 'GET',
+      url: '/config.json',
+    })
+
+    expect(payload).to.deep.equal(JSON.stringify({ resolve: 'references' }))
+    expect(headers['content-type']).to.equal('application/json; charset=utf-8')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
