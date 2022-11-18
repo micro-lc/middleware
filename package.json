@@ -1,6 +1,6 @@
 {
   "name": "@micro-lc/servo",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "micro-lc configuration server",
   "license": "SEE LICENSE IN LICENSE",
   "packageManager": "yarn@3.2.4",
