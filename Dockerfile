@@ -1,6 +1,6 @@
 FROM node:gallium-alpine
 
-LABEL name="servo" \
+LABEL name="middleware" \
       description="Acl + $ref configuration parser for micro-lc"
 
 ENV LOG_LEVEL=info

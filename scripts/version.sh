@@ -14,7 +14,7 @@ if [ -z "$MODE" ]; then
 fi
 
 WORKING_DIR="."
-TAG_SCOPE="@micro-lc/servo"
+TAG_SCOPE="@micro-lc/middleware"
 TAG_PREFIX_NAME="v"
 
 ( cd $WORKING_DIR ; yarn version $MODE )

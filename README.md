@@ -1,22 +1,22 @@
-<h1 align="center">⛽ Servo</h1>
+<h1 align="center">⛽ Middleware</h1>
 
-From Australian slang _servo_, which stands for service station, Servo is a backend middleware responsible for serving
+`Middleware` is a backend service responsible for serving
 [micro-lc](https://github.com/micro-lc/micro-lc) configuration files, applying some useful parsing logic before
 returning their content. This logic is also distributed through an SDK to ease the process of building custom
 configurations serves.
 
-On top of that, Servo distributes a CLI that can be used to automatically convert micro-lc configuration files from
+On top of that, this service distributes a CLI that can be used to automatically convert micro-lc configuration files from
 one version to another.
 
 For a detailed description of the service capabilities, referer to the 
-[server](https://micro-lc.io/add-ons/backend/servo) and 
+[server](https://micro-lc.io/add-ons/backend/middleware) and 
 [CLI](https://micro-lc.io/docs/migrating-from-v1#automated-migration) official documentation.
 
 ---
 
 ## Local development
 
-To develop Servo locally you need:
+To develop locally you need:
 
 - Node 16+
 - Yarn 1.22+
@@ -64,7 +64,7 @@ curl http://localhost:3000/-/ready
 As a result the terminal should return you the following message:
 
 ```json
-{"name":"@micro-lc/servo","status":"OK","version":"0.2.1"}
+{"name":"@micro-lc/middleware","status":"OK","version":"0.2.1"}
 ```
 
 ## Build a Docker container
@@ -72,7 +72,7 @@ As a result the terminal should return you the following message:
 The service Docker image can be build through provided [Dockerfile](./Dockerfile), running
 
 ```shell
-docker build --tag servo .
+docker build --tag microlc/middleware .
 ```
 
 To start the container, you can use the [run.sh](./scripts/run.sh) script, running:

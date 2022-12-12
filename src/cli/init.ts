@@ -85,7 +85,7 @@ export const parseArgs = (): CliContext => {
   const program = new Command()
 
   program
-    .name('Servo conversion CLI')
+    .name('Middleware conversion CLI')
     .description('Convert configuration files from one micro-lc version to another')
     .version(packageFile.version)
 

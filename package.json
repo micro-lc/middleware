@@ -1,5 +1,5 @@
 {
-  "name": "@micro-lc/servo",
+  "name": "@micro-lc/middleware",
   "version": "0.2.4",
   "description": "micro-lc configuration server",
   "license": "SEE LICENSE IN LICENSE",
@@ -10,7 +10,7 @@
     "package.json"
   ],
   "scripts": {
-    "prepare": "husky install",
+    "postinstall": "husky install",
     "lint": "eslint ./src --ext .ts",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }' ts-mocha",
     "coverage": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }' nyc ts-mocha",
@@ -24,7 +24,8 @@
     "bump": "bash ./scripts/version.sh",
     "start": "lc39 dist/server.js",
     "start:local": "yarn start --env-path ./default.env --log-level trace --port 3001",
-    "cli": "yarn ts-node ./src/cli"
+    "cli": "yarn ts-node ./src/cli",
+    "prepublish": "pinst --disable"
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.9",

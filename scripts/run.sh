@@ -28,5 +28,5 @@ docker run -d \
   -e RESOURCES_DIRECTORY_PATH=/usr/src/app/mocks \
   -v `pwd`/mocks:/usr/src/app/mocks \
   -p 3000:3000 \
-  --name servo \
-  servo
+  --name middleware \
+  microlc/middleware

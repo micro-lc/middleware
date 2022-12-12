@@ -24,7 +24,7 @@ jobs:
       - name: Prepare
         id: prepare
         run: |
-          DOCKER_IMAGE=microlc/servo
+          DOCKER_IMAGE=microlc/middleware
           VERSION=$(echo ${{ inputs.version }} | sed s/^v//)
           TAGS="${DOCKER_IMAGE}:${VERSION}"
           echo "tags=${TAGS}" >> $GITHUB_OUTPUT

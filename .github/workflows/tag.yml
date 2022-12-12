@@ -10,18 +10,18 @@ on:
 
 jobs:
   tests:
-    uses: micro-lc/servo/.github/workflows/tests.yml@main
+    uses: micro-lc/middleware/.github/workflows/tests.yml@main
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: micro-lc/servo/.github/workflows/lint.yml@main
+    uses: micro-lc/middleware/.github/workflows/lint.yml@main
 
   docker-build:
     needs:
       - tests
       - lint
-    uses: micro-lc/servo/.github/workflows/docker-build.yml@main
+    uses: micro-lc/middleware/.github/workflows/docker-build.yml@main
     with:
       version: ${GITHUB_REF#refs/tags/}
     secrets:
