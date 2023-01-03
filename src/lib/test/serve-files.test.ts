@@ -41,6 +41,9 @@ describe('Serve files', () => {
     resolveReferencesStub = sandbox.stub(resolveReferences, 'resolveReferences').resolves({ resolve: 'references' })
 
     fastify = await setupFastify({
+      CONTENT_TYPE_MAP: JSON.stringify({
+        '.special': 'application/damn-special',
+      }),
       RESOURCES_DIRECTORY_PATH: path.join(__dirname, './mocks'),
     })
   })
@@ -52,7 +55,7 @@ describe('Serve files', () => {
     sandbox.restore()
   })
 
-  it('should serve only JSON and YAML files', async () => {
+  it('should serve only available files', async () => {
     interface TestCase {
       expectedStatusCode: number
       route: string
@@ -61,9 +64,9 @@ describe('Serve files', () => {
     const testCases: TestCase[] = [
       { expectedStatusCode: 404, route: '/foo.json' },
       { expectedStatusCode: 404, route: '/.config' },
-      { expectedStatusCode: 404, route: '/config' },
+      { expectedStatusCode: 200, route: '/config' },
       { expectedStatusCode: 200, route: '/config.json' },
-      { expectedStatusCode: 404, route: '/config.txt' },
+      { expectedStatusCode: 200, route: '/config.txt' },
       { expectedStatusCode: 200, route: '/config.yaml' },
       { expectedStatusCode: 200, route: '/config.yml' },
     ]
@@ -160,5 +163,25 @@ describe('Serve files', () => {
 
     expect(resolveReferencesStub.calledOnce).to.be.true
     expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'acl' }])
+  })
+
+  it('should serve non-JSON file with proper `Content-Type` headers', async () => {
+    const { payload, headers } = await fastify.inject({
+      method: 'GET',
+      url: '/file.special',
+    })
+
+    expect(payload).to.deep.equal('')
+    expect(headers['content-type']).to.equal('application/damn-special')
+  })
+
+  it('should serve unknown files with `text/plain` `Content-Type` headers', async () => {
+    const { payload, headers } = await fastify.inject({
+      method: 'GET',
+      url: '/config',
+    })
+
+    expect(payload).to.deep.equal('This file should be served as plain text')
+    expect(headers['content-type']).to.equal('text/plain')
   })
 })

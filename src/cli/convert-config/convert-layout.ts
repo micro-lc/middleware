@@ -97,7 +97,10 @@ const buildMenuItem = (input: WithAcl<V1Plugin>): WithAcl<MenuItem> | undefined 
     const categoriesMap: Record<string, V1Plugin[]> = input.content
       .filter(plugin => plugin.category)
       .reduce<Record<string, V1Plugin[]>>((acc, cur) => {
-        acc[cur.category as string] = [...acc[cur.category as string] ?? [], cur]
+        acc[cur.category as string] = [
+          ...(acc[cur.category as string] as V1Plugin[] | undefined) ?? [],
+          cur,
+        ]
         return acc
       }, {})
 

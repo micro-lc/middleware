@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- `middleware` can serve any type of static file (only yaml and JSON will undergo acl validation and $ref resolution)
+- `Content-Type` can be configured on a per-extension basis
+
 ### Versioning
 
 - Development dependencies updated
@@ -14,3 +19,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `ajv` version bumped to `^8.11.2`
 - `@mia-platform/custom-plugin-lib` version bumped to `^5.1.5`
 - `@apidevtools/json-schema-ref-parser` version bumped to `^9.1.0`
+
+## [2.0.0]

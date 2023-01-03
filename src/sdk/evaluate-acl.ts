@@ -35,6 +35,7 @@ const userGroupsObjectBuilder = (userGroups: string[]) => {
   return userGroupsObject
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createUserPermissionsNestedObject = (originalObject: any, permissionPaths: string[]) => {
   for (let i = 0; i < permissionPaths.length; i++) {
     if (i < permissionPaths.length - 1) {
