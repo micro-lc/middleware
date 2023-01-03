@@ -3298,13 +3298,14 @@ __metadata:
   linkType: hard
 
 "fastify@npm:^3.29.0":
-  version: 3.29.3
-  resolution: "fastify@npm:3.29.3"
+  version: 3.29.4
+  resolution: "fastify@npm:3.29.4"
   dependencies:
     "@fastify/ajv-compiler": ^1.0.0
     "@fastify/error": ^2.0.0
     abstract-logging: ^2.0.0
     avvio: ^7.1.2
+    content-type: ^1.0.4
     fast-json-stringify: ^2.5.2
     find-my-way: ^4.5.0
     flatstr: ^1.0.12
@@ -3316,13 +3317,13 @@ __metadata:
     secure-json-parse: ^2.0.0
     semver: ^7.3.2
     tiny-lru: ^8.0.1
-  checksum: a3edd89ff5dd0efae43989f18a6ab2270b9b8fc11c6fc7cca6e8cfe3647dc4b0bb5b20104fe2c8468efbaad57af03113e4c592fafae8c619b8edc9a9e1ae98f4
+  checksum: add73f5bccf87c86f8edc08cad13b7ed942f7639ecaf3caa0502f069d9c9d39c3dd1257d403d3d845c7fa3099eee25ad4d1023223d6116f82bce84f0e724169a
   languageName: node
   linkType: hard
 
 "fastify@npm:^4.10.2":
-  version: 4.10.2
-  resolution: "fastify@npm:4.10.2"
+  version: 4.11.0
+  resolution: "fastify@npm:4.11.0"
   dependencies:
     "@fastify/ajv-compiler": ^3.3.1
     "@fastify/error": ^3.0.0
@@ -3339,7 +3340,7 @@ __metadata:
     secure-json-parse: ^2.5.0
     semver: ^7.3.7
     tiny-lru: ^10.0.0
-  checksum: 1050bb361051b5fa5593dc1ea9a1fdff35980444d29e74fb13d94face47b38be6cb047e61d87b6a1f6337e3e0afb4873dbff342a3ae02f0ea7bf60fec51e8f1f
+  checksum: 814803b1015ae47cce4d7877a16788abee3ba6bba23e7e1b08a6cc62b43828aa6c38624de835c5b422da902fa93b316d1222d191b8373bebd8acbd68c8843584
   languageName: node
   linkType: hard
 
