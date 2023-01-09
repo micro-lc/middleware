@@ -29,8 +29,21 @@ import type { Json } from '../sdk'
 
 import { extractAclContext } from './extract-acl-context'
 
-type FileLoader = (fileAbsPath: string) => Promise<Json>
-type JsonDumper = (json: Json) => unknown
+type Extension = '.json' | '.yml' | '.yaml'
+
+type FileLoader = (fileAbsPath: string, ...args: string[][]) => Promise<unknown>
+type JsonFileLoader = (fileAbsPath: string, aclGroups: string[], aclPermissions: string[]) => Promise<Json>
+
+const DEFAULT_CONTENT_TYPE_MAP: Record<Extension | string, string> = {
+  '.cjs': 'application/javascript',
+  '.css': 'text/css',
+  '.html': 'text/html',
+  '.js': 'application/javascript',
+  '.json': 'application/json; charset=utf-8',
+  '.mjs': 'application/javascript',
+  '.yaml': 'text/yaml; charset=utf-8',
+  '.yml': 'text/yaml; charset=utf-8',
+}
 
 const globPromise = util.promisify(glob)
 
@@ -52,14 +65,32 @@ const validateResourcesDirectoryPath = (dirPath: string) => {
   if (!pathStat.isDirectory()) { throw new Error('"RESOURCES_DIRECTORY_PATH" must point to a directory') }
 }
 
-const loadJsonFile: FileLoader = async fileAbsPath => {
-  const rawContent = await fs.promises.readFile(fileAbsPath, 'utf-8')
-  return JSON.parse(rawContent) as Json
-}
+const validateContentTypeMap = (stringifiedContentTypeMap: string | undefined) => {
+  const candidateContentMap = stringifiedContentTypeMap === undefined || stringifiedContentTypeMap.trim() === '' ? '{}' : stringifiedContentTypeMap
+  try {
+    const contentTypeMap = JSON.parse(candidateContentMap) as unknown
 
-const loadYamlFile: FileLoader = async fileAbsPath => {
-  const rawContent = await fs.promises.readFile(fileAbsPath, 'utf-8')
-  return yaml.load(rawContent) as Json
+    if (typeof contentTypeMap !== 'object' || contentTypeMap === null || Array.isArray(contentTypeMap)) {
+      throw new Error('"CONTENT_TYPE_MAP" is not a valid key/value stringified JSON')
+    }
+
+    return Object.entries(contentTypeMap)
+      .reduce<Record<string, string>>((dict, [key, value]) => {
+        if (typeof value !== 'string') {
+          return dict
+        }
+
+        return Object.assign(dict, key.split(',').reduce<Record<string, string>>((acc, ext) => {
+          const trimmedExtension = ext.trim()
+          if (trimmedExtension.startsWith('.')) {
+            acc[trimmedExtension] = value
+          }
+          return acc
+        }, dict))
+      }, DEFAULT_CONTENT_TYPE_MAP)
+  } catch (err) {
+    throw new Error('"CONTENT_TYPE_MAP" is not a valid stringified JSON')
+  }
 }
 
 const manipulateJson = async (json: Json, aclGroups: string[], aclPermissions: string[]): Promise<Json> => {
@@ -73,18 +104,55 @@ const manipulateJson = async (json: Json, aclGroups: string[], aclPermissions: s
   return resolvedJson
 }
 
-const dumpToJson: JsonDumper = json => json
+const loadJsonFile: JsonFileLoader = async (fileAbsPath, ...args: string[][]) => {
+  const rawContent = await fs.promises.readFile(fileAbsPath, 'utf-8')
+  const json = JSON.parse(rawContent) as Json
+  return manipulateJson(json, args[0], args[1])
+}
 
-const dumpToYaml: JsonDumper = json => yaml.dump(json)
+const loadYamlFile: JsonFileLoader = async (fileAbsPath, ...args: string[][]) => {
+  const rawContent = await fs.promises.readFile(fileAbsPath, 'utf-8')
+  const json = yaml.load(rawContent) as Json
+  return manipulateJson(json, args[0], args[1])
+}
+
+const loadTextFile: FileLoader = async (fileAbsPath) => fs.promises.readFile(fileAbsPath)
+
+function getLoader(extension: string): FileLoader {
+  switch (extension) {
+  case '.json':
+    return loadJsonFile
+  case '.yaml':
+  case '.yml':
+    return loadYamlFile
+  default:
+    return loadTextFile
+  }
+}
+
+function getDumper(extension: Extension | string): (content: unknown) => unknown {
+  switch (extension) {
+  case '.yaml':
+  case '.yml':
+    return (json) => yaml.dump(json)
+  case '.json':
+  default:
+    return (content) => content
+  }
+}
 
 export async function registerRoutes(this: DecoratedFastify<EnvironmentVariables>) {
-  const { RESOURCES_DIRECTORY_PATH } = this.config
+  const { RESOURCES_DIRECTORY_PATH, CONTENT_TYPE_MAP } = this.config
 
   validateResourcesDirectoryPath(RESOURCES_DIRECTORY_PATH)
+  const contentTypeDictionary = validateContentTypeMap(CONTENT_TYPE_MAP)
 
   const winSeparatorRegex = new RegExp(`\\${path.win32.sep}`, 'g')
+  // const globJsonPattern = path
+  //   .join(RESOURCES_DIRECTORY_PATH, '**/*.{json,yml,yaml}')
+  //   .replace(winSeparatorRegex, path.posix.sep)
   const globPattern = path
-    .join(RESOURCES_DIRECTORY_PATH, '**/*.{json,yml,yaml}')
+    .join(RESOURCES_DIRECTORY_PATH, '**/*')
     .replace(winSeparatorRegex, path.posix.sep)
 
   const routesPrefix = '/'
@@ -103,20 +171,18 @@ export async function registerRoutes(this: DecoratedFastify<EnvironmentVariables
 
     const fileExtension = path.extname(fileRelPath)
 
-    const contentType = `${fileExtension === '.json' ? 'application/json' : 'text/yaml'}; charset=utf-8`
-    const fileLoader = fileExtension === '.json' ? loadJsonFile : loadYamlFile
-    const contentDumper = fileExtension === '.json' ? dumpToJson : dumpToYaml
+    const contentType = contentTypeDictionary[fileExtension] as string | undefined
+    const fileLoader = getLoader(fileExtension)
+    const contentDumper = getDumper(fileExtension)
 
     this.addRawCustomPlugin('GET', route, async (request, reply) => {
-      const json = await fileLoader(fileAbsPath)
-
       const aclContext = extractAclContext(this, request)
-      const manipulatedJson = await manipulateJson(json, aclContext.groups, aclContext.permissions)
+      const manipulatedContent = await fileLoader(fileAbsPath, aclContext.groups, aclContext.permissions)
 
-      const payload = contentDumper(manipulatedJson)
+      const payload = contentDumper(manipulatedContent)
 
       return reply
-        .header('content-type', contentType)
+        .header('content-type', contentType ?? 'text/plain')
         .code(200)
         .send(payload)
     })

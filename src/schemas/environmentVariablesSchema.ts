@@ -18,6 +18,10 @@ import type { FromSchema } from 'json-schema-to-ts'
 
 export const environmentVariablesSchema = {
   properties: {
+    CONTENT_TYPE_MAP: {
+      description: 'Key/value dictionary which maps lists of extensions, in the form of a comma separated list, to a `Content-Type` header',
+      type: 'string',
+    },
     RESOURCES_DIRECTORY_PATH: {
       description: 'Absolute path of the directory containing resources to be served',
       type: 'string',

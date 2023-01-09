@@ -92,6 +92,7 @@ const applicationsIterator = (
   }
 
   if ((plugin as V1Plugin).content) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     (plugin as V1Plugin).content!.forEach(subPlugin => { applicationsIterator(acc, subPlugin, elementComposerUrlRegex) })
   }
 }
