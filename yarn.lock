@@ -786,11 +786,11 @@ __metadata:
   linkType: hard
 
 "@micro-lc/interfaces@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@micro-lc/interfaces@npm:1.0.1"
+  version: 1.0.2
+  resolution: "@micro-lc/interfaces@npm:1.0.2"
   peerDependencies:
     postcss: "*"
-  checksum: 01cb8c4cd4488ea9026b53c81497095a6a7d6a6a59ecba9978f7712e458680122b9b8f67d151cafedb91b4ef98c7ebf65553017e8e82587e5f54933d026fbfda
+  checksum: 8607113b159ae73644698acea1a754e33e4c6abcf4e07d75072486cf65478aa8501bad7c7b85c5fc9f820b44b0f40d8ab65068d35ebdf07f380c47060a56ee30
   languageName: node
   linkType: hard
 
