@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Development dependencies updated
 - `fastify` version bumped to `^4.11.0`
-- `ajv` version bumped to `^8.11.2`
+- `ajv` version bumped to `^8.12.0`
 - `@mia-platform/custom-plugin-lib` version bumped to `^5.1.5`
 - `@apidevtools/json-schema-ref-parser` version bumped to `^9.1.0`
 
