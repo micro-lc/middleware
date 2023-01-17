@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [2.0.1] - 2023-01-17
+
 ### Added
 
 - `middleware` can serve any type of static file (only yaml and JSON will undergo acl validation and $ref resolution)
