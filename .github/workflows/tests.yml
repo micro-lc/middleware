@@ -25,10 +25,15 @@ jobs:
           cache: yarn
 
       - name: Install
-        run: yarn install --immutable
+        run: |
+          yarn install --immutable
+          yarn build:cli
 
-      - name: Run Coverage
+      - name: Run Unit Tests
         run: yarn coverage
+
+      - name: Run CLI Tests
+        run: yarn test:cli
 
       - name: Collect Coveralls coverage
         if: ${{ inputs.node-version == '16.x' }}
