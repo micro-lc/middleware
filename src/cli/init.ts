@@ -16,7 +16,7 @@
 
 import { Command, InvalidArgumentError, InvalidOptionArgumentError } from 'commander'
 import glob from 'glob'
-import mkdirp from 'mkdirp'
+import { mkdirpSync } from 'mkdirp'
 
 import packageFile from '../../package.json'
 
@@ -121,7 +121,7 @@ export const parseArgs = (): CliContext => {
     context.fileAbsPaths = fileAbsPaths
 
     if (dir) {
-      mkdirp.sync(dir)
+      mkdirpSync(dir)
       context.dir = dir
     }
   })

@@ -1,0 +1,712 @@
+{
+  "definitions": {
+    "customMessageOnAbsentLookup": {
+      "en": "⚠ Not found",
+      "it": "⚠ Non trovato"
+    },
+    "dataSchema": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "label": "_id",
+          "type": "string",
+          "visualizationOptions": {
+            "hidden": true
+          },
+          "formOptions": {
+            "hidden": true
+          }
+        },
+        "__STATE__": {
+          "type": "string",
+          "default": "PUBLIC",
+          "visualizationOptions": {
+            "hidden": true
+          },
+          "formOptions": {
+            "hidden": true
+          },
+          "filtersOptions": {
+            "hidden": true
+          }
+        },
+        "status": {
+          "label": {
+            "en": "Order status",
+            "it": "Stato ordine"
+          },
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Preparing",
+            "Delivered",
+            "Aborted"
+          ],
+          "default": "Pending",
+          "excludeFromSearch": true,
+          "visualizationOptions": {
+            "iconMap": {
+              "Pending": {
+                "shape": "roundedSquare",
+                "color": "#03a9f4"
+              },
+              "Preparing": {
+                "shape": "roundedSquare",
+                "color": "#ff9800"
+              },
+              "Delivered": {
+                "shape": "roundedSquare",
+                "color": "#4caf50"
+              },
+              "Aborted": {
+                "shape": "roundedSquare",
+                "color": "#ef5350"
+              }
+            }
+          },
+          "filtersOptions": {
+            "hidden": true
+          }
+        },
+        "dishes": {
+          "label": {
+            "it": "Piatti",
+            "en": "Dishes"
+          },
+          "type": "array",
+          "format": "multilookup",
+          "excludeFromSearch": false,
+          "visualizationOptions": {
+            "joinDelimiter": "; "
+          },
+          "lookupOptions": {
+            "lookupDataSource": "dishes",
+            "lookupValue": "_id",
+            "lookupFields": [
+              "name"
+            ]
+          }
+        },
+        "totalPrice": {
+          "label": {
+            "it": "Prezzo",
+            "en": "Price"
+          },
+          "type": "number",
+          "min": 0,
+          "visualizationOptions": {
+            "hidden": true
+          }
+        },
+        "orderedAt": {
+          "label": {
+            "it": "Data di ordinazione",
+            "en": "Ordered at"
+          },
+          "type": "string",
+          "format": "date-time",
+          "dateOptions": {
+            "displayFormat": "DD/MM/YYYY HH:mm"
+          }
+        },
+        "formTitle_delivery": {
+          "type": "form-addon",
+          "format": "title",
+          "label": {
+            "it": "Informazioni sulla consegna",
+            "en": "Delivery information"
+          }
+        },
+        "riderId": {
+          "label": "Rider",
+          "type": "string",
+          "format": "lookup",
+          "excludeFromSearch": false,
+          "lookupOptions": {
+            "lookupDataSource": "riders",
+            "lookupValue": "_id",
+            "lookupFields": [
+              "name",
+              "surname"
+            ],
+            "lookupDelimiter": " "
+          }
+        },
+        "restaurantId": {
+          "label": "Restaurant",
+          "type": "string",
+          "format": "lookup",
+          "excludeFromSearch": false,
+          "lookupOptions": {
+            "lookupDataSource": "restaurants",
+            "lookupValue": "_id",
+            "lookupFields": [
+              "name"
+            ],
+            "lookupDelimiter": " "
+          }
+        },
+        "customerId": {
+          "label": {
+            "it": "Cliente",
+            "en": "Customer"
+          },
+          "type": "string",
+          "format": "lookup",
+          "excludeFromSearch": false,
+          "lookupOptions": {
+            "lookupDataSource": "customers",
+            "lookupValue": "_id",
+            "lookupFields": [
+              "name",
+              "surname"
+            ],
+            "lookupDelimiter": " "
+          }
+        },
+        "address": {
+          "label": {
+            "it": "Indirizzo",
+            "en": "Address"
+          },
+          "type": "string"
+        },
+        "coordinates": {
+          "label": {
+            "it": "Coordinate",
+            "en": "Coordinates"
+          },
+          "excludeFromSearch": true,
+          "type": "array",
+          "format": "geopoint",
+          "visualizationOptions": {
+            "hidden": "true"
+          }
+        }
+      },
+      "required": [
+        "status",
+        "dishes",
+        "totalPrice",
+        "orderedAt",
+        "customerId",
+        "address"
+      ]
+    }
+  },
+  "content": {
+    "content": [
+      {
+        "properties": {
+          "rootElementSelectors": "microlc-element-composer"
+        },
+        "tag": "bk-microlc-theme-manager",
+        "attributes": {}
+      },
+      {
+        "content": [
+          {
+            "content": [
+              {
+                "properties": {
+                  "content": {
+                    "en": "Orders",
+                    "it": "Ordini"
+                  }
+                },
+                "tag": "bk-title",
+                "attributes": {
+                  "style": "margin: 0 1vw 0 0;"
+                }
+              },
+              {
+                "tag": "bk-refresh-button",
+                "attributes": {}
+              }
+            ],
+            "tag": "div",
+            "attributes": {
+              "style": "display: flex; flex-direction: row; align-items: center;"
+            }
+          },
+          {
+            "content": [
+              {
+                "properties": {
+                  "placeholder": {
+                    "en": "Search...",
+                    "it": "Cerca..."
+                  },
+                  "searchLookups": true
+                },
+                "tag": "bk-search-bar",
+                "attributes": {
+                  "style": "margin-right: 10px;"
+                }
+              },
+              {
+                "properties": {
+                  "iconId": "DownloadOutlined",
+                  "content": {
+                    "en": "Export",
+                    "it": "Esporta"
+                  },
+                  "clickConfig": {
+                    "type": "event",
+                    "actionConfig": {
+                      "label": "export-data",
+                      "payload": {}
+                    }
+                  }
+                },
+                "tag": "bk-generic-button",
+                "attributes": {
+                  "style": "margin-right: 10px;"
+                }
+              },
+              {
+                "tag": "bk-add-new-button",
+                "attributes": {
+                  "style": "margin-right: 10px;"
+                }
+              },
+              {
+                "properties": {
+                  "content": "",
+                  "clickConfig": {
+                    "type": "event",
+                    "actionConfig": {
+                      "label": "filter",
+                      "payload": {}
+                    }
+                  },
+                  "type": "outlined",
+                  "iconId": "FunnelPlotOutlined"
+                },
+                "tag": "bk-button",
+                "attributes": {}
+              }
+            ],
+            "tag": "div",
+            "attributes": {
+              "style": "display: flex; flex-direction: row; align-items: center;"
+            }
+          }
+        ],
+        "tag": "div",
+        "attributes": {
+          "style": "display: flex; flex-direction: row; justify-content: space-between; padding: 10px 24px 0px 24px; align-items: center;"
+        }
+      },
+      {
+        "content": [
+          {
+            "properties": {
+              "tabs": [
+                {
+                  "key": "pending",
+                  "title": {
+                    "en": "Pending",
+                    "it": "In attesa"
+                  },
+                  "filters": [
+                    {
+                      "property": "status",
+                      "operator": "equal",
+                      "value": "Pending"
+                    }
+                  ]
+                },
+                {
+                  "key": "preparing",
+                  "title": {
+                    "en": "Preparing",
+                    "it": "In preparazione"
+                  },
+                  "filters": [
+                    {
+                      "property": "status",
+                      "operator": "equal",
+                      "value": "Preparing"
+                    }
+                  ]
+                },
+                {
+                  "key": "delivered",
+                  "title": {
+                    "en": "Delivered",
+                    "it": "In consegna"
+                  },
+                  "filters": [
+                    {
+                      "property": "status",
+                      "operator": "equal",
+                      "value": "Delivered"
+                    }
+                  ]
+                },
+                {
+                  "key": "aborted",
+                  "title": {
+                    "en": "Aborted",
+                    "it": "Annullati"
+                  },
+                  "filters": [
+                    {
+                      "property": "status",
+                      "operator": "equal",
+                      "value": "Aborted"
+                    }
+                  ]
+                },
+                {
+                  "key": "future",
+                  "title": {
+                    "en": "Pre Ordered",
+                    "it": "Pre ordinati"
+                  },
+                  "filters": [
+                    {
+                      "property": "orderedAt",
+                      "operator": "greaterEqual",
+                      "value": "$today"
+                    }
+                  ]
+                }
+              ]
+            },
+            "tag": "bk-tabs",
+            "attributes": {
+              "style": "margin-right: 2vw; width: 500px;"
+            }
+          },
+          {
+            "properties": {
+              "dataSchema": {
+                "$ref": "#/definitions/dataSchema"
+              },
+              "filters": []
+            },
+            "tag": "bk-filters-manager",
+            "attributes": {}
+          }
+        ],
+        "tag": "div",
+        "attributes": {
+          "style": "display: flex; flex-direction: row; padding: 0 24px; align-items: center; justify-content: space-between; border-bottom: 1px solid #CDCDCE; min-height: 50px;"
+        }
+      },
+      {
+        "content": [
+          {
+            "content": [
+              {
+                "properties": {
+                  "customMessageOnAbsentLookup": {
+                    "$ref": "#/definitions/customMessageOnAbsentLookup"
+                  },
+                  "dataSchema": {
+                    "$ref": "#/definitions/dataSchema"
+                  },
+                  "rowActions": {
+                    "kind": "cta",
+                    "actions": [
+                      {
+                        "label": {
+                          "it": "Annulla",
+                          "en": "Abort"
+                        },
+                        "icon": "fas fa-times",
+                        "kind": "httpPost",
+                        "content": "/lambdas/abort",
+                        "requireConfirm": {
+                          "cancelText": {
+                            "en": "Cancel",
+                            "it": "Annulla"
+                          },
+                          "content": {
+                            "en": "You are about to abort the selected order.",
+                            "it": "Procedendo con questa operazione, annullerai l'ordine selezionato."
+                          },
+                          "okText": {
+                            "en": "Confirm",
+                            "it": "Conferma"
+                          },
+                          "title": {
+                            "en": "Are you sure you want to abort the order?",
+                            "it": "Sei sicuro di voler annullare l'ordine?"
+                          }
+                        },
+                        "meta": {
+                          "actionId": "abort-order"
+                        }
+                      }
+                    ]
+                  },
+                  "initialSortDirection": "descend",
+                  "initialSortProperty": "orderedAt",
+                  "maxLines": 8,
+                  "fixedColumns": {
+                    "left": 1
+                  }
+                },
+                "tag": "bk-table",
+                "attributes": {}
+              },
+              {
+                "properties": {
+                  "customMessageOnAbsentLookup": {
+                    "$ref": "#/definitions/customMessageOnAbsentLookup"
+                  },
+                  "allowNavigation": false,
+                  "requireConfirm": {
+                    "onClose": true,
+                    "onSave": true
+                  },
+                  "width": "560",
+                  "dataSchema": {
+                    "$ref": "#/definitions/dataSchema"
+                  },
+                  "customLabels": {
+                    "create": {
+                      "title": {
+                        "en": "Add new",
+                        "it": "Aggiungi nuovo"
+                      },
+                      "ctaLabel": {
+                        "en": "Add",
+                        "it": "Aggiungi"
+                      }
+                    },
+                    "update": {
+                      "title": {
+                        "en": "Order detail",
+                        "it": "Dettaglio ordine"
+                      },
+                      "ctaLabel": {
+                        "en": "Save",
+                        "it": "Salva"
+                      }
+                    }
+                  }
+                },
+                "tag": "bk-form-drawer",
+                "attributes": {}
+              },
+              {
+                "properties": {
+                  "dataSchema": {
+                    "$ref": "#/definitions/dataSchema"
+                  },
+                  "width": "500"
+                },
+                "tag": "bk-filter-drawer",
+                "attributes": {}
+              }
+            ],
+            "tag": "div",
+            "attributes": {
+              "style": "display: flex; flex-direction: column; background-color: #f0f2f5; padding: 24px 24px; flex-grow: 1; position:relative; overflow:hidden;"
+            }
+          }
+        ],
+        "tag": "div",
+        "attributes": {
+          "style": "display: flex; flex-direction: column; flex-grow: 1; position:relative; bottom: 0;"
+        }
+      },
+      {
+        "content": [
+          {
+            "content": [
+              {
+                "tag": "bk-bulk-delete",
+                "attributes": {
+                  "style": "margin-right: 10px;"
+                }
+              },
+              {
+                "properties": {
+                  "dataSchema": {
+                    "$ref": "#/definitions/dataSchema"
+                  }
+                },
+                "tag": "bk-bulk-actions",
+                "attributes": {}
+              }
+            ],
+            "tag": "div",
+            "attributes": {
+              "style": "display: flex; flex-direction: row; justify-content: space-between; padding: 10px 24px 0px 24px; align-items: center;"
+            }
+          },
+          {
+            "properties": {
+              "disableStateChange": true
+            },
+            "tag": "bk-footer",
+            "attributes": {}
+          },
+          {
+            "tag": "bk-pagination",
+            "attributes": {}
+          }
+        ],
+        "tag": "div",
+        "attributes": {
+          "style": "display: flex; flex-direction: row; position: sticky; justify-content: space-between; align-items: center; padding: 12px 24px; background-color: white; z-index: 10; bottom: 0; max-height: 56px;"
+        }
+      },
+      {
+        "tag": "bk-confirmation-modal",
+        "attributes": {}
+      },
+      {
+        "properties": {
+          "rootElementSelectors": "main.micro-lc-layout-content",
+          "successEventMap": {
+            "create-data": {
+              "title": {
+                "en": "Success",
+                "it": "Successo"
+              },
+              "content": {
+                "en": "Order successfully created",
+                "it": "L'ordine è stato creato correttamente"
+              },
+              "type": "success"
+            },
+            "update-data": {
+              "title": {
+                "en": "Success",
+                "it": "Successo"
+              },
+              "content": {
+                "en": "Order successfully updated",
+                "it": "L'ordine è stato aggiornato correttamente"
+              },
+              "type": "success"
+            },
+            "delete-data": {
+              "title": {
+                "en": "Success",
+                "it": "Successo"
+              },
+              "content": {
+                "en": "Order successfully deleted",
+                "it": "L'ordine è stato eliminato correttamente"
+              },
+              "type": "success"
+            },
+            "abort-order": {
+              "title": {
+                "en": "Success",
+                "it": "Successo"
+              },
+              "content": {
+                "en": "Order successfully aborted",
+                "it": "L'ordine è stato cancellato correttamente"
+              },
+              "type": "success"
+            }
+          },
+          "errorEventMap": {
+            "create-data": {
+              "title": {
+                "en": "Error",
+                "it": "Errore"
+              },
+              "content": {
+                "en": "An error occurred during order creation",
+                "it": "C'è stato un errore durante la creazione dell'ordine"
+              },
+              "type": "error"
+            },
+            "update-data": {
+              "title": {
+                "en": "Error",
+                "it": "Errore"
+              },
+              "content": {
+                "en": "An error occurred during order update",
+                "it": "C'è stato un errore durante l'aggiornamento dell'ordine"
+              },
+              "type": "error"
+            },
+            "delete-data": {
+              "title": {
+                "en": "Error",
+                "it": "Errore"
+              },
+              "content": {
+                "en": "An error occurred during order deletion",
+                "it": "C'è stato un errore durante l'eliminazione dell'ordine"
+              },
+              "type": "error"
+            },
+            "abort-order": {
+              "title": {
+                "en": "Error",
+                "it": "Errore"
+              },
+              "content": {
+                "en": "An error occurred during order abort",
+                "it": "C'è stato un errore durante la cancellazione dell'ordine"
+              },
+              "type": "error"
+            }
+          }
+        },
+        "tag": "bk-notifications",
+        "attributes": {}
+      },
+      {
+        "properties": {
+          "basePath": "/v2/orders",
+          "dataSchema": {
+            "$ref": "#/definitions/dataSchema"
+          }
+        },
+        "tag": "bk-crud-client",
+        "attributes": {}
+      },
+      {
+        "properties": {
+          "basePath": "/v2",
+          "dataSchema": {
+            "$ref": "#/definitions/dataSchema"
+          }
+        },
+        "tag": "bk-crud-lookup-client",
+        "attributes": {}
+      },
+      {
+        "properties": {
+          "configMap": {
+            "micro-lc-notification-center": "add-filter"
+          }
+        },
+        "tag": "bk-state-adapter",
+        "attributes": {}
+      },
+      {
+        "properties": {
+          "basePath": "/v2/orders/export",
+          "streamSaverIFrameSrc": "/back-kit/{{BACK_KIT_VERSION}}/export-service-worker.html",
+          "dataSchema": {
+            "$ref": "#/definitions/dataSchema"
+          }
+        },
+        "tag": "bk-export",
+        "attributes": {}
+      }
+    ],
+    "tag": "div",
+    "attributes": {
+      "style": "display: flex; flex-direction: column; height: calc(100vh - 64px);"
+    }
+  },
+  "sources": [
+    "/back-kit/{{BACK_KIT_VERSION}}/bk-web-components.esm.js"
+  ]
+}
