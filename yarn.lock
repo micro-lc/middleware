@@ -5062,11 +5062,11 @@ __metadata:
   linkType: hard
 
 "mkdirp@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "mkdirp@npm:2.1.1"
+  version: 2.1.2
+  resolution: "mkdirp@npm:2.1.2"
   bin:
     mkdirp: dist/cjs/src/bin.js
-  checksum: 3849d9a9022025b0659c382026037a379ab416a6772a0874b72b061f744895ef20b8ea20607aeacac54a1a21c724b948269c994dc6646bd2d016828e9a2e6e18
+  checksum: c2cbd8bb1dc36499fe9a9588385d48aeff41b60a1911088fab730cb19a1b8a12da6904c683e6f4e89e3d2009323bd68a271f64a4f5086d0575eb68b2fefe8cfc
   languageName: node
   linkType: hard
 
