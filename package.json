@@ -12,8 +12,10 @@
   "scripts": {
     "postinstall": "husky install",
     "lint": "eslint ./src --ext .ts",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }' ts-mocha",
-    "coverage": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }' nyc ts-mocha",
+    "check-types": "tsc --noEmit",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }' ts-mocha src/**/test/**/*.test.ts",
+    "test:cli": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }' ts-mocha test/**/*.test.ts",
+    "coverage": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }' nyc ts-mocha src/**/test/**/*.test.ts",
     "clean": "rimraf dist",
     "build:server": "tsc --project ./scripts/tsconfig.build.json && echo \"✔ server compiled successfully\"",
     "build:cli": "yarn node ./scripts/build-cli.mjs",

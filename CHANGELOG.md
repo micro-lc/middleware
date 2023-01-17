@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `middleware` can serve any type of static file (only yaml and JSON will undergo acl validation and $ref resolution)
 - `Content-Type` can be configured on a per-extension basis
+- CLI tests
 
 ### Versioning
 

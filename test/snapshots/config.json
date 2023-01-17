@@ -1,0 +1,276 @@
+{
+  "version": 2,
+  "shared": {
+    "properties": {
+      "headers": {
+        "client-key": "client_key"
+      }
+    }
+  },
+  "settings": {
+    "defaultUrl": "./bo-orders-list"
+  },
+  "layout": {
+    "content": [
+      {
+        "content": {
+          "attributes": {
+            "slot": "top-bar",
+            "style": "display: flex; align-items: center;"
+          },
+          "content": [
+            {
+              "tag": "micro-lc-notification-center",
+              "properties": {
+                "clickStrategy": "push",
+                "limit": 7,
+                "mode": "polling",
+                "pollingFrequency": 60000,
+                "locales": {
+                  "title": {
+                    "it": "Notifiche",
+                    "en": "Notifications"
+                  },
+                  "dateFormat": {
+                    "it": "DD MMM YYYY",
+                    "en": "MMM DD YYYY"
+                  },
+                  "loadingButton": {
+                    "it": "Carica altro",
+                    "en": "Load more"
+                  },
+                  "errorMessage": {
+                    "it": "Si è verificato un errore, riprovare",
+                    "en": "An error occurred, try again"
+                  },
+                  "noNotification": {
+                    "it": "Nessuna notifica da visualizzare",
+                    "en": "No notifications to show"
+                  },
+                  "readAll": {
+                    "it": "Segna tutte come lette",
+                    "en": "Mark all as read"
+                  },
+                  "reload": {
+                    "it": "Ricarica",
+                    "en": "Reload"
+                  },
+                  "backOnTop": {
+                    "it": "Torna all'inizio",
+                    "en": "Back on top"
+                  }
+                }
+              }
+            }
+          ],
+          "tag": "div"
+        },
+        "properties": {
+          "mode": "fixedSideBar",
+          "logo": {
+            "altText": "Logo",
+            "url": "/logo"
+          },
+          "menuItems": [
+            {
+              "icon": {
+                "library": "@fortawesome/free-solid-svg-icons",
+                "selector": "faPaperPlane"
+              },
+              "id": "ordersList",
+              "label": "Orders",
+              "type": "application"
+            },
+            {
+              "children": [
+                {
+                  "icon": {
+                    "library": "@fortawesome/free-solid-svg-icons",
+                    "selector": "faBiking"
+                  },
+                  "id": "ridersList",
+                  "label": "Riders",
+                  "type": "application"
+                },
+                {
+                  "icon": {
+                    "library": "@fortawesome/free-solid-svg-icons",
+                    "selector": "faClipboardList"
+                  },
+                  "id": "ridersShifts",
+                  "label": "Riders shifts",
+                  "type": "application"
+                },
+                {
+                  "icon": {
+                    "library": "@fortawesome/free-solid-svg-icons",
+                    "selector": "faUserTag"
+                  },
+                  "id": "customersList",
+                  "label": "Customers",
+                  "type": "application"
+                }
+              ],
+              "icon": {
+                "library": "@fortawesome/free-solid-svg-icons",
+                "selector": "faUsers"
+              },
+              "id": "usersCategory",
+              "label": "Users",
+              "type": "category"
+            },
+            {
+              "children": [
+                {
+                  "icon": {
+                    "library": "@fortawesome/free-solid-svg-icons",
+                    "selector": "faUtensils"
+                  },
+                  "id": "dishesList",
+                  "label": "Dishes",
+                  "type": "application"
+                },
+                {
+                  "icon": {
+                    "library": "@fortawesome/free-solid-svg-icons",
+                    "selector": "faFish"
+                  },
+                  "id": "ingredientsList",
+                  "label": "Ingredients",
+                  "type": "application"
+                }
+              ],
+              "icon": {
+                "library": "@fortawesome/free-solid-svg-icons",
+                "selector": "faBookOpen"
+              },
+              "id": "menuCategory",
+              "label": "Menu",
+              "type": "category"
+            },
+            {
+              "icon": {
+                "library": "@fortawesome/free-solid-svg-icons",
+                "selector": "faStore"
+              },
+              "id": "restaurantsList",
+              "label": "Restaurants",
+              "type": "application"
+            },
+            {
+              "icon": {
+                "library": "@fortawesome/free-solid-svg-icons",
+                "selector": "faUser"
+              },
+              "id": "user-collections",
+              "label": "User Collections",
+              "type": "application"
+            }
+          ],
+          "userMenu": {
+            "logout": {
+              "redirectUrl": "/logout?redirect=/web-login?redirect=/"
+            },
+            "userInfoUrl": "/userinfo"
+          },
+          "head": {
+            "favIconUrl": "https://www.mia-platform.eu/static/img/favicon/apple-icon-60x60.png",
+            "title": "Test"
+          }
+        },
+        "tag": "mlc-layout"
+      },
+      {
+        "properties": {
+          "primaryColor": "#294C9D",
+          "varsPrefix": [
+            "micro-lc",
+            "microlc",
+            "back-kit",
+            "ant"
+          ]
+        },
+        "tag": "mlc-antd-theme-manager"
+      }
+    ],
+    "sources": [
+      "https://cdn.jsdelivr.net/npm/@micro-lc/layout@latest/dist/mlc-layout.js",
+      "/micro-lc-notification-center/micro-lc-notification-center.esm.js",
+      "https://cdn.jsdelivr.net/npm/@micro-lc/layout@latest/dist/mlc-antd-theme-manager.js"
+    ]
+  },
+  "applications": {
+    "restaurant-details": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "restaurant-details"
+      },
+      "route": "/bo-restaurant-details"
+    },
+    "ordersList": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "orders-list"
+      },
+      "route": "/bo-orders-list"
+    },
+    "ridersList": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "riders-list"
+      },
+      "route": "/bo-riders-list"
+    },
+    "ridersShifts": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "riders-shift"
+      },
+      "route": "/bo-riders-shifts"
+    },
+    "customersList": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "customers-list"
+      },
+      "route": "/bo-customers-list"
+    },
+    "dishesList": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "dishes-list"
+      },
+      "route": "/bo-dishes-list"
+    },
+    "ingredientsList": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "ingredients-list"
+      },
+      "route": "/bo-ingredients-list"
+    },
+    "restaurantsList": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "restaurants-list"
+      },
+      "route": "/bo-restaurants-list"
+    },
+    "user-collections": {
+      "entry": "/element-composer/",
+      "integrationMode": "parcel",
+      "properties": {
+        "configurationName": "user-collections"
+      },
+      "route": "/bo-users-collections"
+    }
+  }
+}
