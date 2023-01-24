@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Versioning
 
 - Development dependencies updated
+- `fastify` version bumped to `^4.12.0`
 
 ## [2.0.1] - 2023-01-17
 
