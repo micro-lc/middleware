@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import $RefParser from '@apidevtools/json-schema-ref-parser'
+import { dereference } from '@apidevtools/json-schema-ref-parser'
 
 import type { Json } from './types'
 
@@ -31,5 +31,5 @@ export const resolveReferences = async (json: Json) : Promise<Json> => {
     return json
   }
 
-  return $RefParser.dereference(json)
+  return dereference(json)
 }
