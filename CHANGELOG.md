@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [2.0.1] - 2023-01-24
+
 ### Fixed
 
 - Security update on `json5` >= 2.2.2. `ts-mocha` has been removed and `eslint-plugin-import` has been fixed with a successful resolution in `package.json`
