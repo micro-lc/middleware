@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [2.0.2] - 2023-02-09
+
+### Fixed
+
+- security vulnerability to `http-cache-semantics` solved bumping from 4.1.0 to 4.1.1
+
 ### Versioning
 
 - Development dependencies updated
