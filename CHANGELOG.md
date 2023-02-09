@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Versioning
+
+- Development dependencies updated
+- `@apidevtools/json-schema-ref-parser` version bumped to `^10.1.0`
+
 ## [2.0.2] - 2023-01-24
 
 ### Fixed
