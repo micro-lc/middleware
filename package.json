@@ -43,7 +43,7 @@
   "devDependencies": {
     "@mia-platform/lc39": "^6.0.2",
     "@micro-lc/interfaces": "^1.0.2",
-    "@micro-lc/layout": "^1.0.0",
+    "@micro-lc/layout": "^2.0.0",
     "@types/chai": "^4.3.4",
     "@types/chai-as-promised": "^7.1.5",
     "@types/glob": "^8.0.1",
