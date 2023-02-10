@@ -14,7 +14,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
-      - run: yarn install --immutable
+
+      - name: Install
+        run: yarn install --immutable
 
       - name: Compile file and build
         run: yarn build
+
+      - name: Test Build
+        run: |
+          export WORKING_DIR=`pwd`/mocks
+          sed -i -r "s#^(RESOURCES_DIRECTORY_PATH=).*#\1$WORKING_DIR#" default.env
+          yarn start:local &
+
+          curl -i "http://localhost:3001/config.json" | grep "HTTP/1.1 200 OK" && echo 'Service works!' || exit 1
+          exit 0
