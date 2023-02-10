@@ -27,5 +27,7 @@ jobs:
           sed -i -r "s#^(RESOURCES_DIRECTORY_PATH=).*#\1$WORKING_DIR#" default.env
           yarn start:local &
 
+          ./scripts/wait-for-it.sh localhost:3001 --timeout 5000
+
           curl -i "http://localhost:3001/config.json" | grep "HTTP/1.1 200 OK"
           exit `echo $?`
