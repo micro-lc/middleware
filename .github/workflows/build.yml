@@ -27,5 +27,5 @@ jobs:
           sed -i -r "s#^(RESOURCES_DIRECTORY_PATH=).*#\1$WORKING_DIR#" default.env
           yarn start:local &
 
-          curl -i "http://localhost:3001/config.json" | grep "HTTP/1.1 200 OK" && echo 'Service works!' || exit 1
-          exit 0
+          curl -i "http://localhost:3001/config.json" | grep "HTTP/1.1 200 OK"
+          exit `echo $?`
