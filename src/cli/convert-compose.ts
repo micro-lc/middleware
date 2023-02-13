@@ -79,8 +79,10 @@ const convertContent = (input: V1Content, accSources: string[]): V2Content => {
   const content = inputContent && convertContent(inputContent, accSources)
   const extra: Partial<WithAcl<V2Component>> = {}
 
-  if (typeof busDiscriminator === 'string') { extra.properties = { eventBus: `eventBus.pool.${busDiscriminator}` } }
   if (inputProperties) { extra.properties = inputProperties as V2Component['properties'] }
+  if (typeof busDiscriminator === 'string') {
+    extra.properties = { ...extra.properties, eventBus: `eventBus.pool.['${busDiscriminator}']` }
+  }
 
   if (aclExpression) { extra.aclExpression = aclExpression }
 

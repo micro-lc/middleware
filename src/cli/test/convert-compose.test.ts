@@ -27,6 +27,7 @@ describe('Convert compose configuration', () => {
       attributes: { style: 'height: 100%;' },
       content: [
         {
+          busDiscriminator: 'card-bus',
           properties: { customProperty: 'custom-property' },
           tag: 'custom-element-1',
           type: 'element',
@@ -79,7 +80,7 @@ describe('Convert compose configuration', () => {
           {
             attributes: {},
             content: undefined,
-            properties: { customProperty: 'custom-property' },
+            properties: { customProperty: 'custom-property', eventBus: 'eventBus.pool.[\'card-bus\']' },
             tag: 'custom-element-1',
           },
           {
