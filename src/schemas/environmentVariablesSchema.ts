@@ -18,16 +18,36 @@ import type { FromSchema } from 'json-schema-to-ts'
 
 export const environmentVariablesSchema = {
   properties: {
-    CONTENT_TYPE_MAP: {
-      description: 'Key/value dictionary which maps lists of extensions, in the form of a comma separated list, to a `Content-Type` header',
+    MICRO_LC_BASE_PATH: {
+      description: '`href` value of the base tag in `micro-lc` application index',
+      type: 'string',
+    },
+    MICRO_LC_CONFIG_SRC: {
+      description: 'fetch path for `micro-lc` configuration',
+      type: 'string',
+    },
+    MICRO_LC_MODE: {
+      description: '`micro-lc` bundle name, either production or development',
+      type: 'string',
+    },
+    MICRO_LC_VERSION: {
+      description: '`micro-lc` version',
+      type: 'string',
+    },
+    PUBLIC_DIRECTORY_PATH: {
+      description: 'Absolute path of the directory containing static files to be served',
       type: 'string',
     },
     RESOURCES_DIRECTORY_PATH: {
-      description: 'Absolute path of the directory containing resources to be served',
+      description: 'Absolute path of the directory containing configuration resources to be served',
+      type: 'string',
+    },
+    SERVICE_CONFIG_PATH: {
+      description: 'service configuration file absolute path',
       type: 'string',
     },
   },
-  required: ['RESOURCES_DIRECTORY_PATH'],
+  required: [],
   type: 'object',
 } as const
 

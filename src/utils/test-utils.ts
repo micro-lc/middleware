@@ -14,27 +14,57 @@
  * limitations under the License.
  */
 
+import { writeFile } from 'fs/promises'
+import path from 'path'
+
 import type { DecoratedFastify } from '@mia-platform/custom-plugin-lib'
 import type Lc39 from '@mia-platform/lc39'
 import type { LogLevel } from 'fastify'
+import type { AffixOptions, Stats } from 'temp'
+import temp from 'temp'
 
+import type { Config } from '../schemas'
 import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
+
+interface Temp {
+ cleanup: () => Promise<void | Stats>
+ name: string
+}
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
 const lc39 = require('@mia-platform/lc39') as typeof Lc39
 
-export const baseVariables = {
+const baseVariables = {
   ADDITIONAL_HEADERS_TO_PROXY: '',
   BACKOFFICE_HEADER_KEY: 'backoffice',
   CLIENTTYPE_HEADER_KEY: 'clienttype',
   GROUPS_HEADER_KEY: 'groups',
   MICROSERVICE_GATEWAY_SERVICE_NAME: 'microservice-gateway.example.org',
-  RESOURCES_DIRECTORY_PATH: '',
   USERID_HEADER_KEY: 'miauserid',
   USER_PROPERTIES_HEADER_KEY: 'miauserproperties',
 }
 
-export async function setupFastify(
+temp.track()
+
+const createTmpDir = async (resources: Record<string, string | Buffer>, opts?: string | AffixOptions): Promise<Temp> => {
+  const dirPath = await temp.mkdir(opts)
+  await Promise.all(Object.entries(resources).map(async ([filepath, buffer]) => {
+    const inputPath = path.join(dirPath, filepath)
+    await writeFile(inputPath, buffer)
+  }))
+
+  return { cleanup: () => temp.cleanup(), name: dirPath }
+}
+
+const createConfigFile = async (data: Config): Promise<Temp> => {
+  const dirPath = await temp.mkdir()
+  const inputPath = path.join(dirPath, 'config.json')
+  await writeFile(inputPath, JSON.stringify(data))
+
+  return { cleanup: () => temp.cleanup(), name: inputPath }
+}
+
+async function setupFastify(
   envVariables: Record<string, string> = {},
   logLevel?: LogLevel
 ): Promise<DecoratedFastify<EnvironmentVariables>> {
@@ -45,3 +75,5 @@ export async function setupFastify(
 
   return service as unknown as DecoratedFastify<EnvironmentVariables>
 }
+
+export { baseVariables, createConfigFile, createTmpDir, setupFastify }

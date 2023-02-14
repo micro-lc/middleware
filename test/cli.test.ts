@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { exec } from 'child_process'
-import { randomUUID } from 'crypto'
+import { exec, execSync } from 'child_process'
 import { statSync, readFileSync } from 'fs'
 import { resolve as pathResolve } from 'path'
 
 import { expect } from 'chai'
-import { mkdirpSync } from 'mkdirp'
+
+import { createTmpDir } from '../src/utils/test-utils'
 
 describe('CLI tests', () => {
   let tempPath: string
+  let cleanup: (() => Promise<unknown>) | undefined
 
-  before(() => {
-    tempPath = mkdirpSync(`/tmp/${randomUUID()}`) as string
+  before(async () => {
+    const { cleanup: cc, name } = (await createTmpDir({}))
+    cleanup = cc
+    tempPath = name
     expect(typeof tempPath).to.equal('string')
+  })
+
+  after(async () => {
+    await cleanup?.()
   })
 
   it('should convert auth/config from v1 to config v2', async () => {
@@ -36,8 +43,8 @@ describe('CLI tests', () => {
       execResolve = resolve
       execReject = reject
     })
-    const authPath = pathResolve(__dirname, '..', 'mocks/config/auth.json')
-    const configPath = pathResolve(__dirname, '..', 'mocks/config/config.json')
+    const authPath = pathResolve(__dirname, 'mocks/auth.json')
+    const configPath = pathResolve(__dirname, 'mocks/config.json')
 
     exec(`node dist/cli -d ${tempPath} --mode config ${authPath} ${configPath}`, (error) => {
       error === null
@@ -57,22 +64,10 @@ describe('CLI tests', () => {
     expect(created).to.equal(snapshot)
   })
 
-  it('should convert a compose plugin from v1 to config v2', async () => {
-    let execResolve: (() => void) | undefined
-    let execReject: ((reason?: unknown) => void) | undefined
-    const done = new Promise<void>((resolve, reject) => {
-      execResolve = resolve
-      execReject = reject
-    })
-    const pluginV1 = pathResolve(__dirname, '..', 'mocks/plugin-v1.json')
+  it('should convert a compose plugin from v1 to config v2', () => {
+    const pluginV1 = pathResolve(__dirname, 'mocks/plugin-v1.json')
 
-    exec(`node dist/cli -d ${tempPath} --mode compose ${pluginV1}`, (error) => {
-      error === null
-        ? execResolve?.()
-        : execReject?.(error)
-    })
-
-    await done
+    execSync(`node dist/cli -d ${tempPath} --mode compose ${pluginV1}`)
 
     const v2ConfigFilePath = pathResolve(tempPath, 'plugin-v1.json')
 

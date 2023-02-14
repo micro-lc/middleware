@@ -2,6 +2,11 @@ name: Build
 
 on:
   workflow_call:
+    inputs:
+      node-version:
+        required: false
+        default: 18.x
+        type: string
 
 jobs:
   build:
@@ -9,10 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ inputs.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ inputs.node-version }}
           cache: yarn
 
       - name: Install
@@ -21,13 +26,27 @@ jobs:
       - name: Compile file and build
         run: yarn build
 
+      - name: Save Build Cache
+        id: save-build-cache
+        uses: actions/cache/save@v3
+        with:
+          path: ./dist
+          key: ${{ runner.os }}-${{ github.sha }}-build
+
       - name: Test Build
         run: |
-          export WORKING_DIR=`pwd`/mocks
-          sed -i -r "s#^(RESOURCES_DIRECTORY_PATH=).*#\1$WORKING_DIR#" default.env
+          export WORKING_DIR=`pwd`
+          export ENV_DIR=$WORKING_DIR/.env
+
+          cp $WORKING_DIR/default.env $WORKING_DIR/.env.local
+          mkdir -p $ENV_DIR/public
+
+          echo "PUBLIC_DIRECTORY_PATH=$ENV_DIR/public" >> $WORKING_DIR/.env.local
+          echo "RESOURCES_DIRECTORY_PATH=$ENV_DIR/configurations" >> $WORKING_DIR/.env.local
+
           yarn start:local &
 
-          ./scripts/wait-for-it.sh localhost:3001 --timeout=5000
+          ./scripts/wait-for-it.sh localhost:3001 --timeout=20
 
           curl -i "http://localhost:3001/-/ready" | grep "HTTP/1.1 200 OK"
           exit `echo $?`

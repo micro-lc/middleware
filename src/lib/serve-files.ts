@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2022 Mia srl
  *
@@ -14,18 +15,16 @@
  * limitations under the License.
  */
 
-import type { Stats } from 'fs'
-import fs, { statSync } from 'fs'
-import path, { isAbsolute } from 'path'
+import fs from 'fs'
+import path from 'path'
 import util from 'util'
 
-import type { DecoratedFastify } from '@mia-platform/custom-plugin-lib'
 import glob from 'glob'
 import * as yaml from 'js-yaml'
 
-import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
 import { evaluateAcl, resolveReferences } from '../sdk'
 import type { Json } from '../sdk'
+import type { FastifyContext } from '../server'
 
 import { extractAclContext } from './extract-acl-context'
 
@@ -34,64 +33,7 @@ type Extension = '.json' | '.yml' | '.yaml'
 type FileLoader = (fileAbsPath: string, ...args: string[][]) => Promise<unknown>
 type JsonFileLoader = (fileAbsPath: string, aclGroups: string[], aclPermissions: string[]) => Promise<Json>
 
-const DEFAULT_CONTENT_TYPE_MAP: Record<Extension | string, string> = {
-  '.cjs': 'application/javascript',
-  '.css': 'text/css',
-  '.html': 'text/html',
-  '.js': 'application/javascript',
-  '.json': 'application/json; charset=utf-8',
-  '.mjs': 'application/javascript',
-  '.yaml': 'text/yaml; charset=utf-8',
-  '.yml': 'text/yaml; charset=utf-8',
-}
-
 const globPromise = util.promisify(glob)
-
-const validateResourcesDirectoryPath = (dirPath: string) => {
-  if (!isAbsolute(dirPath)) { throw new Error('"RESOURCES_DIRECTORY_PATH" must be an absolute path') }
-
-  let pathStat: Stats
-
-  try {
-    pathStat = statSync(dirPath)
-  } catch (err) {
-    if ((err as { code: string }).code === 'ENOENT') {
-      throw new Error('"RESOURCES_DIRECTORY_PATH" must exist')
-    }
-
-    throw err
-  }
-
-  if (!pathStat.isDirectory()) { throw new Error('"RESOURCES_DIRECTORY_PATH" must point to a directory') }
-}
-
-const validateContentTypeMap = (stringifiedContentTypeMap: string | undefined) => {
-  const candidateContentMap = stringifiedContentTypeMap === undefined || stringifiedContentTypeMap.trim() === '' ? '{}' : stringifiedContentTypeMap
-  try {
-    const contentTypeMap = JSON.parse(candidateContentMap) as unknown
-
-    if (typeof contentTypeMap !== 'object' || contentTypeMap === null || Array.isArray(contentTypeMap)) {
-      throw new Error('"CONTENT_TYPE_MAP" is not a valid key/value stringified JSON')
-    }
-
-    return Object.entries(contentTypeMap)
-      .reduce<Record<string, string>>((dict, [key, value]) => {
-        if (typeof value !== 'string') {
-          return dict
-        }
-
-        return Object.assign(dict, key.split(',').reduce<Record<string, string>>((acc, ext) => {
-          const trimmedExtension = ext.trim()
-          if (trimmedExtension.startsWith('.')) {
-            acc[trimmedExtension] = value
-          }
-          return acc
-        }, dict))
-      }, DEFAULT_CONTENT_TYPE_MAP)
-  } catch (err) {
-    throw new Error('"CONTENT_TYPE_MAP" is not a valid stringified JSON')
-  }
-}
 
 const manipulateJson = async (json: Json, aclGroups: string[], aclPermissions: string[]): Promise<Json> => {
   const filteredContent = evaluateAcl(json, aclGroups, aclPermissions)
@@ -141,50 +83,44 @@ function getDumper(extension: Extension | string): (content: unknown) => unknown
   }
 }
 
-export async function registerRoutes(this: DecoratedFastify<EnvironmentVariables>) {
-  const { RESOURCES_DIRECTORY_PATH, CONTENT_TYPE_MAP } = this.config
-
-  validateResourcesDirectoryPath(RESOURCES_DIRECTORY_PATH)
-  const contentTypeDictionary = validateContentTypeMap(CONTENT_TYPE_MAP)
+async function registerRoutes(this: FastifyContext) {
+  const { service, config: { CONTENT_TYPE_MAP: contentTypeDictionary, RESOURCES_DIRECTORY_PATH } } = this
 
   const winSeparatorRegex = new RegExp(`\\${path.win32.sep}`, 'g')
-  // const globJsonPattern = path
-  //   .join(RESOURCES_DIRECTORY_PATH, '**/*.{json,yml,yaml}')
-  //   .replace(winSeparatorRegex, path.posix.sep)
-  const globPattern = path
+  const configGlobPattern = path
     .join(RESOURCES_DIRECTORY_PATH, '**/*')
     .replace(winSeparatorRegex, path.posix.sep)
 
-  const routesPrefix = '/'
+  const configRoutes = new Set()
+  const configFileAbsPaths = await globPromise(configGlobPattern, { nodir: true })
 
-  const routes = new Set()
-  const fileAbsPaths = await globPromise(globPattern, { nodir: true })
-
-  for (const fileAbsPath of fileAbsPaths) {
+  for (const fileAbsPath of configFileAbsPaths) {
     const fileRelPath = fileAbsPath
       .replace(RESOURCES_DIRECTORY_PATH.replace(/\\/g, '/'), '')
       .replace(/^\//, '')
 
-    const route = (routesPrefix + fileRelPath).replace(/\/\//g, '/')
-    if (routes.has(route)) { continue }
-    routes.add(route)
+    const route = (`/configurations/${fileRelPath}`).replace(/\/\//g, '/')
+    if (configRoutes.has(route)) { continue }
+    configRoutes.add(route)
 
-    const fileExtension = path.extname(fileRelPath)
+    const fileExtension = path.extname(fileRelPath) as `.${string}` | ''
 
-    const contentType = contentTypeDictionary[fileExtension] as string | undefined
+    const contentType = fileExtension === '' ? undefined : contentTypeDictionary[fileExtension] as string | undefined
     const fileLoader = getLoader(fileExtension)
     const contentDumper = getDumper(fileExtension)
 
-    this.addRawCustomPlugin('GET', route, async (request, reply) => {
-      const aclContext = extractAclContext(this, request)
+    service.addRawCustomPlugin('GET', route, async (request, reply) => {
+      const aclContext = extractAclContext(service, request)
       const manipulatedContent = await fileLoader(fileAbsPath, aclContext.groups, aclContext.permissions)
 
       const payload = contentDumper(manipulatedContent)
 
       return reply
-        .header('content-type', contentType ?? 'text/plain')
+        .header('Content-Type', contentType ?? 'text/plain')
         .code(200)
         .send(payload)
     })
   }
 }
+
+export { registerRoutes }

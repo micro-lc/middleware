@@ -13,18 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { AsyncInitFunction } from '@mia-platform/custom-plugin-lib'
+import type { AsyncInitFunction, DecoratedFastify } from '@mia-platform/custom-plugin-lib'
 import customService from '@mia-platform/custom-plugin-lib'
 
+import type { RuntimeConfig } from './config'
+import { parseConfig } from './config'
 import { registerRoutes } from './lib/serve-files'
+import { registerPublic, staticFileHandler } from './lib/serve-public'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
 import { environmentVariablesSchema } from './schemas/environmentVariablesSchema'
 
+interface FastifyContext {
+  config: RuntimeConfig
+  service: DecoratedFastify<EnvironmentVariables>
+}
+
 const initFunction: AsyncInitFunction<EnvironmentVariables> = async service => {
-  await registerRoutes
-    .call(service)
+  const runtimeConfig = parseConfig(service.config)
+  const context: FastifyContext = { config: runtimeConfig, service }
+
+  service.addHook('onSend', staticFileHandler(runtimeConfig))
+
+  await Promise.all([
+    registerPublic.call(context),
+    registerRoutes.call(context),
+  ])
     .catch(console.error)
 }
 
+export type { FastifyContext }
 module.exports = customService<EnvironmentVariables>(environmentVariablesSchema)(initFunction) as unknown
