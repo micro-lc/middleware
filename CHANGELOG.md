@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - cli fix: from `busDiscriminator` to `eventBus` pool even when other properties are declared
 
+### Versioning
+
+- Development dependencies updated
+
 ## [2.0.2] - 2023-02-09
 
 ### Fixed
