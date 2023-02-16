@@ -815,8 +815,8 @@ __metadata:
   linkType: hard
 
 "@micro-lc/layout@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@micro-lc/layout@npm:2.0.0"
+  version: 2.0.1
+  resolution: "@micro-lc/layout@npm:2.0.1"
   dependencies:
     "@ant-design/colors": ^7.0.0
     "@ant-design/icons": ^4.8.0
@@ -824,10 +824,10 @@ __metadata:
     "@ctrl/tinycolor": ^3.5.0
     "@micro-lc/iconic": 1.0.0
     antd: ^4.24.7
-    lit: ^2.5.0
+    lit: ^2.6.1
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 22bb2eccd593087243bc088047dc57c47fdc25c83788f7bd32fdfc62975367cf5712646f910dcd4e00d0f4a9420586fbcc404baff46df51ff2321738eb2dc8aa
+  checksum: ab9656d52c9f5c45fe81da1b1ba2dcb50f608619312cc73e5581f5ed759d171e61522cd00ca78a78c4f4da33d2ef36d516a84d8096ac7625ba5a4f596943193d
   languageName: node
   linkType: hard
 
@@ -4561,7 +4561,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:^2.5.0":
+"lit@npm:^2.6.1":
   version: 2.6.1
   resolution: "lit@npm:2.6.1"
   dependencies:
