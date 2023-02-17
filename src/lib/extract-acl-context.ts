@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import type { DecoratedFastify, DecoratedRequest } from '@mia-platform/custom-plugin-lib'
+import type { FastifyRequest } from 'fastify'
 
-import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
-import type { FastifyEnvironmentVariables } from '../server'
+import type { RuntimeConfig } from '../config'
 
 export interface AclContext {
   groups: string[]
   permissions: string[]
 }
 
-const getPermissions = (service: DecoratedFastify<FastifyEnvironmentVariables>, request: DecoratedRequest): string[] => {
-  const { config: { USER_PROPERTIES_HEADER_KEY: user } } = service
+const getPermissions = (config: RuntimeConfig, request: FastifyRequest): string[] => {
+  const { USER_PROPERTIES_HEADER_KEY: user } = config
   const userProperties = user !== undefined ? request.headers[user] ?? '{}' : '{}'
   if (typeof userProperties !== 'string') { return [] }
 
@@ -34,11 +33,14 @@ const getPermissions = (service: DecoratedFastify<FastifyEnvironmentVariables>, 
 }
 
 export const extractAclContext = (
-  service: DecoratedFastify<EnvironmentVariables>,
-  request: DecoratedRequest
+  config: RuntimeConfig,
+  request: FastifyRequest
 ): AclContext => {
-  const groups = request.getGroups()
-  const permissions = getPermissions(service, request)
+  // todo
+  // @ts-expect-error this is a decorated request
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const groups = request.getGroups() as string[]
+  const permissions = getPermissions(config, request)
 
   return { groups, permissions }
 }

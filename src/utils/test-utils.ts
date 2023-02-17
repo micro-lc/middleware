@@ -71,6 +71,8 @@ async function setupFastify(
   const service = await lc39('src/server.ts', {
     envVariables: { ...baseVariables, ...envVariables },
     logLevel: logLevel ?? 'silent',
+  }).catch(err => {
+    console.error(err)
   })
 
   return service as unknown as DecoratedFastify<FastifyEnvironmentVariables>

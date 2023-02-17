@@ -38,6 +38,7 @@ describe('Serve files', () => {
   let cleanup: (() => Promise<unknown>) | undefined
 
   before(async () => {
+    const { name: resourcesDir, cleanup: rCleanup } = await createTmpDir({})
     const { name: publicDir, cleanup: pCleanup } = await createTmpDir({
       'index.html': index,
       // 'style.css': style,
@@ -52,10 +53,11 @@ describe('Serve files', () => {
       },
     })
 
-    cleanup = () => Promise.all([pCleanup(), cpCleanup()])
+    cleanup = () => Promise.all([pCleanup(), cpCleanup(), rCleanup()])
 
     fastify = await setupFastify({
       PUBLIC_DIRECTORY_PATH: publicDir,
+      RESOURCES_DIRECTORY_PATH: resourcesDir,
       SERVICE_CONFIG_PATH: configPath,
     })
   })
@@ -92,5 +94,25 @@ describe('Serve files', () => {
     const line2 = payload2.substring(indexScript2, endline2)
     const nonce2 = line2.match(/nonce="(?<nonce>[^"]+)"/)?.groups?.nonce as string
     expect(nonce).not.to.be.equal(nonce2)
+  })
+
+  it('should retrieve the index on public root', async () => {
+    const { headers, statusCode } = await fastify.inject({
+      method: 'GET',
+      url: '/public',
+    })
+
+    expect(statusCode).to.equal(200)
+    expect(headers['content-type']).to.equal('text/html')
+  })
+
+  it('should retrieve the index 404 inside public root', async () => {
+    const { headers, statusCode } = await fastify.inject({
+      method: 'GET',
+      url: '/public/home',
+    })
+
+    expect(statusCode).to.equal(200)
+    expect(headers['content-type']).to.equal('text/html')
   })
 })

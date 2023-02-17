@@ -6,11 +6,11 @@ import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
 
 type HeadersMap = Record<`/${string}`, Record<string, string>>;
 
-interface RuntimeConfig extends Required<Omit<EnvironmentVariables, 'USER_PROPERTIES_HEADER_KEY'>> {
+interface RuntimeConfig extends Required<EnvironmentVariables> {
   CONTENT_TYPE_MAP: ContentTypeMap
   PUBLIC_HEADERS_MAP: HeadersMap
+  USER_PROPERTIES_HEADER_KEY: string | undefined
 }
-
 
 const validateContentTypeMap = (contentTypeMap: unknown) => {
   if (contentTypeMap === null || typeof contentTypeMap !== 'object') {
@@ -68,7 +68,7 @@ const getPublicHeadersMap = (input: unknown): HeadersMap => {
   return publicHeadersMap
 }
 
-const parseConfig = (config: EnvironmentVariables): RuntimeConfig => {
+const parseConfig = (config: EnvironmentVariables & Record<string, string>): RuntimeConfig => {
   const { SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH } = config
   let serviceConfig: unknown = defaults.PUBLIC_HEADERS_MAP
 
@@ -102,6 +102,7 @@ const parseConfig = (config: EnvironmentVariables): RuntimeConfig => {
     PUBLIC_HEADERS_MAP: getPublicHeadersMap(publicHeadersMap),
     RESOURCES_DIRECTORY_PATH: config.RESOURCES_DIRECTORY_PATH ?? defaults.RESOURCES_DIRECTORY_PATH,
     SERVICE_CONFIG_PATH,
+    USER_PROPERTIES_HEADER_KEY: config.USER_PROPERTIES_HEADER_KEY,
   }
 }
 

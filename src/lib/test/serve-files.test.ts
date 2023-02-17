@@ -48,6 +48,7 @@ describe('Serve files', () => {
       'config.json': JSON.stringify({ foo: 'bar' }),
       'config.txt': '',
       'config.yaml': 'foo: bar',
+      'file-to-parse.json': JSON.stringify({ foo: { aclExpression: 'false', test: true } }),
       'file.special': random,
     })
     const { name: configPath, cleanup: cpCleanup } = await createConfigFile({
@@ -80,7 +81,7 @@ describe('Serve files', () => {
   const testCases: TestCase[] = [
     { expectedStatusCode: 404, route: '/foo.json' },
     { expectedStatusCode: 404, route: '/configurations/foo.json' },
-    { expectedStatusCode: 404, route: '/configurations/.config' },
+    { expectedStatusCode: 200, route: '/configurations/.config' },
     { expectedStatusCode: 200, route: '/configurations/config' },
     { expectedStatusCode: 200, route: '/configurations/config.json' },
     { expectedStatusCode: 200, route: '/configurations/config.txt' },
@@ -190,6 +191,15 @@ describe('Serve files', () => {
 
     expect(payload).to.deep.equal(random)
     expect(headers['content-type']).to.equal('application/damn-special')
+  })
+
+  it('should manipulate an ACL expression', async () => {
+    const { payload } = await fastify.inject({
+      method: 'GET',
+      url: '/configurations/file-to-parse.json',
+    })
+
+    expect(payload).to.deep.equal(JSON.stringify({ resolve: 'references' }))
   })
 
   it('should serve unknown files with `text/plain` `Content-Type` headers', async () => {

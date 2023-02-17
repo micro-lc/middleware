@@ -18,8 +18,8 @@ import customService from '@mia-platform/custom-plugin-lib'
 
 import type { RuntimeConfig } from './config'
 import { parseConfig } from './config'
-import { registerRoutes } from './lib/serve-files'
-import { registerPublic, staticFileHandler } from './lib/serve-public'
+import { staticFileHandler } from './lib/onSendHandler'
+import { registerConfigurations, registerPublic } from './lib/registerHandlers'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
 import { environmentVariablesSchema } from './schemas/environmentVariablesSchema'
 
@@ -34,13 +34,10 @@ const initFunction: AsyncInitFunction<FastifyEnvironmentVariables> = async servi
   const runtimeConfig = parseConfig(service.config)
   const context: FastifyContext = { config: runtimeConfig, service }
 
-  service.addHook('onSend', staticFileHandler(runtimeConfig))
+  service.addHook('onSend', staticFileHandler(context))
 
-  await Promise.all([
-    registerPublic.call(context),
-    registerRoutes.call(context),
-  ])
-    .catch(console.error)
+  registerConfigurations.call(context)
+  return registerPublic.call(context)
 }
 
 export type { FastifyContext, FastifyEnvironmentVariables }
