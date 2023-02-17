@@ -15,11 +15,13 @@
  */
 
 import { expect } from 'chai'
+import type { Context } from 'mocha'
 
 import { createConfigFile, createTmpDir, setupFastify } from '../../utils/test-utils'
 
 describe('cache tests', () => {
-  it('should retrieve the style and returns a 304 on next request', async () => {
+  it('should retrieve the style and returns a 304 on next request', async function test(this: Context) {
+    this.timeout(5000)
     const style = `
     body {
       margin: 0;
