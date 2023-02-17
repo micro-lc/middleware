@@ -13,6 +13,7 @@ node_modules/
 .nyc_output
 *.log*
 .idea
+.DS_Store
 
 .env/
 .env.*
