@@ -14,48 +14,29 @@
  * limitations under the License.
  */
 
-import type { DecoratedFastify } from '@mia-platform/custom-plugin-lib'
 import { expect } from 'chai'
-import { createSandbox } from 'sinon'
 
-import type { EnvironmentVariables } from '../../schemas/environmentVariablesSchema'
 import { createConfigFile, createTmpDir, setupFastify } from '../../utils/test-utils'
 
 describe('cache tests', () => {
-  const sandbox = createSandbox()
-
-  const style = `
+  it('should retrieve the style and returns a 304 on next request', async () => {
+    const style = `
     body {
       margin: 0;
     }
   `
 
-  let fastify: DecoratedFastify<EnvironmentVariables>
-  let cleanup: (() => Promise<unknown>) | undefined
-
-  before(async () => {
     const { name: publicDir, cleanup: pCleanup } = await createTmpDir({
       'style.css': style,
     })
     const { name: configPath, cleanup: cpCleanup } = await createConfigFile({})
 
-    cleanup = () => Promise.all([pCleanup(), cpCleanup()])
+    const cleanup = () => Promise.all([pCleanup(), cpCleanup()])
 
-    fastify = await setupFastify({
+    const fastify = await setupFastify({
       PUBLIC_DIRECTORY_PATH: publicDir,
       SERVICE_CONFIG_PATH: configPath,
     })
-  })
-
-  afterEach(() => sandbox.resetHistory())
-
-  after(async () => {
-    await fastify.close()
-    await cleanup?.()
-    sandbox.restore()
-  })
-
-  it('should retrieve the style and returns a 304 on next request', async () => {
     const { payload, headers: { 'last-modified': lastModified, etag } } = await fastify.inject({
       method: 'GET',
       url: '/public/style.css',
@@ -73,5 +54,8 @@ describe('cache tests', () => {
       url: '/public/style.css',
     })
     expect(statusCode).to.equal(304)
+
+    await fastify.close()
+    await cleanup()
   })
 })
