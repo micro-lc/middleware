@@ -1,38 +1,20 @@
 import { existsSync, readFileSync } from 'fs'
 
+import * as defaults from './defaults'
 import type { ContentTypeMap } from './schemas'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
 
 type HeadersMap = Record<`/${string}`, Record<string, string>>;
 
-interface RuntimeConfig {
+interface RuntimeConfig extends Required<Omit<EnvironmentVariables, 'USER_PROPERTIES_HEADER_KEY'>> {
   CONTENT_TYPE_MAP: ContentTypeMap
-  MICRO_LC_BASE_PATH: string
-  MICRO_LC_CONFIG_SRC: string
-  MICRO_LC_MODE: string
-  MICRO_LC_VERSION: string
-  PUBLIC_DIRECTORY_PATH: string
   PUBLIC_HEADERS_MAP: HeadersMap
-  RESOURCES_DIRECTORY_PATH: string
-  SERVICE_CONFIG_PATH: string
 }
 
-type Extension = '.json' | '.yml' | '.yaml'
-
-const DEFAULT_CONTENT_TYPE_MAP: Record<Extension | string, string> = {
-  '.cjs': 'application/javascript',
-  '.css': 'text/css',
-  '.html': 'text/html',
-  '.js': 'application/javascript',
-  '.json': 'application/json; charset=utf-8',
-  '.mjs': 'application/javascript',
-  '.yaml': 'text/yaml; charset=utf-8',
-  '.yml': 'text/yaml; charset=utf-8',
-}
 
 const validateContentTypeMap = (contentTypeMap: unknown) => {
   if (contentTypeMap === null || typeof contentTypeMap !== 'object') {
-    return DEFAULT_CONTENT_TYPE_MAP
+    return defaults.CONTENT_TYPE_MAP
   }
 
   return Object.entries(contentTypeMap)
@@ -48,7 +30,7 @@ const validateContentTypeMap = (contentTypeMap: unknown) => {
         }
         return acc
       }, dict))
-    }, DEFAULT_CONTENT_TYPE_MAP)
+    }, defaults.CONTENT_TYPE_MAP)
 }
 
 const getHeaderDictionary = (obj: object): Record<string, string> =>
@@ -86,15 +68,9 @@ const getPublicHeadersMap = (input: unknown): HeadersMap => {
   return publicHeadersMap
 }
 
-const DEFAULT_RESOURCES_DIRECTORY_PATH = '/usr/static/configurations'
-
-const DEFAULT_PUBLIC_DIRECTORY_PATH = '/usr/static/public'
-
-const DEFAULT_SERVICE_CONFIG_PATH = '/usr/src/app/config.json'
-
 const parseConfig = (config: EnvironmentVariables): RuntimeConfig => {
-  const { SERVICE_CONFIG_PATH = DEFAULT_SERVICE_CONFIG_PATH } = config
-  let serviceConfig: unknown = {}
+  const { SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH } = config
+  let serviceConfig: unknown = defaults.PUBLIC_HEADERS_MAP
 
   let configPath: string | undefined
   try {
@@ -122,16 +98,12 @@ const parseConfig = (config: EnvironmentVariables): RuntimeConfig => {
 
   return {
     CONTENT_TYPE_MAP: validateContentTypeMap(contentTypeMap),
-    MICRO_LC_BASE_PATH: config.MICRO_LC_BASE_PATH ?? '/',
-    MICRO_LC_CONFIG_SRC: config.MICRO_LC_CONFIG_SRC ?? '/configurations/config.json',
-    MICRO_LC_MODE: config.MICRO_LC_MODE ?? 'production',
-    MICRO_LC_VERSION: config.MICRO_LC_VERSION ?? 'latest',
-    PUBLIC_DIRECTORY_PATH: config.PUBLIC_DIRECTORY_PATH ?? DEFAULT_PUBLIC_DIRECTORY_PATH,
+    PUBLIC_DIRECTORY_PATH: config.PUBLIC_DIRECTORY_PATH ?? defaults.PUBLIC_DIRECTORY_PATH,
     PUBLIC_HEADERS_MAP: getPublicHeadersMap(publicHeadersMap),
-    RESOURCES_DIRECTORY_PATH: config.RESOURCES_DIRECTORY_PATH ?? DEFAULT_RESOURCES_DIRECTORY_PATH,
+    RESOURCES_DIRECTORY_PATH: config.RESOURCES_DIRECTORY_PATH ?? defaults.RESOURCES_DIRECTORY_PATH,
     SERVICE_CONFIG_PATH,
   }
 }
 
 export type { RuntimeConfig }
-export { parseConfig, DEFAULT_CONTENT_TYPE_MAP }
+export { parseConfig }

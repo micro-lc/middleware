@@ -23,12 +23,14 @@ import { registerPublic, staticFileHandler } from './lib/serve-public'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
 import { environmentVariablesSchema } from './schemas/environmentVariablesSchema'
 
+type FastifyEnvironmentVariables = EnvironmentVariables & Record<string, string> & {USER_PROPERTIES_HEADER_KEY?: string | undefined}
+
 interface FastifyContext {
   config: RuntimeConfig
-  service: DecoratedFastify<EnvironmentVariables>
+  service: DecoratedFastify<FastifyEnvironmentVariables>
 }
 
-const initFunction: AsyncInitFunction<EnvironmentVariables> = async service => {
+const initFunction: AsyncInitFunction<FastifyEnvironmentVariables> = async service => {
   const runtimeConfig = parseConfig(service.config)
   const context: FastifyContext = { config: runtimeConfig, service }
 
@@ -41,5 +43,5 @@ const initFunction: AsyncInitFunction<EnvironmentVariables> = async service => {
     .catch(console.error)
 }
 
-export type { FastifyContext }
-module.exports = customService<EnvironmentVariables>(environmentVariablesSchema)(initFunction) as unknown
+export type { FastifyContext, FastifyEnvironmentVariables }
+module.exports = customService<FastifyEnvironmentVariables>(environmentVariablesSchema)(initFunction) as unknown

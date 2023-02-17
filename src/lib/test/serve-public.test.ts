@@ -29,7 +29,7 @@ describe('Serve files', () => {
     <html lang="en">
     <head></head>
     <body>
-      <script nonce="**CSP_NONCE**" src="**MICRO_LC_CONFIG_SRC**"></script>
+      <script nonce="**CSP_NONCE**" src="/configurations/config.json"></script>
     </body>
     </html>
   `

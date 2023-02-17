@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- `public` folder is served as a static webserver root folder
+- user can configure mime-type per extension
+- user can configure headers per resource
+
 ### Fixed
 
 - cli fix: from `busDiscriminator` to `eventBus` pool even when other properties are declared
@@ -15,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Development dependencies updated
 
-## [2.0.2] - 2023-02-09
+## [2.0.3] - 2023-02-09
 
 ### Fixed
 

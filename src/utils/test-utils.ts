@@ -24,7 +24,7 @@ import type { AffixOptions, Stats } from 'temp'
 import temp from 'temp'
 
 import type { Config } from '../schemas'
-import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
+import type { FastifyEnvironmentVariables } from '../server'
 
 interface Temp {
  cleanup: () => Promise<void | Stats>
@@ -67,13 +67,13 @@ const createConfigFile = async (data: Config): Promise<Temp> => {
 async function setupFastify(
   envVariables: Record<string, string> = {},
   logLevel?: LogLevel
-): Promise<DecoratedFastify<EnvironmentVariables>> {
+): Promise<DecoratedFastify<FastifyEnvironmentVariables>> {
   const service = await lc39('src/server.ts', {
     envVariables: { ...baseVariables, ...envVariables },
     logLevel: logLevel ?? 'silent',
   })
 
-  return service as unknown as DecoratedFastify<EnvironmentVariables>
+  return service as unknown as DecoratedFastify<FastifyEnvironmentVariables>
 }
 
 export { baseVariables, createConfigFile, createTmpDir, setupFastify }

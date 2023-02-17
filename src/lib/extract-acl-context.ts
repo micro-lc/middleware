@@ -17,14 +17,16 @@
 import type { DecoratedFastify, DecoratedRequest } from '@mia-platform/custom-plugin-lib'
 
 import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
+import type { FastifyEnvironmentVariables } from '../server'
 
 export interface AclContext {
   groups: string[]
   permissions: string[]
 }
 
-const getPermissions = (service: DecoratedFastify<EnvironmentVariables>, request: DecoratedRequest): string[] => {
-  const userProperties = request.headers[service.config.USER_PROPERTIES_HEADER_KEY] ?? '{}'
+const getPermissions = (service: DecoratedFastify<FastifyEnvironmentVariables>, request: DecoratedRequest): string[] => {
+  const { config: { USER_PROPERTIES_HEADER_KEY: user } } = service
+  const userProperties = user !== undefined ? request.headers[user] ?? '{}' : '{}'
   if (typeof userProperties !== 'string') { return [] }
 
   const parsedProperties = JSON.parse(userProperties) as { permissions?: string[] }

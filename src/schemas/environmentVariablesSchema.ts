@@ -17,23 +17,8 @@
 import type { FromSchema } from 'json-schema-to-ts'
 
 export const environmentVariablesSchema = {
+  additionalProperties: false,
   properties: {
-    MICRO_LC_BASE_PATH: {
-      description: '`href` value of the base tag in `micro-lc` application index',
-      type: 'string',
-    },
-    MICRO_LC_CONFIG_SRC: {
-      description: 'fetch path for `micro-lc` configuration',
-      type: 'string',
-    },
-    MICRO_LC_MODE: {
-      description: '`micro-lc` bundle name, either production or development',
-      type: 'string',
-    },
-    MICRO_LC_VERSION: {
-      description: '`micro-lc` version',
-      type: 'string',
-    },
     PUBLIC_DIRECTORY_PATH: {
       description: 'Absolute path of the directory containing static files to be served',
       type: 'string',
@@ -51,4 +36,4 @@ export const environmentVariablesSchema = {
   type: 'object',
 } as const
 
-export type EnvironmentVariables = FromSchema<typeof environmentVariablesSchema> & Record<string, string>
+export type EnvironmentVariables = FromSchema<typeof environmentVariablesSchema>

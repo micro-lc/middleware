@@ -36,16 +36,8 @@ const nonceGenerator = () => randomBytes(NONCE_LENGTH).toString('base64')
 
 const replaceNonce = (input: string, nonce: string) => input.replace(/\*\*CSP_NONCE\*\*/g, nonce)
 
-const compile = (input: string) => (config: RuntimeConfig, nonce: string) => {
-  let content = input
-  content = content.replace(/\*\*MICRO_LC_BASE_PATH\*\*/g, config.MICRO_LC_BASE_PATH)
-  content = content.replace(/\*\*MICRO_LC_CONFIG_SRC\*\*/g, config.MICRO_LC_CONFIG_SRC)
-  content = content.replace(/\*\*MICRO_LC_MODE\*\*/g, config.MICRO_LC_MODE)
-  content = content.replace(/\*\*MICRO_LC_VERSION\*\*/g, config.MICRO_LC_VERSION)
-
-  content = replaceNonce(content, nonce)
-
-  return content
+const injectNonce = (input: string, nonce: string) => {
+  return replaceNonce(input, nonce)
 }
 
 const staticFileHandler = (config: RuntimeConfig) => (
@@ -101,7 +93,7 @@ const staticFileHandler = (config: RuntimeConfig) => (
 
     // in case of html, parse variables
     if (filename.endsWith('.html')) {
-      content = compile(content)(config, nonce)
+      content = injectNonce(content, nonce)
     }
 
     // reset buffer with index.html file

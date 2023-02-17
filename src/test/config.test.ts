@@ -16,7 +16,8 @@
 
 import { expect } from 'chai'
 
-import { DEFAULT_CONTENT_TYPE_MAP, parseConfig } from '../config'
+import { parseConfig } from '../config'
+import * as defaultConfigs from '../defaults'
 import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
 import { baseVariables, createConfigFile } from '../utils/test-utils'
 
@@ -26,11 +27,7 @@ const createEnvVars = (configPath: string): EnvironmentVariables => ({
 })
 
 const defaults = {
-  CONTENT_TYPE_MAP: DEFAULT_CONTENT_TYPE_MAP,
-  MICRO_LC_BASE_PATH: '/',
-  MICRO_LC_CONFIG_SRC: '/configurations/config.json',
-  MICRO_LC_MODE: 'production',
-  MICRO_LC_VERSION: 'latest',
+  CONTENT_TYPE_MAP: defaultConfigs.CONTENT_TYPE_MAP,
   PUBLIC_DIRECTORY_PATH: '/usr/static/public',
   RESOURCES_DIRECTORY_PATH: '/usr/static/configurations',
 }

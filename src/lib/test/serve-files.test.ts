@@ -108,7 +108,7 @@ describe('Serve files', () => {
     })
 
     expect(payload).to.deep.equal(JSON.stringify({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('application/json; charset=utf-8')
+    expect(headers['content-type']).to.equal('application/json')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
@@ -128,7 +128,7 @@ describe('Serve files', () => {
     })
 
     expect(payload).to.deep.equal(yaml.dump({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('text/yaml; charset=utf-8')
+    expect(headers['content-type']).to.equal('text/yaml')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
@@ -148,7 +148,7 @@ describe('Serve files', () => {
     })
 
     expect(payload).to.deep.equal(yaml.dump({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('text/yaml; charset=utf-8')
+    expect(headers['content-type']).to.equal('text/yaml')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
@@ -173,7 +173,7 @@ describe('Serve files', () => {
     })
 
     expect(payload).to.deep.equal(JSON.stringify({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('application/json; charset=utf-8')
+    expect(headers['content-type']).to.equal('application/json')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
