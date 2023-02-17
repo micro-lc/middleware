@@ -11,7 +11,9 @@ node_modules/
 .pnp.*
 
 .nyc_output
-*.env
 *.log*
 !default.env
 .idea
+
+.env.*
+.env/
