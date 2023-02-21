@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - cli fix: from `busDiscriminator` to `eventBus` pool even when other properties are declared
+- headers: use `/public/index.html` headers when 200 and url is `/public` or `/public/`
 
 ### Versioning
 

@@ -60,7 +60,7 @@ const staticFileHandler = (context: FastifyContext) => async (
   if (statusCode >= 400 && !isPublic(url)) {
     return
   // redirect to /public/index.html
-  } else if (statusCode >= 400 && isPublic(url)) {
+  } else if ((statusCode >= 400 && isPublic(url)) || ['/public', '/public/'].includes(url)) {
     filename = `${PUBLIC_DIRECTORY_PATH}/index.html`
     url = '/public/index.html'
   }

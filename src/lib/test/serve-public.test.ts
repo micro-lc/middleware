@@ -49,6 +49,7 @@ describe('Serve files', () => {
           'content-security-policy': [
             ['script-src \'self\' \'nonce-**CSP_NONCE**\''],
           ],
+          link: 'a link',
         },
       },
     })
@@ -104,12 +105,34 @@ describe('Serve files', () => {
 
     expect(statusCode).to.equal(200)
     expect(headers['content-type']).to.equal('text/html')
+    expect(headers.link).to.equal('a link')
+  })
+
+  it('should retrieve the index on public root', async () => {
+    const { headers, statusCode } = await fastify.inject({
+      method: 'GET',
+      url: '/public/',
+    })
+
+    expect(statusCode).to.equal(200)
+    expect(headers['content-type']).to.equal('text/html')
+    expect(headers.link).to.equal('a link')
   })
 
   it('should retrieve the index 404 inside public root', async () => {
     const { headers, statusCode } = await fastify.inject({
       method: 'GET',
       url: '/public/home',
+    })
+
+    expect(statusCode).to.equal(200)
+    expect(headers['content-type']).to.equal('text/html')
+  })
+
+  it('should reverse on public root if not found file', async () => {
+    const { headers, statusCode } = await fastify.inject({
+      method: 'GET',
+      url: '/public/home.xml',
     })
 
     expect(statusCode).to.equal(200)
