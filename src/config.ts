@@ -19,14 +19,19 @@ const validateContentTypeMap = (contentTypeMap: unknown) => {
 
   return Object.entries(contentTypeMap)
     .reduce<Record<string, string>>((dict, [key, value]) => {
-      if (typeof value !== 'string') {
+      if (!(typeof value === 'string' || Array.isArray(value))) {
         return dict
       }
 
       return Object.assign(dict, key.split(',').reduce<Record<string, string>>((acc, ext) => {
         const trimmedExtension = ext.trim()
         if (trimmedExtension.startsWith('.')) {
-          acc[trimmedExtension] = value
+          acc[trimmedExtension] = typeof value === 'string' ? value : value.reduce<string[]>((contentType, entry) => {
+            if (typeof entry === 'string') {
+              contentType.push(entry)
+            }
+            return contentType
+          }, []).join('; ')
         }
         return acc
       }, dict))

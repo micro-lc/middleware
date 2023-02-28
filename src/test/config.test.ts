@@ -51,6 +51,7 @@ describe('config injection tests', () => {
     const { name: url, cleanup } = await createConfigFile({
       contentTypeMap: {
         '.js': 'text/plain',
+        '.txt, .pdf': ['text/plain', 'charset=utf-8'],
       },
       publicHeadersMap: {
         '/public/index.html': {
@@ -65,6 +66,8 @@ describe('config injection tests', () => {
       CONTENT_TYPE_MAP: {
         ...defaults.CONTENT_TYPE_MAP,
         '.js': 'text/plain',
+        '.pdf': 'text/plain; charset=utf-8',
+        '.txt': 'text/plain; charset=utf-8',
       },
       PUBLIC_HEADERS_MAP: {
         '/public/index.html': {
