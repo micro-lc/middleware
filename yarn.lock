@@ -3888,14 +3888,14 @@ __metadata:
   linkType: hard
 
 "glob@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "glob@npm:9.0.1"
+  version: 9.1.2
+  resolution: "glob@npm:9.1.2"
   dependencies:
     fs.realpath: ^1.0.0
-    minimatch: ^7.3.0
+    minimatch: ^7.4.1
     minipass: ^4.2.4
     path-scurry: ^1.5.0
-  checksum: 898b93b1310186abcf9a7b785aecf7db4abbda5a096cde19fa6bad928993fde4d1f3face98815040b5f0acc8d62bd5ff923ff24d574deec45d798bc3f7566d7b
+  checksum: 8c0bcd729b5783c340553966a25728a6c6e53275b825b4bf3be52bc2d6d31ea39d55d3c7e989edfc541f5a0ba7421b8616788f55367dd8551aac6cebbf7491ab
   languageName: node
   linkType: hard
 
@@ -5125,12 +5125,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^7.3.0":
-  version: 7.3.0
-  resolution: "minimatch@npm:7.3.0"
+"minimatch@npm:^7.4.1":
+  version: 7.4.1
+  resolution: "minimatch@npm:7.4.1"
   dependencies:
     brace-expansion: ^2.0.1
-  checksum: c4d9af992958339d5fc593c9ce496f4b9615597e57cdd663e57bd3a745ebd208c2bba19c3290c25ed8dcf259586fa1f68e4e1acf304f8694927b84c5381167d0
+  checksum: fd930530878ba08e5a57eacc0e69fbc980d4c1dfeb98c6c5eba3a05a10b1f6d8dd4ecca59442a1909107b7ef891b43c005720c1a8ed1a02db962fd0327bf9557
   languageName: node
   linkType: hard
 
