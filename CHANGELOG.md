@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - user can configure mime-type per extension
 - user can configure headers per resource
 
+### Versioning
+
+- Development dependencies updated
+
+## [2.0.4] - 2023-02-17
+
 ### Fixed
 
 - cli fix: from `busDiscriminator` to `eventBus` pool even when other properties are declared
