@@ -7,12 +7,12 @@ on:
 
 jobs:
   tests:
-    uses: micro-lc/middleware/.github/workflows/tests.yml@public-path
+    uses: micro-lc/middleware/.github/workflows/tests.yml@main
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: micro-lc/middleware/.github/workflows/lint.yml@public-path
+    uses: micro-lc/middleware/.github/workflows/lint.yml@main
 
   build:
-    uses: micro-lc/middleware/.github/workflows/build.yml@public-path
+    uses: micro-lc/middleware/.github/workflows/build.yml@main
