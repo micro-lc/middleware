@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       node-version:
-        default: 16.x
+        default: 18.x
         required: false
         type: string
     secrets:
@@ -36,7 +36,6 @@ jobs:
         run: yarn test:cli
 
       - name: Collect Coveralls coverage
-        if: ${{ inputs.node-version == '16.x' }}
         uses: coverallsapp/github-action@master
         continue-on-error: true
         with:

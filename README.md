@@ -18,14 +18,14 @@ For a detailed description of the service capabilities, referer to the
 
 To develop locally you need:
 
-- Node 16+
+- Node 18+
 - Yarn 1.22+
 
 To set up Node, please if possible try to use [nvm](https://github.com/creationix/nvm), so you can manage multiple
 versions easily. Once you have installed nvm, you can go inside the directory of the project and simply run
-`nvm install`, the `.nvmrc` file will install and select the correct version if you don’t already have it. 
+`nvm install`, the `.nvmrc` file will install and select the correct version if you don’t already have it.
 
-Yarn can be installed globally running `npm i -g yarn`. 
+Yarn can be installed globally running `corepack enable` since node 16.
 
 Once you have all the dependency in place, you can launch:
 
@@ -34,31 +34,29 @@ yarn
 yarn coverage
 ```
 
-This two commands, will install the dependencies and run the tests with the coverage report that you can view as an HTML
-page in `coverage/lcov-report/index.html`.
+This two commands, will install the dependencies and run tests emitting a coverage report.
 
-Now create your local copy of the default values for the `env` variables needed for launching the application.
+To launch the service locally, ensure you don't have a `.env.local` file in your root folder and run:
 
 ```shell
-cp ./default.env ./local.env
+./scripts/set-default.env.sh
 ```
 
-From now on, if you want to change anyone of the default values for the variables you can do it inside the `local.env`
+From now on, if you want to change anyone of the default values for the variables you can do it inside the `.env.local`
 file without pushing it to the remote repository.
 
 Once you have all your dependency in place you can launch:
 
 ```shell
-set -a && source local.env
-yarn build:server
-yarn start
+yarn build
+yarn start:local
 ```
 
-and you will have the service exposed on your machine. In order to verify that the service is working properly you could 
+and you will have the service exposed on your machine. In order to verify that the service is working properly you could
 launch in another terminal shell:
 
 ```shell
-curl http://localhost:3000/-/ready
+curl http://localhost:3001/-/ready
 ```
 
 As a result the terminal should return you the following message:

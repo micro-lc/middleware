@@ -177,7 +177,7 @@ module.exports = {
       },
     ],
     'max-nested-callbacks': ['error', 4],
-    'max-statements': ['error', 25, { ignoreTopLevelFunctions: true }],
+    'max-statements': ['error', 30, { ignoreTopLevelFunctions: true }],
     'max-statements-per-line': ['error', { max: 2 }],
     'new-parens': 'error',
     'newline-per-chained-call': ['error', { ignoreChainWithDepth: 3 }],

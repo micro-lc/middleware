@@ -16,6 +16,9 @@
 # * limitations under the License.
 # */
 
+docker stop middleware
+docker rm middleware
+
 docker run -d \
   -e LOG_LEVEL=debug \
   -e HTTP_PORT=3000 \
@@ -25,8 +28,17 @@ docker run -d \
   -e CLIENTTYPE_HEADER_KEY=client-type \
   -e BACKOFFICE_HEADER_KEY=isbackoffice \
   -e USER_PROPERTIES_HEADER_KEY=userproperties \
-  -e RESOURCES_DIRECTORY_PATH=/usr/src/app/mocks \
-  -v `pwd`/mocks:/usr/src/app/mocks \
+  -e MICRO_LC_BASE_PATH=/public/ \
+  -e PUBLIC_DIRECTORY_PATH=/usr/src/app/public \
+  -e RESOURCES_DIRECTORY_PATH=/usr/src/app/configurations \
+  -v `pwd`/.env/public:/usr/src/app/public \
+  -v `pwd`/.env/configurations:/usr/src/app/configurations \
+  -v `pwd`/.env/config.json:/usr/src/app/config.json \
   -p 3000:3000 \
   --name middleware \
   microlc/middleware
+
+if command -v xclip > /dev/null
+then
+  echo "docker stop middleware" | xclip -sel clip
+fi

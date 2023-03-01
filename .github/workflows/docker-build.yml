@@ -21,6 +21,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Restore Build Cache
+        id: restore-build-cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ./dist
+          key: ${{ runner.os }}-${{ github.sha }}-build
+
+      - name: Fail on absent cache
+        if: steps.restore-build-cache.outputs.cache-hit != 'true'
+        run: exit 1
+
       - name: Prepare
         id: prepare
         run: |

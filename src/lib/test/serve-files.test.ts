@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path from 'path'
+import { randomUUID } from 'crypto'
 
 import type { DecoratedFastify } from '@mia-platform/custom-plugin-lib'
 import { expect } from 'chai'
@@ -26,25 +26,42 @@ import { createSandbox } from 'sinon'
 import type { EnvironmentVariables } from '../../schemas/environmentVariablesSchema'
 import * as evaluateAcl from '../../sdk/evaluate-acl'
 import * as resolveReferences from '../../sdk/resolve-references'
-import { baseVariables, setupFastify } from '../../utils/test-utils'
+import { baseVariables, createConfigFile, createTmpDir, setupFastify } from '../../utils/test-utils'
 
 describe('Serve files', () => {
   const sandbox = createSandbox()
 
   let evaluateAclStub: SinonStub
   let resolveReferencesStub: SinonStub
+  let random: string
 
   let fastify: DecoratedFastify<EnvironmentVariables>
+  let cleanup: (() => Promise<unknown>) | undefined
 
   before(async () => {
     evaluateAclStub = sandbox.stub(evaluateAcl, 'evaluateAcl').returns({ evaluate: 'acl' })
     resolveReferencesStub = sandbox.stub(resolveReferences, 'resolveReferences').resolves({ resolve: 'references' })
+    random = randomUUID()
+    const { name: configurations, cleanup: confCleanup } = await createTmpDir({
+      '.config': random,
+      config: random,
+      'config.json': JSON.stringify({ foo: 'bar' }),
+      'config.txt': '',
+      'config.yaml': 'foo: bar',
+      'file-to-parse.json': JSON.stringify({ foo: { aclExpression: 'false', test: true } }),
+      'file.special': random,
+    })
+    const { name: configPath, cleanup: cpCleanup } = await createConfigFile({
+      contentTypeMap: {
+        '.special': 'application/damn-special',
+      },
+    })
+
+    cleanup = () => Promise.all([confCleanup(), cpCleanup()])
 
     fastify = await setupFastify({
-      CONTENT_TYPE_MAP: JSON.stringify({
-        '.special': 'application/damn-special',
-      }),
-      RESOURCES_DIRECTORY_PATH: path.join(__dirname, './mocks'),
+      RESOURCES_DIRECTORY_PATH: configurations,
+      SERVICE_CONFIG_PATH: configPath,
     })
   })
 
@@ -52,33 +69,34 @@ describe('Serve files', () => {
 
   after(async () => {
     await fastify.close()
+    await cleanup?.()
     sandbox.restore()
   })
 
-  it('should serve only available files', async () => {
-    interface TestCase {
-      expectedStatusCode: number
-      route: string
-    }
+  interface TestCase {
+    expectedStatusCode: number
+    route: string
+  }
 
-    const testCases: TestCase[] = [
-      { expectedStatusCode: 404, route: '/foo.json' },
-      { expectedStatusCode: 404, route: '/.config' },
-      { expectedStatusCode: 200, route: '/config' },
-      { expectedStatusCode: 200, route: '/config.json' },
-      { expectedStatusCode: 200, route: '/config.txt' },
-      { expectedStatusCode: 200, route: '/config.yaml' },
-      { expectedStatusCode: 200, route: '/config.yml' },
-    ]
+  const testCases: TestCase[] = [
+    { expectedStatusCode: 404, route: '/foo.json' },
+    { expectedStatusCode: 404, route: '/configurations/foo.json' },
+    { expectedStatusCode: 200, route: '/configurations/.config' },
+    { expectedStatusCode: 200, route: '/configurations/config' },
+    { expectedStatusCode: 200, route: '/configurations/config.json' },
+    { expectedStatusCode: 200, route: '/configurations/config.txt' },
+    { expectedStatusCode: 200, route: '/configurations/config.yaml' },
+    { expectedStatusCode: 404, route: '/configurations/config.yml' },
+  ]
 
-    let response: LightMyRequestResponse
-
-    for (const { expectedStatusCode, route } of testCases) {
-      // eslint-disable-next-line no-await-in-loop
-      response = await fastify.inject({ method: 'GET', url: route })
+  for (const { expectedStatusCode, route } of testCases) {
+    const message = `should return status ${expectedStatusCode} when fetching route ${route}`
+    // eslint-disable-next-line no-loop-func
+    it(`serve only available files: ${message}`, async () => {
+      const response: LightMyRequestResponse = await fastify.inject({ method: 'GET', url: route })
       expect(response.statusCode, route).to.equal(expectedStatusCode)
-    }
-  })
+    })
+  }
 
   it('should serve manipulated .json file', async () => {
     const { payload, headers } = await fastify.inject({
@@ -87,11 +105,11 @@ describe('Serve files', () => {
         [baseVariables.USER_PROPERTIES_HEADER_KEY]: JSON.stringify({ permissions: ['users.post.write'] }),
       },
       method: 'GET',
-      url: '/config.json',
+      url: '/configurations/config.json',
     })
 
     expect(payload).to.deep.equal(JSON.stringify({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('application/json; charset=utf-8')
+    expect(headers['content-type']).to.equal('application/json')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
@@ -107,11 +125,11 @@ describe('Serve files', () => {
         [baseVariables.USER_PROPERTIES_HEADER_KEY]: JSON.stringify({ permissions: ['users.post.write'] }),
       },
       method: 'GET',
-      url: '/config.yaml',
+      url: '/configurations/config.yaml',
     })
 
     expect(payload).to.deep.equal(yaml.dump({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('text/yaml; charset=utf-8')
+    expect(headers['content-type']).to.equal('text/yaml')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
@@ -127,11 +145,11 @@ describe('Serve files', () => {
         [baseVariables.USER_PROPERTIES_HEADER_KEY]: JSON.stringify({ permissions: ['users.post.write'] }),
       },
       method: 'GET',
-      url: '/config.yml',
+      url: '/configurations/config.yaml',
     })
 
     expect(payload).to.deep.equal(yaml.dump({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('text/yaml; charset=utf-8')
+    expect(headers['content-type']).to.equal('text/yaml')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
@@ -152,11 +170,11 @@ describe('Serve files', () => {
         [baseVariables.USER_PROPERTIES_HEADER_KEY]: JSON.stringify({ permissions: ['users.post.write'] }),
       },
       method: 'GET',
-      url: '/config.json',
+      url: '/configurations/config.json',
     })
 
     expect(payload).to.deep.equal(JSON.stringify({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('application/json; charset=utf-8')
+    expect(headers['content-type']).to.equal('application/json')
 
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
@@ -168,20 +186,29 @@ describe('Serve files', () => {
   it('should serve non-JSON file with proper `Content-Type` headers', async () => {
     const { payload, headers } = await fastify.inject({
       method: 'GET',
-      url: '/file.special',
+      url: '/configurations/file.special',
     })
 
-    expect(payload).to.deep.equal('')
+    expect(payload).to.deep.equal(random)
     expect(headers['content-type']).to.equal('application/damn-special')
+  })
+
+  it('should manipulate an ACL expression', async () => {
+    const { payload } = await fastify.inject({
+      method: 'GET',
+      url: '/configurations/file-to-parse.json',
+    })
+
+    expect(payload).to.deep.equal(JSON.stringify({ resolve: 'references' }))
   })
 
   it('should serve unknown files with `text/plain` `Content-Type` headers', async () => {
     const { payload, headers } = await fastify.inject({
       method: 'GET',
-      url: '/config',
+      url: '/configurations/config',
     })
 
-    expect(payload).to.deep.equal('This file should be served as plain text')
+    expect(payload).to.deep.equal(random)
     expect(headers['content-type']).to.equal('text/plain')
   })
 })

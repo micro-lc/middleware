@@ -1,4 +1,4 @@
-FROM node:gallium-alpine
+FROM node:hydrogen-alpine
 
 LABEL name="middleware" \
       description="Acl + $ref configuration parser for micro-lc"
@@ -19,11 +19,8 @@ COPY .yarnrc.yml ./
 RUN corepack enable
 RUN yarn install --immutable
 
-COPY src ./src
-COPY tsconfig.json ./tsconfig.json
+COPY dist ./dist
 COPY scripts ./scripts
-
-RUN yarn build:server
 
 USER node
 

@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://raw.githubusercontent.com/micro-lc/middleware/main/schemas/config.schema.json",
+  "definitions": {
+    "arrayOrString": {
+      "title": "ArrayOrString",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "headers": {
+      "title": "Headers",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/arrayOrString"
+          }
+        }
+      ]
+    }
+  },
+  "title": "Config",
+  "type": "object",
+  "properties": {
+    "contentTypeMap": {
+      "title": "ContentTypeMap",
+      "type": "object",
+      "tsType": "Record<`.${string}`, string | string[]>",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\.": {
+          "$ref": "#/definitions/arrayOrString"
+        }
+      }
+    },
+    "publicHeadersMap": {
+      "title": "PublicHeadersMap",
+      "type": "object",
+      "tsType": "Record<`/${string}`, Record<string, Headers>>",
+      "patternProperties": {
+        "^\\/": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/headers"
+          }
+        }
+      }
+    }
+  }
+}

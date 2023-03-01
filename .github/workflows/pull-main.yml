@@ -7,21 +7,12 @@ on:
 
 jobs:
   tests:
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version:
-         - 16.x
-         - 17.x
-         - 18.x
-    uses: micro-lc/middleware/.github/workflows/tests.yml@main
-    with:
-      node-version: ${{ matrix.node-version }}
+    uses: micro-lc/middleware/.github/workflows/tests.yml@public-path
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: micro-lc/middleware/.github/workflows/lint.yml@main
+    uses: micro-lc/middleware/.github/workflows/lint.yml@public-path
 
   build:
-    uses: micro-lc/middleware/.github/workflows/build.yml@main
+    uses: micro-lc/middleware/.github/workflows/build.yml@public-path

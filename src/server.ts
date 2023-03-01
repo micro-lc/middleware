@@ -13,18 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { AsyncInitFunction } from '@mia-platform/custom-plugin-lib'
+import type { AsyncInitFunction, DecoratedFastify } from '@mia-platform/custom-plugin-lib'
 import customService from '@mia-platform/custom-plugin-lib'
 
-import { registerRoutes } from './lib/serve-files'
+import type { RuntimeConfig } from './config'
+import { parseConfig } from './config'
+import { staticFileHandler } from './lib/onSendHandler'
+import { registerConfigurations, registerPublic } from './lib/registerHandlers'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
 import { environmentVariablesSchema } from './schemas/environmentVariablesSchema'
 
-const initFunction: AsyncInitFunction<EnvironmentVariables> = async service => {
-  await registerRoutes
-    .call(service)
-    .catch(console.error)
+type FastifyEnvironmentVariables = EnvironmentVariables & Record<string, string> & {USER_PROPERTIES_HEADER_KEY?: string | undefined}
+
+interface FastifyContext {
+  config: RuntimeConfig
+  service: DecoratedFastify<FastifyEnvironmentVariables>
 }
 
-module.exports = customService<EnvironmentVariables>(environmentVariablesSchema)(initFunction) as unknown
+const initFunction: AsyncInitFunction<FastifyEnvironmentVariables> = async service => {
+  const runtimeConfig = parseConfig(service.config)
+  const context: FastifyContext = { config: runtimeConfig, service }
+
+  service.addHook('onSend', staticFileHandler(context))
+
+  registerConfigurations.call(context)
+  return registerPublic.call(context)
+}
+
+export type { FastifyContext, FastifyEnvironmentVariables }
+module.exports = customService<FastifyEnvironmentVariables>(environmentVariablesSchema)(initFunction) as unknown

@@ -15,7 +15,7 @@
  */
 
 import { Command, InvalidArgumentError, InvalidOptionArgumentError } from 'commander'
-import glob from 'glob'
+import { globSync } from 'glob'
 import { mkdirpSync } from 'mkdirp'
 
 import packageFile from '../../package.json'
@@ -103,7 +103,7 @@ export const parseArgs = (): CliContext => {
     let fileAbsPaths: string[] = []
     for (let globPattern of globs) {
       globPattern = toAbsolute(globPattern)
-      fileAbsPaths = [...fileAbsPaths, ...glob.sync(globPattern)]
+      fileAbsPaths = [...fileAbsPaths, ...globSync(globPattern)]
     }
 
     if (fileAbsPaths.length === 0) {

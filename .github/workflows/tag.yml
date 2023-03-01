@@ -2,6 +2,7 @@ name: Tag
 
 env:
   NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  node-version: 18.x
 
 on:
   push:
@@ -10,46 +11,51 @@ on:
 
 jobs:
   tests:
-    uses: micro-lc/middleware/.github/workflows/tests.yml@main
+    uses: micro-lc/middleware/.github/workflows/tests.yml@public-path
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: micro-lc/middleware/.github/workflows/lint.yml@main
+    uses: micro-lc/middleware/.github/workflows/lint.yml@public-path
+
+  build:
+    uses: micro-lc/middleware/.github/workflows/build.yml@public-path
 
   docker-build:
     needs:
       - tests
       - lint
-    uses: micro-lc/middleware/.github/workflows/docker-build.yml@main
+      - build
+    uses: micro-lc/middleware/.github/workflows/docker-build.yml@public-path
     with:
       version: ${GITHUB_REF#refs/tags/}
     secrets:
       username: ${{ secrets.BOT_DOCKER_USERNAME }}
       token: ${{ secrets.BOT_DOCKER_TOKEN }}
 
-  npm-publish:
-    needs:
-      - tests
-      - lint
+  # npm-publish:
+  #   needs:
+  #     - tests
+  #     - lint
+  #     - build
 
-    name: Release package on npm
-    runs-on: ubuntu-latest
+  #   name: Release package on npm
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ inputs.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: yarn
+  #     - name: Use Node.js ${{ env.node-version }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ env.node-version }}
+  #         cache: yarn
 
-      - name: Install
-        run: yarn install --immutable
+  #     - name: Install
+  #       run: yarn install --immutable
 
-      - name: Build
-        run: yarn build
+  #     - name: Build
+  #       run: yarn build
 
-      - name: Publish
-        run: yarn npm publish
+  #     - name: Publish
+  #       run: yarn npm publish

@@ -12,8 +12,8 @@ node_modules/
 
 .nyc_output
 *.log*
-!default.env
 .idea
+.DS_Store
 
-.env.*
 .env/
+.env.*

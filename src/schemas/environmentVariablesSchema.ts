@@ -17,18 +17,23 @@
 import type { FromSchema } from 'json-schema-to-ts'
 
 export const environmentVariablesSchema = {
+  additionalProperties: false,
   properties: {
-    CONTENT_TYPE_MAP: {
-      description: 'Key/value dictionary which maps lists of extensions, in the form of a comma separated list, to a `Content-Type` header',
+    PUBLIC_DIRECTORY_PATH: {
+      description: 'Absolute path of the directory containing static files to be served',
       type: 'string',
     },
     RESOURCES_DIRECTORY_PATH: {
-      description: 'Absolute path of the directory containing resources to be served',
+      description: 'Absolute path of the directory containing configuration resources to be served',
+      type: 'string',
+    },
+    SERVICE_CONFIG_PATH: {
+      description: 'service configuration file absolute path',
       type: 'string',
     },
   },
-  required: ['RESOURCES_DIRECTORY_PATH'],
+  required: [],
   type: 'object',
 } as const
 
-export type EnvironmentVariables = FromSchema<typeof environmentVariablesSchema> & Record<string, string>
+export type EnvironmentVariables = FromSchema<typeof environmentVariablesSchema>
