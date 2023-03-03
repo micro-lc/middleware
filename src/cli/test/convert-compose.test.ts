@@ -15,7 +15,6 @@
  */
 
 import type { PluginConfiguration as V2Plugin } from '@micro-lc/interfaces/v2'
-
 import { expect } from 'chai'
 
 import type { V1Compose, V2PluginWithRef } from '../convert-compose'

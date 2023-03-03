@@ -48,13 +48,13 @@ jobs:
   #       uses: actions/setup-node@v3
   #       with:
   #         node-version: 18.x
-  #         cache: yarn
+  #         cache: npm
 
   #     - name: Install
-  #       run: yarn install --immutable
+  #       run: npm ic
 
   #     - name: Build
-  #       run: yarn build
+  #       run: npm run build
 
   #     - name: Publish
-  #       run: yarn npm publish
+  #       run: npm publish
