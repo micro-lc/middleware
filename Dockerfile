@@ -15,6 +15,8 @@ COPY package.json ./
 COPY .yarn ./.yarn
 COPY yarn.lock ./
 COPY .yarnrc.yml ./
+RUN sed '/^nodeLinker:/d' ./.yarnrc.yml
+RUN echo 'nodeLinker: node-modules' >> ./.yarnrc.yml
 
 RUN corepack enable
 RUN yarn install --immutable
