@@ -15,6 +15,7 @@ COPY schemas ./schemas
 COPY scripts ./scripts
 COPY src ./src
 COPY tsconfig.json .
+COPY .eslintrc.js .
 
 RUN npm run build
 
