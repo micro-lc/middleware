@@ -9,7 +9,7 @@ MODE=$1
 
 if [ -z "$MODE" ]; then
   printf "${RED}no version parameter specified: e.g., patch, minor, major or an explicit semver triple like 0.2.9${ENDCOLOR}"
-  printf "\nsyntax: ${GREEN}yarn bump <version>${ENDCOLOR}\n"
+  printf "\nsyntax: ${GREEN}npm run bump <version>${ENDCOLOR}\n"
   exit 1
 fi
 

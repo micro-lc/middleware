@@ -24,7 +24,6 @@ import type {
   VoidComponent as V2VoidComponent,
   PluginConfiguration as V2Plugin,
 } from '@micro-lc/interfaces/v2'
-
 import { JSONPath } from 'jsonpath-plus'
 
 import type { Converter, WithAcl } from './types'

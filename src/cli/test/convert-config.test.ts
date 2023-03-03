@@ -15,7 +15,6 @@
  */
 
 import type { Config as V1Config } from '@micro-lc/interfaces/v1'
-
 import { expect } from 'chai'
 
 import type { V1AuthConfig } from '../convert-config'
