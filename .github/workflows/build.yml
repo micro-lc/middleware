@@ -18,13 +18,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node-version }}
-          cache: yarn
+          cache: npm
 
       - name: Install
-        run: yarn install --immutable
+        run: npm ic
 
       - name: Compile file and build
-        run: yarn build
+        run: npm run build
 
       - name: Save Build Cache
         id: save-build-cache
@@ -44,7 +44,7 @@ jobs:
           echo "PUBLIC_DIRECTORY_PATH=$ENV_DIR/public" >> $WORKING_DIR/.env.local
           echo "RESOURCES_DIRECTORY_PATH=$ENV_DIR/configurations" >> $WORKING_DIR/.env.local
 
-          yarn start:local &
+          npm run start:local &
 
           ./scripts/wait-for-it.sh localhost:3001 --timeout=20
 

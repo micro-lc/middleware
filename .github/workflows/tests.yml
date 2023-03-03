@@ -22,18 +22,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node-version }}
-          cache: yarn
+          cache: npm
 
       - name: Install
         run: |
-          yarn install --immutable
-          yarn build:cli
+          npm ic
+          npm run build:cli
 
       - name: Run Unit Tests
-        run: yarn coverage
+        run: npm run coverage
 
       - name: Run CLI Tests
-        run: yarn test:cli
+        run: npm run test:cli
 
       - name: Collect Coveralls coverage
         uses: coverallsapp/github-action@master
