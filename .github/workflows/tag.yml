@@ -10,22 +10,22 @@ on:
 
 jobs:
   tests:
-    uses: micro-lc/middleware/.github/workflows/tests.yml@main
+    uses: micro-lc/middleware/.github/workflows/tests.yml@remove-pnp-on-docker-build
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: micro-lc/middleware/.github/workflows/lint.yml@main
+    uses: micro-lc/middleware/.github/workflows/lint.yml@remove-pnp-on-docker-build
 
   build:
-    uses: micro-lc/middleware/.github/workflows/build.yml@main
+    uses: micro-lc/middleware/.github/workflows/build.yml@remove-pnp-on-docker-build
 
   docker-build:
     needs:
       - tests
       - lint
       - build
-    uses: micro-lc/middleware/.github/workflows/docker-build.yml@main
+    uses: micro-lc/middleware/.github/workflows/docker-build.yml@remove-pnp-on-docker-build
     with:
       version: ${GITHUB_REF#refs/tags/}
     secrets:
