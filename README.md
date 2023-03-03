@@ -79,7 +79,7 @@ To start the container, you can use the [run.sh](./scripts/run.sh) script, runni
 ## Tag
 
 ```shell
-yarn bump [patch|minor|major|<version number>]
+npm run bump [patch|minor|major|<version number>]
 ```
 
 releases both the sdk on npm and the docker container on docker hub
