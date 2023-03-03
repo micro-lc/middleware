@@ -3,14 +3,13 @@
   "version": "3.0.0",
   "description": "micro-lc configuration server",
   "license": "SEE LICENSE IN LICENSE",
-  "packageManager": "yarn@3.4.1",
   "bin": "./dist/cli/index.js",
   "files": [
     "dist",
     "package.json"
   ],
   "scripts": {
-    "postinstall": "husky install",
+    "_postinstall": "husky install",
     "cleanup": "rimraf .nyc_output coverage dist node_modules",
     "make-types": "node ./scripts/make-types.mjs",
     "lint": "eslint ./src --ext .ts",
@@ -20,7 +19,7 @@
     "coverage": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }' nyc mocha src/**/test/**/*.test.ts",
     "clean": "rimraf dist",
     "build:server": "tsc --project ./scripts/tsconfig.build.json && echo \"✔ server compiled successfully\"",
-    "build:cli": "yarn node ./scripts/build-cli.mjs",
+    "build:cli": "node ./scripts/build-cli.mjs",
     "build:sdk-types": "tsc --project ./scripts/tsconfig.types.json",
     "build:sdk-esm": "tsc --project ./scripts/tsconfig.esm.json",
     "build:sdk": "run-p build:sdk-types build:sdk-esm && echo \"✔ sdk compiled successfully\"",
@@ -28,9 +27,9 @@
     "build": "run-s make-types build:all",
     "bump": "bash ./scripts/version.sh",
     "start": "lc39 dist/server.js",
-    "start:local": "NODE_ENV=development yarn start --env-path .env.local --log-level trace --port 3001",
-    "cli": "yarn ts-node ./src/cli",
-    "prepublish": "pinst --disable"
+    "start:local": "NODE_ENV=development npm run start -- --env-path .env.local --log-level trace --port 3001",
+    "cli": "ts-node ./src/cli",
+    "_prepublish": "pinst --disable"
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^10.1.0",
