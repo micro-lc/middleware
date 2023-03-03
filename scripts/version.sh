@@ -17,10 +17,11 @@ WORKING_DIR="."
 TAG_SCOPE="@micro-lc/middleware"
 TAG_PREFIX_NAME="v"
 
-( cd $WORKING_DIR ; npm version $MODE )
+( cd $WORKING_DIR ; npm version $MODE --git-tag-version false --commit-hooks false )
 
 git reset
 git add package.json
+git add package-lock.json
 
 unameOut="$(uname -s)"
 case "${unameOut}" in
