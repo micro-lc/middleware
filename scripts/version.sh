@@ -17,11 +17,10 @@ WORKING_DIR="."
 TAG_SCOPE="@micro-lc/middleware"
 TAG_PREFIX_NAME="v"
 
-( cd $WORKING_DIR ; yarn version $MODE )
+( cd $WORKING_DIR ; npm version $MODE )
 
 git reset
 git add package.json
-git add .yarn/versions
 
 unameOut="$(uname -s)"
 case "${unameOut}" in

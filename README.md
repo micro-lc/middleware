@@ -19,19 +19,16 @@ For a detailed description of the service capabilities, referer to the
 To develop locally you need:
 
 - Node 18+
-- Yarn 1.22+
 
 To set up Node, please if possible try to use [nvm](https://github.com/creationix/nvm), so you can manage multiple
 versions easily. Once you have installed nvm, you can go inside the directory of the project and simply run
 `nvm install`, the `.nvmrc` file will install and select the correct version if you don’t already have it.
 
-Yarn can be installed globally running `corepack enable` since node 16.
-
 Once you have all the dependency in place, you can launch:
 
 ```shell
-yarn
-yarn coverage
+npm install
+npm run coverage
 ```
 
 This two commands, will install the dependencies and run tests emitting a coverage report.
@@ -48,8 +45,8 @@ file without pushing it to the remote repository.
 Once you have all your dependency in place you can launch:
 
 ```shell
-yarn build
-yarn start:local
+npm run build
+npm run start:local
 ```
 
 and you will have the service exposed on your machine. In order to verify that the service is working properly you could
