@@ -6,6 +6,7 @@
   "bin": "./dist/cli/index.js",
   "files": [
     "dist",
+    "sdk",
     "package.json"
   ],
   "scripts": {
