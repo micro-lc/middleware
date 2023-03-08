@@ -31,6 +31,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Development dependencies updated
 
+### BREAKING CHANGES
+
+- configurations are served from a fixed endpoint `/configurations`
+- variable `RESOURCES_DIRECTORY_PATH` defaults to `/usr/static/public`
+
 ## [2.0.4] - 2023-02-17
 
 ### Fixed

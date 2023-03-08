@@ -14,6 +14,11 @@ For a detailed description of the service capabilities, referer to the
 
 ---
 
+## Migrating from v2 to v3
+
+Service now provides configurations on a fixed endpoint `/configurations`, hence an endpoint rewrite via a reverse proxy
+is needed to map the old (v2) `/` to (v3) `/configurations/`.
+
 ## Local development
 
 To develop locally you need:
