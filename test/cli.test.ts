@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { exec, execSync } from 'child_process'
+import { execFile, execFileSync } from 'child_process'
 import { statSync, readFileSync } from 'fs'
 import { resolve as pathResolve } from 'path'
 
@@ -46,7 +46,7 @@ describe('CLI tests', () => {
     const authPath = pathResolve(__dirname, 'mocks/auth.json')
     const configPath = pathResolve(__dirname, 'mocks/config.json')
 
-    exec(`node dist/cli -d ${tempPath} --mode config ${authPath} ${configPath}`, (error) => {
+    execFile('node', ['dist/cli', '-d', tempPath, '--mode', 'config', authPath, configPath], (error) => {
       error === null
         ? execResolve?.()
         : execReject?.(error)
@@ -67,7 +67,7 @@ describe('CLI tests', () => {
   it('should convert a compose plugin from v1 to config v2', () => {
     const pluginV1 = pathResolve(__dirname, 'mocks/plugin-v1.json')
 
-    execSync(`node dist/cli -d ${tempPath} --mode compose ${pluginV1}`)
+    execFileSync('node', ['dist/cli', '-d', tempPath, '--mode', 'compose', pluginV1])
 
     const v2ConfigFilePath = pathResolve(tempPath, 'plugin-v1.json')
 
