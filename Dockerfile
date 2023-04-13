@@ -25,6 +25,12 @@ RUN echo "microlc/middleware: $COMMIT_SHA" >> ./commit.sha
 
 FROM node:hydrogen-alpine
 
+# - stop vulnerabilities:package HIGH Vulnerability found in os package type (APKG) - libcrypto3 (fixed in: 3.0.8-r2)(CVE-2023-0464 - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-0464)
+# - stop vulnerabilities:package HIGH Vulnerability found in os package type (APKG) - libssl3 (fixed in: 3.0.8-r1)(CVE-2023-0464 https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-0464)
+# - stop vulnerabilities:package MEDIUM Vulnerability found in os package type (APKG) - libssl3 (fixed in: 3.0.8-r2)(CVE-2023-0465 https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-0465)
+# - stop vulnerabilities:package MEDIUM Vulnerability found in os package type (APKG) - libssl3 (fixed in: 3.0.8-r3)(CVE-2023-0466 https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-0466)
+RUN apk add --no-cache --upgrade libcrypto3 libssl3
+
 RUN apk add --no-cache tini
 
 LABEL name="middleware" \

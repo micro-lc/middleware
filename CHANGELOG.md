@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unrelease]
 
+### Fixed
+
+- fix to CVE-2023-0464 in Dockerfile
+- fix to CVE-2023-0465 in Dockerfile
+- fix to CVE-2023-0466 in Dockerfile
+
 ### Versioning
 
 - Development dependencies updated
