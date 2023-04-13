@@ -26,7 +26,7 @@
     "build:sdk": "run-p build:sdk-types build:sdk-esm && echo \"✔ sdk compiled successfully\"",
     "build:all": "run-p build:server build:cli build:sdk",
     "build": "run-s make-types build:all",
-    "bump": "bash ./scripts/version.sh",
+    "bump": "node ./scripts/version.mjs",
     "start": "lc39 dist/server.js",
     "start:local": "NODE_ENV=development npm run start -- --env-path .env.local --log-level trace --port 3001",
     "cli": "ts-node ./src/cli",
