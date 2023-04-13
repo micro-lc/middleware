@@ -78,7 +78,7 @@ docker build --tag microlc/middleware .
 To start the container, you can use the [run.sh](./scripts/run.sh) script, running:
 
 ```shell
-.scripts/run.sh
+./scripts/run.sh
 ```
 
 ## Tag
