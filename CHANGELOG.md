@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [3.0.3] - 2023-04-13
+
 ### Fixed
 
 - fix to CVE-2023-0464 in Dockerfile
