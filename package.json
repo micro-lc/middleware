@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@fastify/static": "^5.0.2",
-    "@mia-platform/lc39": "^6.0.2",
+    "@mia-platform/lc39": "^7.0.0",
     "@micro-lc/interfaces": "^1.0.2",
     "@micro-lc/layout": "^2.0.1",
     "@types/chai": "^4.3.4",
