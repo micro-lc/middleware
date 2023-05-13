@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Versioning
 
+- `@mia-platform/lc39` bumped to `v7.0.0`
+- `@mia-platform/custom-plugin-lib` bumped to `v6.0.0`
+- `@fastify/static` bumped to `v6.x`
 - Development dependencies updated
 
 ## [3.0.3] - 2023-04-13
