@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `@fastify/static` bumped to `v6.x`
 - Development dependencies updated
 
+### Fixed
+
+- CLI will not break if menu icon selector has an unexpected value
+
 ## [3.0.3] - 2023-04-13
 
 ### Fixed

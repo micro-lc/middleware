@@ -60,6 +60,7 @@ const buildMenuItemIcon = (input: string | undefined): Icon | undefined => {
   if (!input) { return undefined }
 
   const inputSegments = input.split(' ')
+  if (inputSegments.length !== 2) { return undefined }
 
   return {
     library: inputSegments[0] === 'fas' ? '@fortawesome/free-solid-svg-icons' : '@fortawesome/free-regular-svg-icons',
