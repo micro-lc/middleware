@@ -41,7 +41,7 @@ This two commands, will install the dependencies and run tests emitting a covera
 To launch the service locally, ensure you don't have a `.env.local` file in your root folder and run:
 
 ```shell
-./scripts/set-default.env.sh
+./scripts/set-default-env.sh
 ```
 
 From now on, if you want to change anyone of the default values for the variables you can do it inside the `.env.local`

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 WORKING_DIR=`pwd`
 ENV_DIR=$WORKING_DIR/.env
