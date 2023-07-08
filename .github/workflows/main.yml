@@ -23,6 +23,9 @@ jobs:
       - lint
       - build
     uses: micro-lc/middleware/.github/workflows/docker-build.yml@main
+    with:
+      push: true
     secrets:
       username: ${{ secrets.BOT_DOCKER_USERNAME }}
       token: ${{ secrets.BOT_DOCKER_TOKEN }}
+      security_checks_token: ${{ secrets.SECURITY_CHECKS_TOKEN }}

@@ -3,6 +3,10 @@ name: Docker build
 on:
   workflow_call:
     inputs:
+      push:
+        default: false
+        required: false
+        type: boolean
       version:
         default: latest
         type: string
@@ -12,10 +16,14 @@ on:
         required: true
       token:
         required: true
+      security_checks_token:
+        required: true
 
 jobs:
-  docker-build:
+  release-docker:
     runs-on: ubuntu-latest
+    outputs:
+      checksum: ${{ steps.docker-container-id.outputs.checksum }}
 
     steps:
       - name: Checkout code
@@ -51,6 +59,7 @@ jobs:
           password: ${{ secrets.token }}
 
       - name: Build and push
+        if: ${{ inputs.push }}
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -59,3 +68,27 @@ jobs:
           cache-from: type=registry,ref=${{ steps.prepare.outputs.image }}:${{ inputs.version }}
           cache-to: type=inline
           tags: ${{ steps.prepare.outputs.tags }}
+      
+      - name: Get checksum
+        id: docker-container-id
+        run: |
+          export DOCKER_IMAGE=microlc/micro-lc:${{ inputs.version }}
+          CHECKSUM=$(docker inspect --format '{{.Id}}' $DOCKER_IMAGE)
+          echo "checksum=$CHECKSUM" >> GITHUB_OUTPUT
+
+  security-checks:
+    needs:
+      - release-docker
+    name: Triggers security checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Invoke API
+        if: ${{ inputs.push }}
+        run: |
+          curl --request POST \
+            --form token=${{ secrets.security_checks_token }} \
+            --form ref=main \
+            --form "variables[VERSION]=${{ inputs.version }}" \
+            --form "variables[CHECKSUM]=${{ needs.release-docker.outputs.checksum }}" \
+            "https://git.tools.mia-platform.eu/api/v4/projects/86269/trigger/pipeline"
