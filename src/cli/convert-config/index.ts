@@ -39,7 +39,6 @@ const importAuthConfig = async (fileAbsPath: string): Promise<V1AuthConfig> => {
   const rawContent = await fs.readFile(fileAbsPath, 'utf-8')
   const input = JSON.parse(rawContent) as V1AuthConfig
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (input.isAuthNecessary === undefined) {
     throw new TypeError(`${fileAbsPath} is not a valid authentication configuration`)
   }

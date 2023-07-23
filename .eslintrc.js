@@ -73,6 +73,7 @@ const tsConfigs = {
         singleline: { delimiter: 'semi', requireLast: false },
       },
     ],
+    '@typescript-eslint/no-redundant-type-constituents': 'off',
     '@typescript-eslint/no-invalid-void-type': 'off',
     '@typescript-eslint/no-shadow': ['error', { hoist: 'functions' }],
     '@typescript-eslint/no-unused-vars': [
