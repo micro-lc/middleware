@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `fastify` bumped to `v4.19.2`
 - Development dependencies updated
 
+### Fixed
+
+- CLI will not add `undefined` to style attributes if input not had no style attribute
+
 ## [3.0.4] - 2023-06-04
 
 ### Versioning

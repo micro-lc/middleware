@@ -88,11 +88,11 @@ const convertContent = (input: V1Content, accSources: string[]): V2Content => {
   switch (inputType) {
   case 'row':
     extra.tag = 'div'
-    extra.attributes = { ...attributes, style: `display: flex; flex-direction: column; ${attributes.style}` }
+    extra.attributes = { ...attributes, style: `display: flex; flex-direction: column;${attributes.style ? ` ${attributes.style}` : ''}` }
     break
   case 'column':
     extra.tag = 'div'
-    extra.attributes = { ...attributes, style: `display: flex; flex-direction: row; ${attributes.style}` }
+    extra.attributes = { ...attributes, style: `display: flex; flex-direction: row;${attributes.style ? ` ${attributes.style}` : ''}` }
     break
   default:
     extra.tag = inputTag

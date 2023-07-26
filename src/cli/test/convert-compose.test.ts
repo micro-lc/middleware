@@ -36,7 +36,6 @@ describe('Convert compose configuration', () => {
           attributes: { style: 'width: 100%' },
           content: [
             {
-              attributes: { style: 'align-items: center;' },
               content: [
                 {
                   attributes: { style: 'margin: 0 1vw 0 0;' },
@@ -86,7 +85,7 @@ describe('Convert compose configuration', () => {
             attributes: { style: 'display: flex; flex-direction: row; width: 100%' },
             content: [
               {
-                attributes: { style: 'display: flex; flex-direction: row; align-items: center;' },
+                attributes: { style: 'display: flex; flex-direction: row;' },
                 content: [
                   {
                     attributes: { style: 'margin: 0 1vw 0 0;' },
