@@ -82,10 +82,10 @@ describe('Convert compose configuration', () => {
             tag: 'custom-element-1',
           },
           {
-            attributes: { style: 'display: flex; flex-direction: row;' },
+            attributes: { style: 'display: flex; flex-direction: row; width: 100%' },
             content: [
               {
-                attributes: { style: 'display: flex; flex-direction: row; align-items: center;' },
+                attributes: { style: 'display: flex; flex-direction: row;' },
                 content: [
                   {
                     attributes: { style: 'margin: 0 1vw 0 0;' },
