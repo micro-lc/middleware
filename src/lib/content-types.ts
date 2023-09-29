@@ -1,5 +1,6 @@
 type Extension = '.json' | '.yml' | '.yaml'
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 const DEFAULT_CONTENT_TYPE_MAP: Record<Extension | string, string> = {
   '.cjs': 'application/javascript',
   '.css': 'text/css',

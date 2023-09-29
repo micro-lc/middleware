@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Versioning
 
-- `fastify` bumped to `v4.19.2`
+- `glob` bumped to `^10.3.10`
+- `mkdirp` bumped to `^3.0.1`
+- `@fastify/static` bumped to `^6.11.2`
+- `@mia-platform/lc39` bumped to `^7.0.1`
+- `@micro-lc/interfaces` bumped to `^1.1.0`
+- `@micro-lc/layout` bumped to `^2.2.0`
+- `fastify` bumped to `^4.23.2`
 - Development dependencies updated
 
 ### Fixed

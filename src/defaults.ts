@@ -8,6 +8,7 @@ const SERVICE_CONFIG_PATH = '/usr/src/app/config/config.json'
 
 const PUBLIC_HEADERS_MAP = {}
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 const CONTENT_TYPE_MAP: Record<Extension | string, string> = {
   '.css': 'text/css',
   '.html': 'text/html',
