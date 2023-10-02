@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [3.0.5] - 2023-10-02
+
 ### Versioning
 
 - `glob` bumped to `^10.3.10`
