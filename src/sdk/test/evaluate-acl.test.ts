@@ -215,4 +215,9 @@ describe('Evaluate ACL', () => {
       expect(result).to.deep.equal(expected)
     })
   })
+
+  it('should throw if expression is invalid', () => {
+    expect(() => evaluateAcl({ aclExpression: 'invalid-expression' }, [], []))
+      .to.throw('Error evaluating expression "invalid-expression"')
+  })
 })

@@ -72,7 +72,12 @@ const buildPluginFunction = (plugin: FilterableObject) => {
 const evaluatePluginExpression = (userGroupsObject: UserGroupsObject, userPermissionsObject: UserPermissionsObject) => {
   return (plugin: FilterableObject): boolean => {
     const expressionEvaluationFunction = buildPluginFunction(plugin)
-    return expressionEvaluationFunction(userGroupsObject, userPermissionsObject) as boolean
+
+    try {
+      return expressionEvaluationFunction(userGroupsObject, userPermissionsObject) as boolean
+    } catch (err) {
+      throw new Error(`Error evaluating expression "${plugin.aclExpression}"`)
+    }
   }
 }
 
