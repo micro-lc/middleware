@@ -16,6 +16,7 @@
 
 import type { FromSchema } from 'json-schema-to-ts'
 
+// TODO: add path for translations dir
 export const environmentVariablesSchema = {
   additionalProperties: false,
   properties: {

@@ -6,6 +6,8 @@ const PUBLIC_DIRECTORY_PATH = '/usr/static/public'
 
 const SERVICE_CONFIG_PATH = '/usr/src/app/config/config.json'
 
+// TODO: default for languages dir
+
 const PUBLIC_HEADERS_MAP = {}
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
