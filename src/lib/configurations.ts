@@ -24,18 +24,25 @@ import * as yaml from 'js-yaml'
 import type { RuntimeConfig } from '../config'
 import { evaluateAcl, resolveReferences } from '../sdk'
 import type { Json } from '../sdk'
+import { resolveTranslations } from '../sdk/resolve-translations'
 
+import type { AclContext } from './extract-acl-context'
 import { extractAclContext } from './extract-acl-context'
-import { chooseLanguage } from './language'
+import type { LanguageContext } from './language'
+import { extractLanguageContext } from './language'
 
 type ExtensionOutput = '' | `.${string}`
 
 type Extension = '.json' | '.yml' | '.yaml'
 
-const manipulateJson = async (json: Json, aclGroups: string[], aclPermissions: string[]): Promise<Json> => {
+const manipulateJson = async (json: Json, aclContext: AclContext, languageContext: LanguageContext): Promise<Json> => {
+  const {
+    groups: aclGroups,
+    permissions: aclPermissions,
+  } = aclContext
   const filteredContent = evaluateAcl(json, aclGroups, aclPermissions)
-  const resolvedJson = await resolveReferences(filteredContent)
-  // TODO aggiungere qui funzione che risolve la lingua
+  const translatedJson = resolveTranslations(filteredContent, languageContext.filepath)
+  const resolvedJson = await resolveReferences(translatedJson)
 
   if (resolvedJson && typeof resolvedJson === 'object' && 'definitions' in resolvedJson) {
     delete (resolvedJson as { definitions?: unknown }).definitions
@@ -44,21 +51,21 @@ const manipulateJson = async (json: Json, aclGroups: string[], aclPermissions: s
   return resolvedJson
 }
 
-const asJson = async (buffer: Buffer, ...args: string[][]): Promise<Json> => {
+const asJson = async (buffer: Buffer, aclContext: AclContext, languageContext: LanguageContext): Promise<Json> => {
   const json = JSON.parse(buffer.toString('utf-8')) as Json
-  return manipulateJson(json, args[0], args[1])
+  return manipulateJson(json, aclContext, languageContext)
 }
 
-const asYaml = async (buffer: Buffer, ...args: string[][]): Promise<Json> => {
+const asYaml = async (buffer: Buffer, aclContext: AclContext, languageContext: LanguageContext): Promise<Json> => {
   const json = yaml.load(buffer.toString('utf-8')) as Json
-  return manipulateJson(json, args[0], args[1])
+  return manipulateJson(json, aclContext, languageContext)
 }
 
 const fsCache = new Map<string, Promise<Buffer>>()
 
 const fileLoader = async (filepath: string) => fs.promises.readFile(filepath)
 
-const loadAs = (extension: Extension): (buffer: Buffer, ...args: string[][]) => Promise<Json> => {
+const loadAs = (extension: Extension): (buffer: Buffer, aclContext: AclContext, languageContext: LanguageContext) => Promise<Json> => {
   switch (extension) {
   case '.json':
     return asJson
@@ -81,7 +88,7 @@ const getDumper = (extension: Extension): (content: Json) => string => {
 const shouldManipulate = (extension: ExtensionOutput): extension is Extension =>
   ['.json', '.yaml', '.yml'].includes(extension)
 
-type ConfigurationResponse = {
+interface ConfigurationResponse {
   fileBuffer: Buffer
   language?: string
 }
@@ -99,13 +106,13 @@ async function configurationsHandler(request: FastifyRequest, filename: string, 
     return { fileBuffer: buffer }
   }
 
+  const languageContext = await extractLanguageContext(config, request.languages())
   const dump = getDumper(fileExtension)
-  const language = await chooseLanguage(config, request.languages())
-  const json = await loadAs(fileExtension)(buffer, aclContext.groups, aclContext.permissions)
+  const json = await loadAs(fileExtension)(buffer, aclContext, languageContext)
 
   return {
     fileBuffer: Buffer.from(dump(json), 'utf-8'),
-    language,
+    language: languageContext.language,
   }
 }
 
