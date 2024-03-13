@@ -26,6 +26,7 @@ import { evaluateAcl, resolveReferences } from '../sdk'
 import type { Json } from '../sdk'
 
 import { extractAclContext } from './extract-acl-context'
+import { chooseLanguage } from './language'
 
 type ExtensionOutput = '' | `.${string}`
 
@@ -34,6 +35,7 @@ type Extension = '.json' | '.yml' | '.yaml'
 const manipulateJson = async (json: Json, aclGroups: string[], aclPermissions: string[]): Promise<Json> => {
   const filteredContent = evaluateAcl(json, aclGroups, aclPermissions)
   const resolvedJson = await resolveReferences(filteredContent)
+  // TODO aggiungere qui funzione che risolve la lingua
 
   if (resolvedJson && typeof resolvedJson === 'object' && 'definitions' in resolvedJson) {
     delete (resolvedJson as { definitions?: unknown }).definitions
@@ -79,7 +81,12 @@ const getDumper = (extension: Extension): (content: Json) => string => {
 const shouldManipulate = (extension: ExtensionOutput): extension is Extension =>
   ['.json', '.yaml', '.yml'].includes(extension)
 
-async function configurationsHandler(request: FastifyRequest, filename: string, config: RuntimeConfig): Promise<Buffer> {
+type ConfigurationResponse = {
+  fileBuffer: Buffer
+  language?: string
+}
+
+async function configurationsHandler(request: FastifyRequest, filename: string, config: RuntimeConfig): Promise<ConfigurationResponse> {
   const fileExtension = path.extname(filename) as ExtensionOutput
   const aclContext = extractAclContext(config, request)
 
@@ -89,13 +96,17 @@ async function configurationsHandler(request: FastifyRequest, filename: string, 
   const buffer = await bufferPromise
 
   if (!shouldManipulate(fileExtension)) {
-    return buffer
+    return { fileBuffer: buffer }
   }
 
   const dump = getDumper(fileExtension)
+  const language = await chooseLanguage(config, request.languages())
   const json = await loadAs(fileExtension)(buffer, aclContext.groups, aclContext.permissions)
 
-  return Buffer.from(dump(json), 'utf-8')
+  return {
+    fileBuffer: Buffer.from(dump(json), 'utf-8'),
+    language,
+  }
 }
 
 export { configurationsHandler }

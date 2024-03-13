@@ -103,6 +103,7 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
 
   return {
     CONTENT_TYPE_MAP: validateContentTypeMap(contentTypeMap),
+    LANGUAGES_DIRECTORY_PATH: config.LANGUAGES_DIRECTORY_PATH ?? defaults.LANGUAGES_DIRECTORY_PATH,
     PUBLIC_DIRECTORY_PATH: config.PUBLIC_DIRECTORY_PATH ?? defaults.PUBLIC_DIRECTORY_PATH,
     PUBLIC_HEADERS_MAP: getPublicHeadersMap(publicHeadersMap),
     RESOURCES_DIRECTORY_PATH: config.RESOURCES_DIRECTORY_PATH ?? defaults.RESOURCES_DIRECTORY_PATH,

@@ -34,6 +34,7 @@ const isPublic = (url: string): url is `/public${string}` => url.startsWith('/pu
 
 const isConfigurations = (url: string): url is `/configurations/${string}` => url.startsWith('/configurations/')
 
+// eslint-disable-next-line max-statements
 const staticFileHandler = (context: FastifyContext) => async (
   request: FastifyRequest,
   reply: FastifyReply,
@@ -73,9 +74,11 @@ const staticFileHandler = (context: FastifyContext) => async (
   const headers = phMap[url as `/${string}`] as Record<string, string> | undefined
 
   if (isConfigurations(url) && filename) {
-    const fileBuffer = await configurationsHandler(request, filename, config)
+    const { fileBuffer, language } = await configurationsHandler(request, filename, config)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     reply.header('content-length', fileBuffer.length)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    language && reply.header('content-language', language)
     buffer = fileBuffer
   } else if (isPublic(url)) {
     const fileBuffer = await publicHandler(filename, injectNonce)

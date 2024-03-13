@@ -36,7 +36,7 @@ const initFunction: AsyncInitFunction<FastifyEnvironmentVariables> = async servi
 
   service.addHook('onSend', staticFileHandler(context))
 
-  registerConfigurations.call(context)
+  await registerConfigurations.call(context)
   return registerPublic.call(context)
 }
 

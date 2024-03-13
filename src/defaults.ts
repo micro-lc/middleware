@@ -4,6 +4,8 @@ const RESOURCES_DIRECTORY_PATH = '/usr/static/configurations'
 
 const PUBLIC_DIRECTORY_PATH = '/usr/static/public'
 
+const LANGUAGES_DIRECTORY_PATH = '/usr/static/languages'
+
 const SERVICE_CONFIG_PATH = '/usr/src/app/config/config.json'
 
 // TODO: default for languages dir
@@ -26,4 +28,5 @@ export {
   SERVICE_CONFIG_PATH,
   PUBLIC_DIRECTORY_PATH,
   PUBLIC_HEADERS_MAP,
+  LANGUAGES_DIRECTORY_PATH,
 }
