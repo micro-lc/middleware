@@ -35,12 +35,13 @@ type ExtensionOutput = '' | `.${string}`
 
 type Extension = '.json' | '.yml' | '.yaml'
 
+interface ConfigurationResponse {
+  fileBuffer: Buffer
+  language?: string
+}
+
 const manipulateJson = async (json: Json, aclContext: AclContext, languageContext: LanguageContext): Promise<Json> => {
-  const {
-    groups: aclGroups,
-    permissions: aclPermissions,
-  } = aclContext
-  const filteredContent = evaluateAcl(json, aclGroups, aclPermissions)
+  const filteredContent = evaluateAcl(json, aclContext.groups, aclContext.permissions)
   const translatedJson = resolveTranslations(filteredContent, languageContext.filepath)
   const resolvedJson = await resolveReferences(translatedJson)
 
@@ -87,11 +88,6 @@ const getDumper = (extension: Extension): (content: Json) => string => {
 
 const shouldManipulate = (extension: ExtensionOutput): extension is Extension =>
   ['.json', '.yaml', '.yml'].includes(extension)
-
-interface ConfigurationResponse {
-  fileBuffer: Buffer
-  language?: string
-}
 
 async function configurationsHandler(request: FastifyRequest, filename: string, config: RuntimeConfig): Promise<ConfigurationResponse> {
   const fileExtension = path.extname(filename) as ExtensionOutput
