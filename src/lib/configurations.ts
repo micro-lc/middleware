@@ -24,7 +24,7 @@ import * as yaml from 'js-yaml'
 import type { RuntimeConfig } from '../config'
 import { evaluateAcl, resolveReferences } from '../sdk'
 import type { Json } from '../sdk'
-import { resolveTranslations } from '../sdk/resolve-translations'
+import { evaluateLanguage } from '../sdk/resolve-translations'
 
 import type { AclContext } from './extract-acl-context'
 import { extractAclContext } from './extract-acl-context'
@@ -42,7 +42,7 @@ interface ConfigurationResponse {
 
 const manipulateJson = async (json: Json, aclContext: AclContext, languageContext: LanguageContext): Promise<Json> => {
   const filteredContent = evaluateAcl(json, aclContext.groups, aclContext.permissions)
-  const translatedJson = resolveTranslations(filteredContent, languageContext.filepath)
+  const translatedJson = evaluateLanguage(filteredContent, languageContext.labelsMap)
   const resolvedJson = await resolveReferences(translatedJson)
 
   if (resolvedJson && typeof resolvedJson === 'object' && 'definitions' in resolvedJson) {
@@ -102,13 +102,13 @@ async function configurationsHandler(request: FastifyRequest, filename: string, 
     return { fileBuffer: buffer }
   }
 
-  const languageContext = await extractLanguageContext(config, request.languages())
+  const languageContext = extractLanguageContext(config, request.languages())
   const dump = getDumper(fileExtension)
   const json = await loadAs(fileExtension)(buffer, aclContext, languageContext)
 
   return {
     fileBuffer: Buffer.from(dump(json), 'utf-8'),
-    language: languageContext.language,
+    language: languageContext.chosenLanguage,
   }
 }
 

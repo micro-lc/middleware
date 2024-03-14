@@ -1,57 +1,39 @@
-import { readdir } from 'fs/promises'
-import path from 'path'
-
 import type { RuntimeConfig } from '../config'
 
 export interface LanguageContext {
-  filepath: string
-  language: string
+  chosenLanguage: string
+  labelsMap: Record<string, string>
 }
 
-const jsonExtension = '.json'
+export const extractLanguageContext = (config: RuntimeConfig, acceptedLanguages: string[]): LanguageContext => {
+  const { LANGUAGES_CONFIG: languagesConfig } = config
 
-export const extractLanguageContext = async (config: RuntimeConfig, acceptedLanguages: string[]): Promise<LanguageContext> => {
-  const { LANGUAGES_DIRECTORY_PATH: languagesDir } = config
-  const languageFilenames = await readdir(languagesDir)
-
-  let chosenFile: string | undefined
-  let acceptedLanguage = acceptedLanguages.find(language =>
-    languageFilenames.some(filename => {
-      if (path.basename(filename, jsonExtension) === language) {
-        chosenFile = filename
-        return true
+  for (const language of acceptedLanguages) {
+    for (const langConfig of languagesConfig) {
+      if (langConfig.languageId === language) {
+        return {
+          chosenLanguage: language,
+          labelsMap: langConfig.labelsMap,
+        }
       }
-      return false
-    })
-  )
-  if (acceptedLanguage !== undefined && chosenFile !== undefined) {
-    return {
-      filepath: path.join(languagesDir, chosenFile),
-      language: acceptedLanguage,
     }
   }
 
-  acceptedLanguage = acceptedLanguages
-    .map(language => language.split('-')[0])
-    .find(language =>
-      languageFilenames.some(filename => {
-        if (path.basename(filename, jsonExtension).split('-')[0] === language) {
-          chosenFile = filename
-          return true
+  const relaxedAcceptedLanguages = acceptedLanguages.map(language => language.split('-')[0])
+  for (const language of relaxedAcceptedLanguages) {
+    for (const langConfig of languagesConfig) {
+      if (langConfig.languageId.split('-')[0] === language) {
+        return {
+          chosenLanguage: language,
+          labelsMap: langConfig.labelsMap,
         }
-        return false
-      })
-    )
-  if (acceptedLanguage !== undefined && chosenFile !== undefined) {
-    return {
-      filepath: path.join(languagesDir, chosenFile),
-      language: acceptedLanguage,
+      }
     }
   }
 
   // TODO gestire default
   return {
-    filepath: '',
-    language: '',
+    chosenLanguage: '',
+    labelsMap: {},
   }
 }
