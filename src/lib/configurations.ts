@@ -24,12 +24,12 @@ import * as yaml from 'js-yaml'
 import type { RuntimeConfig } from '../config'
 import { evaluateAcl, resolveReferences } from '../sdk'
 import type { Json } from '../sdk'
-import { evaluateLanguage } from '../sdk/resolve-translations'
+import { evaluateLanguage } from '../sdk/evaluate-language'
 
 import type { AclContext } from './extract-acl-context'
 import { extractAclContext } from './extract-acl-context'
-import type { LanguageContext } from './language'
-import { extractLanguageContext } from './language'
+import type { LanguageContext } from './extract-language-context'
+import { extractLanguageContext } from './extract-language-context'
 
 type ExtensionOutput = '' | `.${string}`
 
@@ -90,18 +90,16 @@ const shouldManipulate = (extension: ExtensionOutput): extension is Extension =>
   ['.json', '.yaml', '.yml'].includes(extension)
 
 async function configurationsHandler(request: FastifyRequest, filename: string, config: RuntimeConfig): Promise<ConfigurationResponse> {
-  const fileExtension = path.extname(filename) as ExtensionOutput
-  const aclContext = extractAclContext(config, request)
-
   const bufferPromise = fsCache.get(filename) ?? fileLoader(filename)
   fsCache.set(filename, bufferPromise)
-
   const buffer = await bufferPromise
 
+  const fileExtension = path.extname(filename) as ExtensionOutput
   if (!shouldManipulate(fileExtension)) {
     return { fileBuffer: buffer }
   }
 
+  const aclContext = extractAclContext(config, request)
   const languageContext = extractLanguageContext(config, request.languages())
   const dump = getDumper(fileExtension)
   const json = await loadAs(fileExtension)(buffer, aclContext, languageContext)
