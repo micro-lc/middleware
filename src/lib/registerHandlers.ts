@@ -19,8 +19,6 @@ async function registerPublic(this: FastifyContext) {
 
 async function registerConfigurations(this: FastifyContext) {
   const { config: { RESOURCES_DIRECTORY_PATH }, service } = this
-  await service.register(fastifyAcceptsPlugin)
-
   service.addRawCustomPlugin('GET', '/configurations/*', async (request, reply) => {
     const { url } = request
     const filename = path.join(RESOURCES_DIRECTORY_PATH, url.replace(/^\/configurations/, ''))
@@ -31,6 +29,8 @@ async function registerConfigurations(this: FastifyContext) {
 
     return reply.callNotFound()
   })
+
+  return service.register(fastifyAcceptsPlugin)
 }
 
 export { registerConfigurations, registerPublic }
