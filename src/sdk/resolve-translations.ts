@@ -11,9 +11,12 @@ const buildCustomizer = (labelsMap: Record<string, string | undefined>) => {
   }
 }
 
-export const evaluateLanguage = (json: Json, labelsMap: Record<string, string>): Json => {
-  const customizer = buildCustomizer(labelsMap)
+export const evaluateLanguage = (json: Json, labelsMap: Record<string, string> | undefined): Json => {
+  if (labelsMap === undefined) {
+    return json
+  }
 
+  const customizer = buildCustomizer(labelsMap)
   const clonedJson = cloneDeepWith(json, customizer) as Json
   return clonedJson
 }

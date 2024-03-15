@@ -19,18 +19,25 @@ interface RuntimeConfig extends Required<EnvironmentVariables> {
   USER_PROPERTIES_HEADER_KEY: string | undefined
 }
 
-const jsonExtension = '.json'
-
 const validateLanguages = (languageDirPath: string): LanguageConfig[] => {
-  const languageFilenames = readdirSync(languageDirPath)
+  if (!existsSync(languageDirPath)) {
+    return []
+  }
 
-  return languageFilenames.map(filename => {
+  const languageFilenames = readdirSync(languageDirPath)
+  return languageFilenames.map((filename) => {
     const filepath = path.join(languageDirPath, filename)
-    const labelsMap = JSON.parse(readFileSync(filepath).toString()) as Record<string, string>
-    // TODO verificare la struttura del file?
+    const fileContent = JSON.parse(readFileSync(filepath).toString()) as unknown
+    if (!fileContent
+      || typeof fileContent !== 'object'
+      || Array.isArray(fileContent)
+      || Object.values(fileContent).some(value => typeof value !== 'string')) {
+      throw new Error(`${filename} is not a valid language configuration`)
+    }
+
     return {
-      labelsMap,
-      languageId: path.basename(filename, jsonExtension),
+      labelsMap: fileContent as Record<string, string>,
+      languageId: path.basename(filename, '.json'),
     }
   })
 }

@@ -2,7 +2,7 @@ import type { RuntimeConfig } from '../config'
 
 export interface LanguageContext {
   chosenLanguage: string
-  labelsMap: Record<string, string>
+  labelsMap?: Record<string, string>
 }
 
 export const extractLanguageContext = (config: RuntimeConfig, acceptedLanguages: string[]): LanguageContext => {
@@ -34,6 +34,5 @@ export const extractLanguageContext = (config: RuntimeConfig, acceptedLanguages:
   // TODO gestire default
   return {
     chosenLanguage: '',
-    labelsMap: {},
   }
 }
