@@ -43,6 +43,7 @@
     "js-yaml": "^4.1.0",
     "jsonpath-plus": "^7.2.0",
     "lodash.clonedeepwith": "^4.5.0",
+    "lodash.get": "^4.4.2",
     "mkdirp": "^3.0.1"
   },
   "devDependencies": {
@@ -55,6 +56,7 @@
     "@types/glob": "^8.1.0",
     "@types/js-yaml": "^4.0.6",
     "@types/lodash.clonedeepwith": "^4.5.9",
+    "@types/lodash.get": "^4.4.9",
     "@types/mocha": "^10.0.2",
     "@types/node": "^20.7.1",
     "@types/sinon": "^17.0.3",

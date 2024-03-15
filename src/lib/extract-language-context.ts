@@ -18,7 +18,7 @@ import type { LanguageConfig, RuntimeConfig } from '../config'
 
 export interface LanguageContext {
   chosenLanguage: string
-  labelsMap?: Record<string, string>
+  labelsMap?: Record<string, unknown>
 }
 
 const noLanguageContext: LanguageContext = { chosenLanguage: '' }
@@ -50,19 +50,10 @@ const extractRelaxedLanguage = (languagesConfig: LanguageConfig[], acceptedLangu
   }
 }
 
-const extractDefaultLanguage = (languagesConfig: LanguageConfig[], defaultContentLanguage: string): LanguageContext | undefined => {
-  return extractExactLanguage(languagesConfig, [defaultContentLanguage])
-    ?? extractRelaxedLanguage(languagesConfig, [defaultContentLanguage])
-}
-
 export const extractLanguageContext = (config: RuntimeConfig, acceptedLanguages: string[]): LanguageContext => {
-  const {
-    DEFAULT_CONTENT_LANGUAGE: defaultContentLanguage,
-    LANGUAGES_CONFIG: languagesConfig,
-  } = config
+  const { LANGUAGES_CONFIG: languagesConfig } = config
 
   return extractExactLanguage(languagesConfig, acceptedLanguages)
     ?? extractRelaxedLanguage(languagesConfig, acceptedLanguages)
-    ?? extractDefaultLanguage(languagesConfig, defaultContentLanguage)
     ?? noLanguageContext
 }

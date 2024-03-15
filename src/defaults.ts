@@ -8,8 +8,6 @@ const LANGUAGES_DIRECTORY_PATH = '/usr/static/languages'
 
 const SERVICE_CONFIG_PATH = '/usr/src/app/config/config.json'
 
-const DEFAULT_CONTENT_LANGUAGE = 'en'
-
 const PUBLIC_HEADERS_MAP = {}
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
@@ -29,5 +27,4 @@ export {
   PUBLIC_DIRECTORY_PATH,
   PUBLIC_HEADERS_MAP,
   LANGUAGES_DIRECTORY_PATH,
-  DEFAULT_CONTENT_LANGUAGE,
 }

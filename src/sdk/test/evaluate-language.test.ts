@@ -23,7 +23,7 @@ describe('Evaluate Language', () => {
   interface Test {
     expected: Json
     json: Json
-    labelsMap?: Record<string, string>
+    labelsMap?: Record<string, unknown>
     message: string
   }
 
@@ -65,10 +65,14 @@ describe('Evaluate Language', () => {
         title: 'main.title',
       },
       labelsMap: {
+        main: {
+          parent: {
+            text: 'translated text',
+          },
+        },
         'main.array.value': 'translated array value',
         'main.parent.array.value': 'translated nested array value',
         'main.parent.nested-parent.text': 'translated nested text',
-        'main.parent.text': 'translated text',
         'main.title': 'translated title',
       },
       message: 'should replace label values',

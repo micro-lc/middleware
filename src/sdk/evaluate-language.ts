@@ -15,19 +15,20 @@
  */
 
 import cloneDeepWith from 'lodash.clonedeepwith'
+import lget from 'lodash.get'
 
 import type { Json } from './types'
 
-const buildCustomizer = (labelsMap: Record<string, string | undefined>) => {
+const buildCustomizer = (labelsMap: Record<string, unknown>) => {
   return (value: unknown) => {
     if (typeof value === 'string') {
-      const translation = labelsMap[value]
+      const translation = lget(labelsMap, value)
       return translation
     }
   }
 }
 
-export const evaluateLanguage = (json: Json, labelsMap: Record<string, string> | undefined): Json => {
+export const evaluateLanguage = (json: Json, labelsMap: Record<string, unknown> | undefined): Json => {
   if (labelsMap === undefined) {
     return json
   }

@@ -23,7 +23,6 @@ import { extractLanguageContext } from '../extract-language-context'
 describe('Extract Language Context', () => {
   const config: RuntimeConfig = {
     CONTENT_TYPE_MAP: {},
-    DEFAULT_CONTENT_LANGUAGE: 'en-UK',
     LANGUAGES_CONFIG: [
       {
         labelsMap: { hello: 'hello' },
@@ -48,7 +47,6 @@ describe('Extract Language Context', () => {
 
   interface Test {
     acceptedLanguages: string[]
-    defaultContentLanguage?: string
     expected: LanguageContext
     languagesConfig?: LanguageConfig[]
     message: string
@@ -72,23 +70,6 @@ describe('Extract Language Context', () => {
       message: 'should extract context by relaxed match',
     },
     {
-      acceptedLanguages: ['es-ES'],
-      expected: {
-        chosenLanguage: 'en-UK',
-        labelsMap: { hello: 'hello' },
-      },
-      message: 'should extract context by default exact match',
-    },
-    {
-      acceptedLanguages: ['es-ES'],
-      defaultContentLanguage: 'it',
-      expected: {
-        chosenLanguage: 'it',
-        labelsMap: { hello: 'ciao' },
-      },
-      message: 'should extract context by default relaxed match',
-    },
-    {
       acceptedLanguages: ['en-US'],
       expected: {
         chosenLanguage: '',
@@ -98,11 +79,10 @@ describe('Extract Language Context', () => {
     },
   ]
 
-  tests.forEach(({ acceptedLanguages, defaultContentLanguage, expected, languagesConfig, message }, index) => {
+  tests.forEach(({ acceptedLanguages, expected, languagesConfig, message }, index) => {
     it(`#${index} - ${message}`, () => {
       const testConfig: RuntimeConfig = {
         ...config,
-        DEFAULT_CONTENT_LANGUAGE: defaultContentLanguage ?? config.DEFAULT_CONTENT_LANGUAGE,
         LANGUAGES_CONFIG: languagesConfig ?? config.LANGUAGES_CONFIG,
       }
 

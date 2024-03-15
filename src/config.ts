@@ -8,7 +8,7 @@ import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
 type HeadersMap = Record<`/${string}`, Record<string, string>>;
 
 interface LanguageConfig {
-  labelsMap: Record<string, string>
+  labelsMap: Record<string, unknown>
   languageId: string
 }
 
@@ -30,13 +30,12 @@ const validateLanguages = (languageDirPath: string): LanguageConfig[] => {
     const fileContent = JSON.parse(readFileSync(filepath).toString()) as unknown
     if (!fileContent
       || typeof fileContent !== 'object'
-      || Array.isArray(fileContent)
-      || Object.values(fileContent).some(value => typeof value !== 'string')) {
+      || Array.isArray(fileContent)) {
       throw new Error(`${filename} is not a valid language configuration`)
     }
 
     return {
-      labelsMap: fileContent as Record<string, string>,
+      labelsMap: fileContent as Record<string, unknown>,
       languageId: path.basename(filename, '.json'),
     }
   })
@@ -105,7 +104,6 @@ const getPublicHeadersMap = (input: unknown): HeadersMap => {
 
 const parseConfig = (config: EnvironmentVariables & Record<string, string>): RuntimeConfig => {
   const {
-    DEFAULT_CONTENT_LANGUAGE = defaults.DEFAULT_CONTENT_LANGUAGE,
     LANGUAGES_DIRECTORY_PATH = defaults.LANGUAGES_DIRECTORY_PATH,
     SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH,
   } = config
@@ -137,7 +135,6 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
 
   return {
     CONTENT_TYPE_MAP: validateContentTypeMap(contentTypeMap),
-    DEFAULT_CONTENT_LANGUAGE,
     LANGUAGES_CONFIG: validateLanguages(LANGUAGES_DIRECTORY_PATH),
     LANGUAGES_DIRECTORY_PATH,
     PUBLIC_DIRECTORY_PATH: config.PUBLIC_DIRECTORY_PATH ?? defaults.PUBLIC_DIRECTORY_PATH,

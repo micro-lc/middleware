@@ -19,10 +19,6 @@ import type { FromSchema } from 'json-schema-to-ts'
 export const environmentVariablesSchema = {
   additionalProperties: false,
   properties: {
-    DEFAULT_CONTENT_LANGUAGE: {
-      description: 'Absolute path of the directory containing files to be used for translation',
-      type: 'string',
-    },
     LANGUAGES_DIRECTORY_PATH: {
       description: 'Absolute path of the directory containing files to be used for translation',
       type: 'string',
