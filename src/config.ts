@@ -105,6 +105,7 @@ const getPublicHeadersMap = (input: unknown): HeadersMap => {
 
 const parseConfig = (config: EnvironmentVariables & Record<string, string>): RuntimeConfig => {
   const {
+    DEFAULT_CONTENT_LANGUAGE = defaults.DEFAULT_CONTENT_LANGUAGE,
     LANGUAGES_DIRECTORY_PATH = defaults.LANGUAGES_DIRECTORY_PATH,
     SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH,
   } = config
@@ -136,6 +137,7 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
 
   return {
     CONTENT_TYPE_MAP: validateContentTypeMap(contentTypeMap),
+    DEFAULT_CONTENT_LANGUAGE,
     LANGUAGES_CONFIG: validateLanguages(LANGUAGES_DIRECTORY_PATH),
     LANGUAGES_DIRECTORY_PATH,
     PUBLIC_DIRECTORY_PATH: config.PUBLIC_DIRECTORY_PATH ?? defaults.PUBLIC_DIRECTORY_PATH,
@@ -146,5 +148,5 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
   }
 }
 
-export type { RuntimeConfig }
+export type { LanguageConfig, RuntimeConfig }
 export { parseConfig }

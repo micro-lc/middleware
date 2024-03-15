@@ -1,13 +1,13 @@
-import type { RuntimeConfig } from '../config'
+import type { LanguageConfig, RuntimeConfig } from '../config'
 
 export interface LanguageContext {
   chosenLanguage: string
   labelsMap?: Record<string, string>
 }
 
-export const extractLanguageContext = (config: RuntimeConfig, acceptedLanguages: string[]): LanguageContext => {
-  const { LANGUAGES_CONFIG: languagesConfig } = config
+const noLanguageContext: LanguageContext = { chosenLanguage: '' }
 
+const extractExactLanguage = (languagesConfig: LanguageConfig[], acceptedLanguages: string[]): LanguageContext | undefined => {
   for (const language of acceptedLanguages) {
     for (const langConfig of languagesConfig) {
       if (langConfig.languageId === language) {
@@ -18,21 +18,35 @@ export const extractLanguageContext = (config: RuntimeConfig, acceptedLanguages:
       }
     }
   }
+}
 
+const extractRelaxedLanguage = (languagesConfig: LanguageConfig[], acceptedLanguages: string[]): LanguageContext | undefined => {
   const relaxedAcceptedLanguages = acceptedLanguages.map(language => language.split('-')[0])
-  for (const language of relaxedAcceptedLanguages) {
+  for (const relaxedLanguage of relaxedAcceptedLanguages) {
     for (const langConfig of languagesConfig) {
-      if (langConfig.languageId.split('-')[0] === language) {
+      if (langConfig.languageId.split('-')[0] === relaxedLanguage) {
         return {
-          chosenLanguage: language,
+          chosenLanguage: relaxedLanguage,
           labelsMap: langConfig.labelsMap,
         }
       }
     }
   }
+}
 
-  // TODO gestire default
-  return {
-    chosenLanguage: '',
-  }
+const extractDefaultLanguage = (languagesConfig: LanguageConfig[], defaultContentLanguage: string): LanguageContext | undefined => {
+  return extractExactLanguage(languagesConfig, [defaultContentLanguage])
+    ?? extractRelaxedLanguage(languagesConfig, [defaultContentLanguage])
+}
+
+export const extractLanguageContext = (config: RuntimeConfig, acceptedLanguages: string[]): LanguageContext => {
+  const {
+    DEFAULT_CONTENT_LANGUAGE: defaultContentLanguage,
+    LANGUAGES_CONFIG: languagesConfig,
+  } = config
+
+  return extractExactLanguage(languagesConfig, acceptedLanguages)
+    ?? extractRelaxedLanguage(languagesConfig, acceptedLanguages)
+    ?? extractDefaultLanguage(languagesConfig, defaultContentLanguage)
+    ?? noLanguageContext
 }
