@@ -1,6 +1,7 @@
 import { existsSync, statSync } from 'fs'
 import path from 'path'
 
+import fastifyAcceptsPlugin from '@fastify/accepts'
 import fastifyStaticPlugin from '@fastify/static'
 
 import type { FastifyContext } from '../server'
@@ -16,7 +17,7 @@ async function registerPublic(this: FastifyContext) {
   )
 }
 
-function registerConfigurations(this: FastifyContext) {
+async function registerConfigurations(this: FastifyContext) {
   const { config: { RESOURCES_DIRECTORY_PATH }, service } = this
   service.addRawCustomPlugin('GET', '/configurations/*', async (request, reply) => {
     const { url } = request
@@ -28,6 +29,8 @@ function registerConfigurations(this: FastifyContext) {
 
     return reply.callNotFound()
   })
+
+  return service.register(fastifyAcceptsPlugin)
 }
 
 export { registerConfigurations, registerPublic }

@@ -1,4 +1,5 @@
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, readFileSync, readdirSync } from 'fs'
+import path from 'path'
 
 import * as defaults from './defaults'
 import type { ContentTypeMap } from './schemas'
@@ -6,10 +7,38 @@ import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
 
 type HeadersMap = Record<`/${string}`, Record<string, string>>;
 
+interface LanguageConfig {
+  labelsMap: Record<string, unknown>
+  languageId: string
+}
+
 interface RuntimeConfig extends Required<EnvironmentVariables> {
   CONTENT_TYPE_MAP: ContentTypeMap
+  LANGUAGES_CONFIG: LanguageConfig[]
   PUBLIC_HEADERS_MAP: HeadersMap
   USER_PROPERTIES_HEADER_KEY: string | undefined
+}
+
+const validateLanguages = (languageDirPath: string): LanguageConfig[] => {
+  if (!existsSync(languageDirPath)) {
+    return []
+  }
+
+  const languageFilenames = readdirSync(languageDirPath)
+  return languageFilenames.map((filename) => {
+    const filepath = path.join(languageDirPath, filename)
+    const fileContent = JSON.parse(readFileSync(filepath).toString()) as unknown
+    if (!fileContent
+      || typeof fileContent !== 'object'
+      || Array.isArray(fileContent)) {
+      throw new Error(`${filename} is not a valid language configuration`)
+    }
+
+    return {
+      labelsMap: fileContent as Record<string, unknown>,
+      languageId: path.basename(filename, '.json'),
+    }
+  })
 }
 
 const validateContentTypeMap = (contentTypeMap: unknown) => {
@@ -74,7 +103,10 @@ const getPublicHeadersMap = (input: unknown): HeadersMap => {
 }
 
 const parseConfig = (config: EnvironmentVariables & Record<string, string>): RuntimeConfig => {
-  const { SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH } = config
+  const {
+    LANGUAGES_DIRECTORY_PATH = defaults.LANGUAGES_DIRECTORY_PATH,
+    SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH,
+  } = config
   let serviceConfig: unknown = defaults.PUBLIC_HEADERS_MAP
 
   let configPath: string | undefined
@@ -103,6 +135,8 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
 
   return {
     CONTENT_TYPE_MAP: validateContentTypeMap(contentTypeMap),
+    LANGUAGES_CONFIG: validateLanguages(LANGUAGES_DIRECTORY_PATH),
+    LANGUAGES_DIRECTORY_PATH,
     PUBLIC_DIRECTORY_PATH: config.PUBLIC_DIRECTORY_PATH ?? defaults.PUBLIC_DIRECTORY_PATH,
     PUBLIC_HEADERS_MAP: getPublicHeadersMap(publicHeadersMap),
     RESOURCES_DIRECTORY_PATH: config.RESOURCES_DIRECTORY_PATH ?? defaults.RESOURCES_DIRECTORY_PATH,
@@ -111,5 +145,5 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
   }
 }
 
-export type { RuntimeConfig }
+export type { LanguageConfig, RuntimeConfig }
 export { parseConfig }

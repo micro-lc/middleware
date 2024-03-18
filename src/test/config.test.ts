@@ -28,6 +28,8 @@ const createEnvVars = (configPath: string): EnvironmentVariables => ({
 
 const defaults = {
   CONTENT_TYPE_MAP: defaultConfigs.CONTENT_TYPE_MAP,
+  LANGUAGES_CONFIG: [],
+  LANGUAGES_DIRECTORY_PATH: '/usr/static/languages',
   PUBLIC_DIRECTORY_PATH: '/usr/static/public',
   RESOURCES_DIRECTORY_PATH: '/usr/static/configurations',
   USER_PROPERTIES_HEADER_KEY: 'miauserproperties',

@@ -25,6 +25,7 @@ import { createSandbox } from 'sinon'
 
 import type { EnvironmentVariables } from '../../schemas/environmentVariablesSchema'
 import * as evaluateAcl from '../../sdk/evaluate-acl'
+import * as evaluateLanguage from '../../sdk/evaluate-language'
 import * as resolveReferences from '../../sdk/resolve-references'
 import { baseVariables, createConfigFile, createTmpDir, setupFastify } from '../../utils/test-utils'
 
@@ -32,6 +33,7 @@ describe('Serve files', () => {
   const sandbox = createSandbox()
 
   let evaluateAclStub: SinonStub
+  let evaluateLanguageStub: SinonStub
   let resolveReferencesStub: SinonStub
   let random: string
 
@@ -40,6 +42,7 @@ describe('Serve files', () => {
 
   before(async () => {
     evaluateAclStub = sandbox.stub(evaluateAcl, 'evaluateAcl').returns({ evaluate: 'acl' })
+    evaluateLanguageStub = sandbox.stub(evaluateLanguage, 'evaluateLanguage').returns({ evaluate: 'language' })
     resolveReferencesStub = sandbox.stub(resolveReferences, 'resolveReferences').resolves({ resolve: 'references' })
     random = randomUUID()
     const { name: configurations, cleanup: confCleanup } = await createTmpDir({
@@ -114,8 +117,11 @@ describe('Serve files', () => {
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
 
+    expect(evaluateLanguageStub.calledOnce).to.be.true
+    expect(evaluateLanguageStub.args[0]).to.deep.equal([{ evaluate: 'acl' }, undefined])
+
     expect(resolveReferencesStub.calledOnce).to.be.true
-    expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'acl' }])
+    expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'language' }])
   })
 
   it('should serve manipulated .yaml file', async () => {
@@ -134,28 +140,11 @@ describe('Serve files', () => {
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
 
-    expect(resolveReferencesStub.calledOnce).to.be.true
-    expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'acl' }])
-  })
-
-  it('should serve manipulated .yaml file', async () => {
-    const { payload, headers } = await fastify.inject({
-      headers: {
-        [baseVariables.GROUPS_HEADER_KEY]: 'admin,user',
-        [baseVariables.USER_PROPERTIES_HEADER_KEY]: JSON.stringify({ permissions: ['users.post.write'] }),
-      },
-      method: 'GET',
-      url: '/configurations/config.yaml',
-    })
-
-    expect(payload).to.deep.equal(yaml.dump({ resolve: 'references' }))
-    expect(headers['content-type']).to.equal('text/yaml')
-
-    expect(evaluateAclStub.calledOnce).to.be.true
-    expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
+    expect(evaluateLanguageStub.calledOnce).to.be.true
+    expect(evaluateLanguageStub.args[0]).to.deep.equal([{ evaluate: 'acl' }, undefined])
 
     expect(resolveReferencesStub.calledOnce).to.be.true
-    expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'acl' }])
+    expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'language' }])
   })
 
   it('should remove "definitions" key from manipulated file', async () => {
@@ -179,8 +168,11 @@ describe('Serve files', () => {
     expect(evaluateAclStub.calledOnce).to.be.true
     expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
 
+    expect(evaluateLanguageStub.calledOnce).to.be.true
+    expect(evaluateLanguageStub.args[0]).to.deep.equal([{ evaluate: 'acl' }, undefined])
+
     expect(resolveReferencesStub.calledOnce).to.be.true
-    expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'acl' }])
+    expect(resolveReferencesStub.args[0]).to.deep.equal([{ evaluate: 'language' }])
   })
 
   it('should serve non-JSON file with proper `Content-Type` headers', async () => {
