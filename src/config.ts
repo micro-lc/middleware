@@ -28,7 +28,6 @@ const validateLanguages = (languageDirPath: string): LanguageConfig[] => {
     .map(filename => path.join(languageDirPath, filename))
     .filter(filepath => lstatSync(realpathSync(filepath)).isFile())
   return languageFilepaths.map((filepath) => {
-    console.log(filepath)
     const fileContent = JSON.parse(readFileSync(filepath).toString()) as unknown
     if (!fileContent
       || typeof fileContent !== 'object'
