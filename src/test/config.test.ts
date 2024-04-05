@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { symlink } from 'fs/promises'
+import path from 'path'
+
 import { expect } from 'chai'
 
 import { parseConfig } from '../config'
 import * as defaultConfigs from '../defaults'
 import type { EnvironmentVariables } from '../schemas/environmentVariablesSchema'
-import { baseVariables, createConfigFile } from '../utils/test-utils'
+import { baseVariables, createConfigFile, createTmpDir } from '../utils/test-utils'
 
 const createEnvVars = (configPath: string): EnvironmentVariables => ({
   ...baseVariables,
@@ -44,6 +47,38 @@ describe('config injection tests', () => {
       ...defaults,
       PUBLIC_HEADERS_MAP: {},
       SERVICE_CONFIG_PATH: url,
+    })
+
+    await cleanup()
+  })
+
+  it('should parse a language configuration', async () => {
+    const labelsMap = { key: 'value' }
+    const { cleanup, name: targetPath } = await createTmpDir({
+      'en.json': JSON.stringify(labelsMap),
+    })
+
+    // symlinks should be ignored
+    const { name: otherPath } = await createTmpDir({
+      'file.json': JSON.stringify({ anotherKey: 'anotherValue' }),
+    })
+    await symlink(otherPath, path.join(targetPath, 'linkToDir'), 'dir')
+    await symlink(path.join(otherPath, 'file.json'), path.join(targetPath, 'linkToFile'), 'file')
+
+    const envVars = {
+      ...baseVariables,
+      LANGUAGES_DIRECTORY_PATH: targetPath,
+    }
+
+    expect(parseConfig(envVars)).to.deep.equal({
+      ...defaults,
+      LANGUAGES_CONFIG: [{
+        labelsMap,
+        languageId: 'en',
+      }],
+      LANGUAGES_DIRECTORY_PATH: targetPath,
+      PUBLIC_HEADERS_MAP: {},
+      SERVICE_CONFIG_PATH: defaultConfigs.SERVICE_CONFIG_PATH,
     })
 
     await cleanup()
