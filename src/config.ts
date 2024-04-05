@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from 'fs'
+import { existsSync, lstatSync, readFileSync, readdirSync } from 'fs'
 import path from 'path'
 
 import * as defaults from './defaults'
@@ -24,19 +24,20 @@ const validateLanguages = (languageDirPath: string): LanguageConfig[] => {
     return []
   }
 
-  const languageFilenames = readdirSync(languageDirPath)
-  return languageFilenames.map((filename) => {
-    const filepath = path.join(languageDirPath, filename)
+  const languageFilepaths = readdirSync(languageDirPath)
+    .map(filename => path.join(languageDirPath, filename))
+    .filter(filepath => lstatSync(filepath).isFile())
+  return languageFilepaths.map((filepath) => {
     const fileContent = JSON.parse(readFileSync(filepath).toString()) as unknown
     if (!fileContent
       || typeof fileContent !== 'object'
       || Array.isArray(fileContent)) {
-      throw new Error(`${filename} is not a valid language configuration`)
+      throw new Error(`${filepath} is not a valid language configuration`)
     }
 
     return {
       labelsMap: fileContent as Record<string, unknown>,
-      languageId: path.basename(filename, '.json'),
+      languageId: path.basename(filepath, '.json'),
     }
   })
 }
