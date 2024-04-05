@@ -1,6 +1,6 @@
 {
   "name": "@micro-lc/middleware",
-  "version": "3.1.0",
+  "version": "3.1.1-rc.0",
   "description": "micro-lc configuration server",
   "license": "SEE LICENSE IN LICENSE",
   "bin": "./dist/cli/index.js",

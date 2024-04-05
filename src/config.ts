@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, readFileSync, readdirSync } from 'fs'
+import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'fs'
 import path from 'path'
 
 import * as defaults from './defaults'
@@ -26,7 +26,7 @@ const validateLanguages = (languageDirPath: string): LanguageConfig[] => {
 
   const languageFilepaths = readdirSync(languageDirPath)
     .map(filename => path.join(languageDirPath, filename))
-    .filter(filepath => lstatSync(filepath).isFile())
+    .filter(filepath => lstatSync(realpathSync(filepath)).isFile())
   return languageFilepaths.map((filepath) => {
     const fileContent = JSON.parse(readFileSync(filepath).toString()) as unknown
     if (!fileContent

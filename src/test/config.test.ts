@@ -53,17 +53,20 @@ describe('config injection tests', () => {
   })
 
   it('should parse a language configuration', async () => {
-    const labelsMap = { key: 'value' }
+    const enLabelsMap = { key: 'value' }
     const { cleanup, name: targetPath } = await createTmpDir({
-      'en.json': JSON.stringify(labelsMap),
+      'en.json': JSON.stringify(enLabelsMap),
     })
 
-    // symlinks should be ignored
+    // symlinks directories should be ignored
+    const itLabelsMap = { anotherKey: 'anotherValue' }
     const { name: otherPath } = await createTmpDir({
-      'file.json': JSON.stringify({ anotherKey: 'anotherValue' }),
+      'it-real.json': JSON.stringify(itLabelsMap),
     })
-    await symlink(otherPath, path.join(targetPath, 'linkToDir'), 'dir')
-    await symlink(path.join(otherPath, 'file.json'), path.join(targetPath, 'linkToFile'), 'file')
+    const { name: anotherPath } = await createTmpDir({})
+    await symlink(anotherPath, path.join(targetPath, 'linkToAnotherDir'), 'dir')
+    await symlink(otherPath, path.join(targetPath, 'linkToOtherDir'), 'dir')
+    await symlink(path.join(otherPath, 'it-real.json'), path.join(targetPath, 'it.json'), 'file')
 
     const envVars = {
       ...baseVariables,
@@ -72,10 +75,16 @@ describe('config injection tests', () => {
 
     expect(parseConfig(envVars)).to.deep.equal({
       ...defaults,
-      LANGUAGES_CONFIG: [{
-        labelsMap,
-        languageId: 'en',
-      }],
+      LANGUAGES_CONFIG: [
+        {
+          labelsMap: enLabelsMap,
+          languageId: 'en',
+        },
+        {
+          labelsMap: itLabelsMap,
+          languageId: 'it',
+        },
+      ],
       LANGUAGES_DIRECTORY_PATH: targetPath,
       PUBLIC_HEADERS_MAP: {},
       SERVICE_CONFIG_PATH: defaultConfigs.SERVICE_CONFIG_PATH,
