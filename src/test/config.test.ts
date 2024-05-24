@@ -95,6 +95,29 @@ describe('config injection tests', () => {
     await cleanup()
   })
 
+  it.skip('should parse a configuration with custom acl context builder', async () => {
+    const filename = 'acl-context-builder.js'
+    const { cleanup, name: targetPath } = await createTmpDir({
+      [filename]: 'export default () => { return [] }',
+    })
+    const aclContextBuilderPath = path.join(targetPath, filename)
+
+    const envVars = {
+      ...baseVariables,
+      ACL_CONTEXT_BUILDER_PATH: aclContextBuilderPath,
+    }
+
+    expect(await parseConfig(envVars)).to.deep.equal({
+      ...defaults,
+      ACL_CONTEXT_BUILDER: '',
+      ACL_CONTEXT_BUILDER_PATH: aclContextBuilderPath,
+      PUBLIC_HEADERS_MAP: {},
+      SERVICE_CONFIG_PATH: defaultConfigs.SERVICE_CONFIG_PATH,
+    })
+
+    await cleanup()
+  })
+
   it('should parse a content-type configuration with lowercase key', async () => {
     const { name: url, cleanup } = await createConfigFile({
       contentTypeMap: {
