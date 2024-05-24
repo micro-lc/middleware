@@ -30,6 +30,8 @@ const createEnvVars = (configPath: string): EnvironmentVariables => ({
 })
 
 const defaults = {
+  ACL_CONTEXT_BUILDER: undefined,
+  ACL_CONTEXT_BUILDER_PATH: '/usr/src/app/config/acl-context-builder.js',
   CONTENT_TYPE_MAP: defaultConfigs.CONTENT_TYPE_MAP,
   LANGUAGES_CONFIG: [],
   LANGUAGES_DIRECTORY_PATH: '/usr/static/languages',
@@ -43,7 +45,7 @@ describe('config injection tests', () => {
     const { name: url, cleanup } = await createConfigFile({})
     const envVars = createEnvVars(url)
 
-    expect(parseConfig(envVars)).to.deep.equal({
+    expect(await parseConfig(envVars)).to.deep.equal({
       ...defaults,
       PUBLIC_HEADERS_MAP: {},
       SERVICE_CONFIG_PATH: url,
@@ -73,7 +75,7 @@ describe('config injection tests', () => {
       LANGUAGES_DIRECTORY_PATH: targetPath,
     }
 
-    expect(parseConfig(envVars)).to.deep.equal({
+    expect(await parseConfig(envVars)).to.deep.equal({
       ...defaults,
       LANGUAGES_CONFIG: [
         {
@@ -107,7 +109,7 @@ describe('config injection tests', () => {
     })
     const envVars = createEnvVars(url)
 
-    expect(parseConfig(envVars)).to.deep.equal({
+    expect(await parseConfig(envVars)).to.deep.equal({
       ...defaults,
       CONTENT_TYPE_MAP: {
         ...defaults.CONTENT_TYPE_MAP,
