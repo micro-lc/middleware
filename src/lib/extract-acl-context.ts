@@ -32,13 +32,18 @@ const getPermissions = (config: RuntimeConfig, request: FastifyRequest): string[
   return parsedProperties.permissions ?? []
 }
 
+const cleanHeaders = (headers: Record<string, string | string[] | undefined>): Record<string, string | string[] | undefined> => {
+  delete headers.cookie
+  return headers
+}
+
 export const extractAclContext = (
   config: RuntimeConfig,
   request: FastifyRequest
 ): AclContext => {
   if (config.ACL_CONTEXT_BUILDER !== undefined) {
     const permissions = config.ACL_CONTEXT_BUILDER({
-      headers: request.headers,
+      headers: cleanHeaders(request.headers),
       method: request.method,
       pathParams: request.params,
       queryParams: request.query,
