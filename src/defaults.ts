@@ -8,6 +8,8 @@ const LANGUAGES_DIRECTORY_PATH = '/usr/static/languages'
 
 const SERVICE_CONFIG_PATH = '/usr/src/app/config/config.json'
 
+const ACL_CONTEXT_BUILDER_PATH = '/usr/src/app/config/acl-context-builder.js'
+
 const PUBLIC_HEADERS_MAP = {}
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
@@ -21,6 +23,7 @@ const CONTENT_TYPE_MAP: Record<Extension | string, string> = {
 }
 
 export {
+  ACL_CONTEXT_BUILDER_PATH,
   CONTENT_TYPE_MAP,
   RESOURCES_DIRECTORY_PATH,
   SERVICE_CONFIG_PATH,

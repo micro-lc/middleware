@@ -36,6 +36,16 @@ export const extractAclContext = (
   config: RuntimeConfig,
   request: FastifyRequest
 ): AclContext => {
+  if (config.ACL_CONTEXT_BUILDER !== undefined) {
+    const permissions = config.ACL_CONTEXT_BUILDER({
+      headers: request.headers,
+      method: request.method,
+      pathParams: request.params,
+      queryParams: request.query,
+      url: request.url,
+    })
+    return { groups: [], permissions }
+  }
   // todo
   // @ts-expect-error this is a decorated request
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call

@@ -3,10 +3,11 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "target": "ES6",
-    "module": "commonjs",
+    "module": "Node16",
     "noEmit": false,
     "outDir": "../dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "moduleResolution": "Node16"
   },
   "include": ["../src"],
   "exclude": [

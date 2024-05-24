@@ -31,7 +31,7 @@ interface FastifyContext {
 }
 
 const initFunction: AsyncInitFunction<FastifyEnvironmentVariables> = async service => {
-  const runtimeConfig = parseConfig(service.config)
+  const runtimeConfig = await parseConfig(service.config)
   const context: FastifyContext = { config: runtimeConfig, service }
 
   service.addHook('onSend', staticFileHandler(context))

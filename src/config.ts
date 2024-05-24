@@ -12,7 +12,18 @@ interface LanguageConfig {
   languageId: string
 }
 
+interface AclContextBuilderInput {
+  headers: Record<string, string | string[] | undefined>
+  method: string
+  pathParams: unknown
+  queryParams: unknown
+  url: string
+}
+
+type AclContextBuilderFunction = (input: AclContextBuilderInput) => string[]
+
 interface RuntimeConfig extends Required<EnvironmentVariables> {
+  ACL_CONTEXT_BUILDER: AclContextBuilderFunction | undefined
   CONTENT_TYPE_MAP: ContentTypeMap
   LANGUAGES_CONFIG: LanguageConfig[]
   PUBLIC_HEADERS_MAP: HeadersMap
@@ -103,8 +114,22 @@ const getPublicHeadersMap = (input: unknown): HeadersMap => {
   return publicHeadersMap
 }
 
-const parseConfig = (config: EnvironmentVariables & Record<string, string>): RuntimeConfig => {
+const getAclContextBuilder = async (aclContextBuilderPath: string): Promise<AclContextBuilderFunction | undefined> => {
+  if (!existsSync(aclContextBuilderPath)) {
+    return undefined
+  }
+  try {
+    const content = readFileSync(aclContextBuilderPath).toString('base64')
+    const { default: aclContextBuilder } = await import(`data:text/javascript;base64,${content}`) as {default:AclContextBuilderFunction}
+    return aclContextBuilder
+  } catch (err) {
+    throw new Error(`${aclContextBuilderPath} is not a valid script ${err instanceof Error ? err.message : ''}`)
+  }
+}
+
+const parseConfig = async (config: EnvironmentVariables & Record<string, string>): Promise<RuntimeConfig> => {
   const {
+    ACL_CONTEXT_BUILDER_PATH = defaults.ACL_CONTEXT_BUILDER_PATH,
     LANGUAGES_DIRECTORY_PATH = defaults.LANGUAGES_DIRECTORY_PATH,
     SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH,
   } = config
@@ -135,6 +160,8 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
   }
 
   return {
+    ACL_CONTEXT_BUILDER: await getAclContextBuilder(ACL_CONTEXT_BUILDER_PATH),
+    ACL_CONTEXT_BUILDER_PATH,
     CONTENT_TYPE_MAP: validateContentTypeMap(contentTypeMap),
     LANGUAGES_CONFIG: validateLanguages(LANGUAGES_DIRECTORY_PATH),
     LANGUAGES_DIRECTORY_PATH,
