@@ -95,10 +95,11 @@ describe('config injection tests', () => {
     await cleanup()
   })
 
-  it.skip('should parse a configuration with custom acl context builder', async () => {
+  it('should parse a configuration with custom acl context builder', async () => {
+    const customAclContextBuilder = '() => { return [] }'
     const filename = 'acl-context-builder.js'
     const { cleanup, name: targetPath } = await createTmpDir({
-      [filename]: 'export default () => { return [] }',
+      [filename]: `export default ${customAclContextBuilder}`,
     })
     const aclContextBuilderPath = path.join(targetPath, filename)
 
@@ -107,9 +108,12 @@ describe('config injection tests', () => {
       ACL_CONTEXT_BUILDER_PATH: aclContextBuilderPath,
     }
 
-    expect(await parseConfig(envVars)).to.deep.equal({
+    const config = await parseConfig(envVars)
+    expect(config.ACL_CONTEXT_BUILDER?.toString()).to.deep.equal(customAclContextBuilder)
+
+    config.ACL_CONTEXT_BUILDER = undefined
+    expect(config).to.deep.equal({
       ...defaults,
-      ACL_CONTEXT_BUILDER: '',
       ACL_CONTEXT_BUILDER_PATH: aclContextBuilderPath,
       PUBLIC_HEADERS_MAP: {},
       SERVICE_CONFIG_PATH: defaultConfigs.SERVICE_CONFIG_PATH,
