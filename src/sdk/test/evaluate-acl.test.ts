@@ -15,23 +15,23 @@
  */
 
 import { expect } from 'chai'
+import type { FastifyBaseLogger } from 'fastify'
 
 import { evaluateAcl } from '../evaluate-acl'
 import type { Json } from '../types'
 
 describe('Evaluate ACL', () => {
   interface Test {
+    aclContext: string[]
     expected: unknown
-    groups: string[]
     json: unknown
     message?: string
-    permissions: string[]
   }
 
   const tests: Test[] = [
     {
+      aclContext: ['groups.ceo', 'groups.admin', 'groups.developer'],
       expected: [{ expr: 'groups.admin && groups.ceo' }],
-      groups: ['ceo', 'admin', 'developer'],
       json: [
         {
           aclExpression: 'groups.admin && groups.ceo',
@@ -42,11 +42,10 @@ describe('Evaluate ACL', () => {
           expr: '!groups.developer',
         },
       ],
-      permissions: [],
     },
     {
+      aclContext: ['groups.po', 'groups.reviewer'],
       expected: [{}, { expr: '!groups.developer' }],
-      groups: ['po', 'reviewer'],
       json: [
         {},
         {
@@ -58,68 +57,67 @@ describe('Evaluate ACL', () => {
           expr: 'groups.admin && groups.ceo',
         },
       ],
-      permissions: [],
     },
     {
+      aclContext: ['groups.po', 'groups.reviewer'],
       expected: [],
-      groups: ['po', 'reviewer'],
       json: [],
-      permissions: [],
     },
     {
+      aclContext: [],
       expected: [],
-      groups: [],
       json: [],
-      permissions: [],
     },
     {
+      aclContext: [],
       expected: { test: { nested: { object: {} } } },
-      groups: [],
       json: { test: { nested: { object: {} } } },
-      permissions: [],
     },
     {
+      aclContext: [],
       expected: { test: {} },
-      groups: [],
       json: { test: { nested: { aclExpression: 'groups.admin && groups.ceo', object: {} } } },
-      permissions: [],
     },
     {
+      aclContext: ['groups.ceo', 'groups.admin'],
       expected: { test: { nested: { object: {} } } },
-      groups: ['ceo', 'admin'],
       json: { test: { nested: { aclExpression: 'groups.admin && groups.ceo', object: {} } } },
-      permissions: [],
     },
     {
+      aclContext: ['groups.po', 'groups.admin'],
       expected: { test: {} },
-      groups: ['po', 'admin'],
       json: { test: { nested: { aclExpression: 'groups.admin && groups.ceo', object: {} } } },
-      permissions: [],
     },
     {
+      aclContext: ['permissions.api.users.patch'],
       expected: { test: {} },
-      groups: [],
       json: { test: { nested: { aclExpression: 'permissions.api.users.get', object: {} } } },
-      permissions: ['api.users.patch'],
     },
     {
+      aclContext: ['permissions.api'],
       expected: { test: {} },
-      groups: [],
       json: { test: { nested: {
         aclExpression: 'permissions.api && permissions.api.users && permissions.api.users.get',
         object: {},
       } } },
-      permissions: ['api'],
     },
     {
+      aclContext: [],
+      expected: {},
+      json: {
+        test: {
+          aclExpression: 'expression',
+        },
+      },
+    },
+    {
+      aclContext: ['groups.po', 'groups.admin'],
       expected: true,
-      groups: ['po', 'admin'],
       json: true,
-      permissions: [],
     },
     {
+      aclContext: ['groups.doctor'],
       expected: [{ expr: 'groups.superadmin || groups.admin || groups.doctor' }],
-      groups: ['doctor'],
       json: [
         {
           aclExpression: 'groups.superadmin || groups.admin || groups.secretary',
@@ -134,14 +132,13 @@ describe('Evaluate ACL', () => {
           expr: 'groups.superadmin || groups.admin',
         },
       ],
-      permissions: [],
     },
     {
+      aclContext: ['groups.doctor', 'permissions.api.users.get', 'permissions.api.users.post', 'permissions.api.test-crud.all'],
       expected: [
         { expr: 'permissions.api.test-crud.all || permissions.api.test-crud.get' },
         { expr: 'groups.superadmin || groups.admin || groups.doctor' },
       ],
-      groups: ['doctor'],
       json: [
         {
           aclExpression: 'permissions.api.test-crud.all || permissions.api.test-crud.get',
@@ -160,11 +157,10 @@ describe('Evaluate ACL', () => {
           expr: 'groups.superadmin || groups.admin',
         },
       ],
-      permissions: ['api.users.get', 'api.users.post', 'api.test-crud.all'],
     },
     {
+      aclContext: ['permissions.api.users.post', 'permissions.api.users.count.get'],
       expected: [{ expr: 'permissions.api.users.count.get' }],
-      groups: [],
       json: [
         {
           aclExpression: 'permissions.api',
@@ -179,14 +175,13 @@ describe('Evaluate ACL', () => {
           expr: 'permissions.api.companies',
         },
       ],
-      permissions: ['api.users.post', 'api.users.count.get'],
     },
     {
+      aclContext: ['groups.doctor', 'permissions.api.users.post', 'permissions.api.users.count.get'],
       expected: [
         { expr: '(groups.doctor && !permissions.api.users.post) || permissions.api.users.count.get' },
         { expr: '(groups.doctor === true && permissions.api.users.post === true)' },
       ],
-      groups: ['doctor'],
       json: [
         {
           aclExpression: '(groups.doctor && !permissions.api.users.post) || permissions.api.users.count.get',
@@ -205,19 +200,18 @@ describe('Evaluate ACL', () => {
           expr: '(groups.doctor && permissions.api.users.post === false)',
         },
       ],
-      permissions: ['api.users.post', 'api.users.count.get'],
     },
   ]
 
-  tests.forEach(({ groups, permissions, expected, json, message }, idx) => {
+  // @ts-expect-error incomplete for test purposes
+  const loggerMock: FastifyBaseLogger = {
+    warn: () => { /* noop */ },
+  }
+
+  tests.forEach(({ aclContext, expected, json, message }, idx) => {
     it(`#${idx}${message ? `- ${message}` : ''}`, () => {
-      const result = evaluateAcl(json as Json, groups, permissions)
+      const result = evaluateAcl(loggerMock, json as Json, aclContext)
       expect(result).to.deep.equal(expected)
     })
-  })
-
-  it('should throw if expression is invalid', () => {
-    expect(() => evaluateAcl({ aclExpression: 'invalid-expression' }, [], []))
-      .to.throw('Error evaluating expression "invalid-expression"')
   })
 })

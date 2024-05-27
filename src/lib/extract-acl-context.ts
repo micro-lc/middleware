@@ -18,10 +18,6 @@ import type { FastifyRequest } from 'fastify'
 
 import type { RuntimeConfig } from '../config'
 
-export interface AclContext {
-  groups: string[]
-  permissions: string[]
-}
 
 const getPermissions = (config: RuntimeConfig, request: FastifyRequest): string[] => {
   const { USER_PROPERTIES_HEADER_KEY: user } = config
@@ -40,16 +36,19 @@ const cleanHeaders = (headers: Record<string, string | string[] | undefined>): R
 export const extractAclContext = (
   config: RuntimeConfig,
   request: FastifyRequest
-): AclContext => {
+): string[] => {
   if (config.ACL_CONTEXT_BUILDER !== undefined) {
-    const permissions = config.ACL_CONTEXT_BUILDER({
+    const aclContext = config.ACL_CONTEXT_BUILDER({
       headers: cleanHeaders(request.headers),
       method: request.method,
       pathParams: request.params,
       queryParams: request.query,
       url: request.url,
     })
-    return { groups: [], permissions }
+
+    return Array.isArray(aclContext)
+      ? aclContext.filter(element => typeof element === 'string')
+      : []
   }
   // todo
   // @ts-expect-error this is a decorated request
@@ -57,5 +56,8 @@ export const extractAclContext = (
   const groups = request.getGroups() as string[]
   const permissions = getPermissions(config, request)
 
-  return { groups, permissions }
+  const aclContext: string[] = []
+  aclContext.push(...groups.map(group => `groups.${group}`))
+  aclContext.push(...permissions.map(permission => `permissions.${permission}`))
+  return aclContext
 }

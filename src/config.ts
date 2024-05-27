@@ -20,7 +20,7 @@ interface AclContextBuilderInput {
   url: string
 }
 
-type AclContextBuilderFunction = (input: AclContextBuilderInput) => string[]
+export type AclContextBuilderFunction = (input: AclContextBuilderInput) => string[]
 
 interface RuntimeConfig extends Required<EnvironmentVariables> {
   ACL_CONTEXT_BUILDER: AclContextBuilderFunction | undefined

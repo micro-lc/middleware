@@ -115,7 +115,7 @@ describe('Serve files', () => {
     expect(headers['content-type']).to.equal('application/json')
 
     expect(evaluateAclStub.calledOnce).to.be.true
-    expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
+    expect(evaluateAclStub.args[0].splice(1)).to.deep.equal([{ foo: 'bar' }, ['groups.admin', 'groups.user', 'permissions.users.post.write']])
 
     expect(evaluateLanguageStub.calledOnce).to.be.true
     expect(evaluateLanguageStub.args[0]).to.deep.equal([{ evaluate: 'acl' }, undefined])
@@ -138,7 +138,7 @@ describe('Serve files', () => {
     expect(headers['content-type']).to.equal('text/yaml')
 
     expect(evaluateAclStub.calledOnce).to.be.true
-    expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
+    expect(evaluateAclStub.args[0].splice(1)).to.deep.equal([{ foo: 'bar' }, ['groups.admin', 'groups.user', 'permissions.users.post.write']])
 
     expect(evaluateLanguageStub.calledOnce).to.be.true
     expect(evaluateLanguageStub.args[0]).to.deep.equal([{ evaluate: 'acl' }, undefined])
@@ -166,7 +166,7 @@ describe('Serve files', () => {
     expect(headers['content-type']).to.equal('application/json')
 
     expect(evaluateAclStub.calledOnce).to.be.true
-    expect(evaluateAclStub.args[0]).to.deep.equal([{ foo: 'bar' }, ['admin', 'user'], ['users.post.write']])
+    expect(evaluateAclStub.args[0].splice(1)).to.deep.equal([{ foo: 'bar' }, ['groups.admin', 'groups.user', 'permissions.users.post.write']])
 
     expect(evaluateLanguageStub.calledOnce).to.be.true
     expect(evaluateLanguageStub.args[0]).to.deep.equal([{ evaluate: 'acl' }, undefined])

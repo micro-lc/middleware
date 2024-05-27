@@ -18,7 +18,7 @@
 import fs from 'fs'
 import path from 'path'
 
-import type { FastifyRequest } from 'fastify'
+import type { FastifyBaseLogger, FastifyRequest } from 'fastify'
 import * as yaml from 'js-yaml'
 
 import type { RuntimeConfig } from '../config'
@@ -26,7 +26,6 @@ import { evaluateAcl, resolveReferences } from '../sdk'
 import type { Json } from '../sdk'
 import { evaluateLanguage } from '../sdk/evaluate-language'
 
-import type { AclContext } from './extract-acl-context'
 import { extractAclContext } from './extract-acl-context'
 import type { LanguageContext } from './extract-language-context'
 import { extractLanguageContext } from './extract-language-context'
@@ -40,8 +39,8 @@ interface ConfigurationResponse {
   language?: string
 }
 
-const manipulateJson = async (json: Json, aclContext: AclContext, languageContext: LanguageContext): Promise<Json> => {
-  const filteredContent = evaluateAcl(json, aclContext.groups, aclContext.permissions)
+const manipulateJson = async (logger: FastifyBaseLogger, json: Json, aclContext: string[], languageContext: LanguageContext): Promise<Json> => {
+  const filteredContent = evaluateAcl(logger, json, aclContext)
   const translatedJson = evaluateLanguage(filteredContent, languageContext.labelsMap)
   const resolvedJson = await resolveReferences(translatedJson)
 
@@ -52,21 +51,21 @@ const manipulateJson = async (json: Json, aclContext: AclContext, languageContex
   return resolvedJson
 }
 
-const asJson = async (buffer: Buffer, aclContext: AclContext, languageContext: LanguageContext): Promise<Json> => {
+const asJson = async (logger: FastifyBaseLogger, buffer: Buffer, aclContext: string[], languageContext: LanguageContext): Promise<Json> => {
   const json = JSON.parse(buffer.toString('utf-8')) as Json
-  return manipulateJson(json, aclContext, languageContext)
+  return manipulateJson(logger, json, aclContext, languageContext)
 }
 
-const asYaml = async (buffer: Buffer, aclContext: AclContext, languageContext: LanguageContext): Promise<Json> => {
+const asYaml = async (logger: FastifyBaseLogger, buffer: Buffer, aclContext: string[], languageContext: LanguageContext): Promise<Json> => {
   const json = yaml.load(buffer.toString('utf-8')) as Json
-  return manipulateJson(json, aclContext, languageContext)
+  return manipulateJson(logger, json, aclContext, languageContext)
 }
 
 const fsCache = new Map<string, Promise<Buffer>>()
 
 const fileLoader = async (filepath: string) => fs.promises.readFile(filepath)
 
-const loadAs = (extension: Extension): (buffer: Buffer, aclContext: AclContext, languageContext: LanguageContext) => Promise<Json> => {
+const loadAs = (extension: Extension): (logger: FastifyBaseLogger, buffer: Buffer, aclContext: string[], languageContext: LanguageContext) => Promise<Json> => {
   switch (extension) {
   case '.json':
     return asJson
@@ -102,7 +101,7 @@ async function configurationsHandler(request: FastifyRequest, filename: string, 
   const aclContext = extractAclContext(config, request)
   const languageContext = extractLanguageContext(config, request.languages())
   const dump = getDumper(fileExtension)
-  const json = await loadAs(fileExtension)(buffer, aclContext, languageContext)
+  const json = await loadAs(fileExtension)(request.log, buffer, aclContext, languageContext)
 
   return {
     fileBuffer: Buffer.from(dump(json), 'utf-8'),
