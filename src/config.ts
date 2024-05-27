@@ -12,7 +12,7 @@ interface LanguageConfig {
   languageId: string
 }
 
-interface AclContextBuilderInput {
+export interface AclContextBuilderInput {
   headers: Record<string, string | string[] | undefined>
   method: string
   pathParams: unknown
