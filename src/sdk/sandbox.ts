@@ -59,6 +59,7 @@ class Sandbox {
     }
     context.unwrapResult(wrappedResult).dispose()
     const result = context.getProp(context.global, 'result').consume(context.dump.bind(context)) as string[]
+    this.cache[hash] = result
     return result
   }
 }

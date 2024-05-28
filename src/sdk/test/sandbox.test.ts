@@ -52,7 +52,9 @@ describe('Sandbox', () => {
       url: '/configurations/file.json',
     }
 
+    expect(sandbox.cache).to.deep.equal({})
     const result = await sandbox.evalAclContextBuilder(input)
     expect(result).to.deep.equal(['property'])
+    expect(sandbox.cache[JSON.stringify(input)]).to.deep.equal(result)
   })
 })
