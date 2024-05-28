@@ -98,7 +98,7 @@ async function configurationsHandler(request: FastifyRequest, filename: string, 
     return { fileBuffer: buffer }
   }
 
-  const aclContext = extractAclContext(config, request)
+  const aclContext = await extractAclContext(config, request)
   const languageContext = extractLanguageContext(config, request.languages())
   const dump = getDumper(fileExtension)
   const json = await loadAs(fileExtension)(request.log, buffer, aclContext, languageContext)

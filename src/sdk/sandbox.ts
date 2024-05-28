@@ -3,21 +3,21 @@ import { newAsyncRuntime } from 'quickjs-emscripten'
 
 import type { AclContextBuilderInput } from '../config'
 
-const CODE = `export default function (input) {
-        throw new Error('mamma')
-        return [input.ciao]
-      }
-      `
+// const CODE = `export default function (input) {
+//         throw new Error('mamma')
+//         return [input.ciao]
+//       }
+//       `
 
 class Sandbox {
   context: Promise<QuickJSContext>
   cache: Record<string, string[] | undefined>
 
-  constructor() {
+  constructor(script: string) {
     this.cache = {}
     this.context = newAsyncRuntime().then((runtime) => {
       runtime.setModuleLoader(() => {
-        return CODE
+        return script
       })
       return runtime.newContext()
     })
@@ -62,4 +62,4 @@ class Sandbox {
   }
 }
 
-export default new Sandbox()
+export default Sandbox

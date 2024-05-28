@@ -4,6 +4,7 @@ import path from 'path'
 import * as defaults from './defaults'
 import type { ContentTypeMap } from './schemas'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
+import Sandbox from './sdk/sandbox'
 
 type HeadersMap = Record<`/${string}`, Record<string, string>>;
 
@@ -20,7 +21,7 @@ export interface AclContextBuilderInput {
   url: string
 }
 
-export type AclContextBuilderFunction = (input: AclContextBuilderInput) => string[]
+export type AclContextBuilderFunction = (input: AclContextBuilderInput) => Promise<string[]>
 
 interface RuntimeConfig extends Required<EnvironmentVariables> {
   ACL_CONTEXT_BUILDER: AclContextBuilderFunction | undefined
@@ -114,20 +115,21 @@ const getPublicHeadersMap = (input: unknown): HeadersMap => {
   return publicHeadersMap
 }
 
-const getAclContextBuilder = async (aclContextBuilderPath: string): Promise<AclContextBuilderFunction | undefined> => {
+const getAclContextBuilder = (aclContextBuilderPath: string): AclContextBuilderFunction | undefined => {
   if (!existsSync(aclContextBuilderPath)) {
     return undefined
   }
   try {
-    const content = readFileSync(aclContextBuilderPath).toString('base64')
-    const { default: aclContextBuilder } = await import(`data:text/javascript;base64,${content}`) as {default:AclContextBuilderFunction}
-    return aclContextBuilder
+    const content = readFileSync(aclContextBuilderPath).toString()
+    // SAFETY: ensure Sandbox is created only once
+    const sandbox = new Sandbox(content)
+    return sandbox.evalAclContextBuilder.bind(sandbox)
   } catch (err) {
     throw new Error(`${aclContextBuilderPath} is not a valid script ${err instanceof Error ? err.message : ''}`)
   }
 }
 
-const parseConfig = async (config: EnvironmentVariables & Record<string, string>): Promise<RuntimeConfig> => {
+const parseConfig = (config: EnvironmentVariables & Record<string, string>): RuntimeConfig => {
   const {
     ACL_CONTEXT_BUILDER_PATH = defaults.ACL_CONTEXT_BUILDER_PATH,
     LANGUAGES_DIRECTORY_PATH = defaults.LANGUAGES_DIRECTORY_PATH,
@@ -160,7 +162,7 @@ const parseConfig = async (config: EnvironmentVariables & Record<string, string>
   }
 
   return {
-    ACL_CONTEXT_BUILDER: await getAclContextBuilder(ACL_CONTEXT_BUILDER_PATH),
+    ACL_CONTEXT_BUILDER: getAclContextBuilder(ACL_CONTEXT_BUILDER_PATH),
     ACL_CONTEXT_BUILDER_PATH,
     CONTENT_TYPE_MAP: validateContentTypeMap(contentTypeMap),
     LANGUAGES_CONFIG: validateLanguages(LANGUAGES_DIRECTORY_PATH),

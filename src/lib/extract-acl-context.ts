@@ -33,12 +33,12 @@ const cleanHeaders = (headers: Record<string, string | string[] | undefined>): R
   return headers
 }
 
-export const extractAclContext = (
+export const extractAclContext = async (
   config: RuntimeConfig,
   request: FastifyRequest
-): string[] => {
+): Promise<string[]> => {
   if (config.ACL_CONTEXT_BUILDER !== undefined) {
-    const aclContext = config.ACL_CONTEXT_BUILDER({
+    const aclContext = await config.ACL_CONTEXT_BUILDER({
       headers: cleanHeaders(request.headers),
       method: request.method,
       pathParams: request.params,
