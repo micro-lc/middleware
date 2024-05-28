@@ -4,7 +4,7 @@ import path from 'path'
 import * as defaults from './defaults'
 import type { ContentTypeMap } from './schemas'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
-import Sandbox from './sdk/sandbox'
+import _sandbox from './sdk/sandbox'
 
 type HeadersMap = Record<`/${string}`, Record<string, string>>;
 
@@ -121,8 +121,7 @@ const getAclContextBuilder = (aclContextBuilderPath: string): AclContextBuilderF
   }
   try {
     const content = readFileSync(aclContextBuilderPath).toString()
-    // SAFETY: ensure Sandbox is created only once
-    const sandbox = new Sandbox(content)
+    const sandbox = _sandbox.getInstance(content)
     return sandbox.evalAclContextBuilder.bind(sandbox)
   } catch (err) {
     throw new Error(`${aclContextBuilderPath} is not a valid script ${err instanceof Error ? err.message : ''}`)

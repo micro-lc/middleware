@@ -17,11 +17,16 @@
 import { expect } from 'chai'
 
 import type { AclContextBuilderInput } from '../../config'
-import Sandbox from '../sandbox'
+import _sandbox from '../sandbox'
 
 describe('Sandbox', () => {
   const script = `export default function (input) { return [input.method] }`
-  const sandbox = new Sandbox(script)
+  const sandbox = _sandbox.getInstance(script)
+
+  it('Ensure singleton', () => {
+    const sandbox2 = _sandbox.getInstance(script)
+    expect(sandbox2).to.deep.equal(sandbox)
+  })
 
   it('Eval ACL context builder', async () => {
     const input: AclContextBuilderInput = {
