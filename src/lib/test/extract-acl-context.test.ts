@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { expect } from 'chai'
 
 import type { AclContextBuilderFunction, RuntimeConfig } from '../../config'
@@ -37,32 +38,32 @@ describe('Extract Acl Context', () => {
     },
     {
       // @ts-expect-error needed for test
-      aclContextBuilder: () => ({ unknown: 'value' }),
+      aclContextBuilder: async () => ({ unknown: 'value' }),
       expected: [],
       message: 'Custom function does NOT return an array',
     },
     {
       // @ts-expect-error needed for test
-      aclContextBuilder: () => [{ foo: 'bar' }, ['something']],
+      aclContextBuilder: async () => [{ foo: 'bar' }, ['something']],
       expected: [],
       message: 'Custom function returns an array of NON-strings',
     },
     {
-      aclContextBuilder: () => ['something'],
+      aclContextBuilder: async () => ['something'],
       expected: ['something'],
       message: 'Custom function returns an array of strings',
     },
   ]
 
   tests.forEach(({ aclContextBuilder, expected, message }, index) => {
-    it(`#${index} - ${message}`, () => {
+    it(`#${index} - ${message}`, async () => {
       const testConfig: RuntimeConfig = {
         ...config,
         ACL_CONTEXT_BUILDER: aclContextBuilder,
       }
 
       // @ts-expect-error request is incomplete for test purposes
-      const result = extractAclContext(testConfig, request)
+      const result = await extractAclContext(testConfig, request)
       expect(result).to.deep.equal(expected)
     })
   })

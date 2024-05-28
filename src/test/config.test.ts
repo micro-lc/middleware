@@ -45,7 +45,7 @@ describe('config injection tests', () => {
     const { name: url, cleanup } = await createConfigFile({})
     const envVars = createEnvVars(url)
 
-    expect(await parseConfig(envVars)).to.deep.equal({
+    expect(parseConfig(envVars)).to.deep.equal({
       ...defaults,
       PUBLIC_HEADERS_MAP: {},
       SERVICE_CONFIG_PATH: url,
@@ -75,7 +75,7 @@ describe('config injection tests', () => {
       LANGUAGES_DIRECTORY_PATH: targetPath,
     }
 
-    expect(await parseConfig(envVars)).to.deep.equal({
+    expect(parseConfig(envVars)).to.deep.equal({
       ...defaults,
       LANGUAGES_CONFIG: [
         {
@@ -96,10 +96,9 @@ describe('config injection tests', () => {
   })
 
   it('should parse a configuration with custom acl context builder', async () => {
-    const customAclContextBuilder = '() => { return [] }'
     const filename = 'acl-context-builder.js'
     const { cleanup, name: targetPath } = await createTmpDir({
-      [filename]: `export default ${customAclContextBuilder}`,
+      [filename]: 'export default () => { return [] }',
     })
     const aclContextBuilderPath = path.join(targetPath, filename)
 
@@ -108,8 +107,8 @@ describe('config injection tests', () => {
       ACL_CONTEXT_BUILDER_PATH: aclContextBuilderPath,
     }
 
-    const config = await parseConfig(envVars)
-    expect(config.ACL_CONTEXT_BUILDER?.toString()).to.deep.equal(customAclContextBuilder)
+    const config = parseConfig(envVars)
+    expect(config.ACL_CONTEXT_BUILDER).to.be.a('function')
 
     config.ACL_CONTEXT_BUILDER = undefined
     expect(config).to.deep.equal({
@@ -136,7 +135,7 @@ describe('config injection tests', () => {
     })
     const envVars = createEnvVars(url)
 
-    expect(await parseConfig(envVars)).to.deep.equal({
+    expect(parseConfig(envVars)).to.deep.equal({
       ...defaults,
       CONTENT_TYPE_MAP: {
         ...defaults.CONTENT_TYPE_MAP,

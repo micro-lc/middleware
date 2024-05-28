@@ -16,12 +16,23 @@
 
 import { expect } from 'chai'
 
-import sandbox from '../sandbox'
+import type { AclContextBuilderInput } from '../../config'
+import Sandbox from '../sandbox'
 
-describe.only('Sandbox', () => {
-  it('test name', async () => {
-    // @ts-expect-error-error
-    const result = await sandbox.evalAclContextBuilder({ ciao: 'ciao' })
-    expect(result).to.deep.equal(['ciao'])
+describe('Sandbox', () => {
+  const script = `export default function (input) { return [input.method] }`
+  const sandbox = new Sandbox(script)
+
+  it('Eval ACL context builder', async () => {
+    const input: AclContextBuilderInput = {
+      headers: {},
+      method: 'GET',
+      pathParams: {},
+      queryParams: {},
+      url: '/configurations/file.json',
+    }
+
+    const result = await sandbox.evalAclContextBuilder(input)
+    expect(result).to.deep.equal(['GET'])
   })
 })
