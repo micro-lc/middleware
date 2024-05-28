@@ -37,6 +37,10 @@ class Sandbox {
 
     context.setProp(context.global, 'input', context.newString(hash))
     const wrappedResult = context.evalCode(code)
+    if (wrappedResult.error) {
+      const error = context.dump(wrappedResult.error) as { message?: string }
+      throw new Error(`External ACL context builder failed: ${error.message}`)
+    }
     context.unwrapResult(wrappedResult).dispose()
     const result = context.getProp(context.global, 'result').consume(context.dump.bind(context)) as string[]
     return result

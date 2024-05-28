@@ -46,6 +46,7 @@ export const extractAclContext = async (
       url: request.url,
     })
 
+    // SAFETY: check the actual outcome of the function because is externally defined
     return Array.isArray(aclContext)
       ? aclContext.filter(element => typeof element === 'string')
       : []

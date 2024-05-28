@@ -20,7 +20,7 @@ import type { AclContextBuilderInput } from '../../config'
 import _sandbox from '../sandbox'
 
 describe('Sandbox', () => {
-  const script = `export default function (input) { return [input.method] }`
+  const script = 'export default function (input) { return [input.headers.userproperties] }'
   const sandbox = _sandbox.getInstance(script)
 
   it('Ensure singleton', () => {
@@ -28,9 +28,24 @@ describe('Sandbox', () => {
     expect(sandbox2).to.deep.equal(sandbox)
   })
 
+  it('Scripts throws error', async () => {
+    const input: AclContextBuilderInput = {
+      // @ts-expect-error needed for test
+      headers: undefined,
+      method: 'GET',
+      pathParams: {},
+      queryParams: {},
+      url: '/configurations/file.json',
+    }
+
+    await expect(sandbox.evalAclContextBuilder(input)).to.be.rejectedWith('External ACL context builder failed: cannot read property \'userproperties\' of undefined')
+  })
+
   it('Eval ACL context builder', async () => {
     const input: AclContextBuilderInput = {
-      headers: {},
+      headers: {
+        userproperties: 'property',
+      },
       method: 'GET',
       pathParams: {},
       queryParams: {},
@@ -38,6 +53,6 @@ describe('Sandbox', () => {
     }
 
     const result = await sandbox.evalAclContextBuilder(input)
-    expect(result).to.deep.equal(['GET'])
+    expect(result).to.deep.equal(['property'])
   })
 })
