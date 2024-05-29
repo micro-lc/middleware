@@ -4,6 +4,7 @@ import path from 'path'
 import * as defaults from './defaults'
 import type { ContentTypeMap } from './schemas'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
+import _sandbox from './sdk/sandbox'
 
 type HeadersMap = Record<`/${string}`, Record<string, string>>;
 
@@ -12,7 +13,18 @@ interface LanguageConfig {
   languageId: string
 }
 
+export interface AclContextBuilderInput {
+  headers: Record<string, string | string[] | undefined>
+  method: string
+  pathParams: unknown
+  queryParams: unknown
+  url: string
+}
+
+export type AclContextBuilderFunction = (input: AclContextBuilderInput) => Promise<string[]>
+
 interface RuntimeConfig extends Required<EnvironmentVariables> {
+  ACL_CONTEXT_BUILDER: AclContextBuilderFunction | undefined
   CONTENT_TYPE_MAP: ContentTypeMap
   LANGUAGES_CONFIG: LanguageConfig[]
   PUBLIC_HEADERS_MAP: HeadersMap
@@ -103,8 +115,22 @@ const getPublicHeadersMap = (input: unknown): HeadersMap => {
   return publicHeadersMap
 }
 
+const getAclContextBuilder = (aclContextBuilderPath: string): AclContextBuilderFunction | undefined => {
+  if (!existsSync(aclContextBuilderPath)) {
+    return undefined
+  }
+  try {
+    const content = readFileSync(aclContextBuilderPath, { encoding: 'utf8' })
+    const sandbox = _sandbox.getInstance(content)
+    return sandbox.evalAclContextBuilder.bind(sandbox)
+  } catch (err) {
+    throw new Error(`${aclContextBuilderPath} is not a valid script ${err instanceof Error ? err.message : ''}`)
+  }
+}
+
 const parseConfig = (config: EnvironmentVariables & Record<string, string>): RuntimeConfig => {
   const {
+    ACL_CONTEXT_BUILDER_PATH = defaults.ACL_CONTEXT_BUILDER_PATH,
     LANGUAGES_DIRECTORY_PATH = defaults.LANGUAGES_DIRECTORY_PATH,
     SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH,
   } = config
@@ -135,6 +161,8 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
   }
 
   return {
+    ACL_CONTEXT_BUILDER: getAclContextBuilder(ACL_CONTEXT_BUILDER_PATH),
+    ACL_CONTEXT_BUILDER_PATH,
     CONTENT_TYPE_MAP: validateContentTypeMap(contentTypeMap),
     LANGUAGES_CONFIG: validateLanguages(LANGUAGES_DIRECTORY_PATH),
     LANGUAGES_DIRECTORY_PATH,

@@ -22,6 +22,8 @@ import { extractLanguageContext } from '../extract-language-context'
 
 describe('Extract Language Context', () => {
   const config: RuntimeConfig = {
+    ACL_CONTEXT_BUILDER: undefined,
+    ACL_CONTEXT_BUILDER_PATH: '',
     CONTENT_TYPE_MAP: {},
     LANGUAGES_CONFIG: [
       {

@@ -18,10 +18,6 @@ import type { FastifyRequest } from 'fastify'
 
 import type { RuntimeConfig } from '../config'
 
-export interface AclContext {
-  groups: string[]
-  permissions: string[]
-}
 
 const getPermissions = (config: RuntimeConfig, request: FastifyRequest): string[] => {
   const { USER_PROPERTIES_HEADER_KEY: user } = config
@@ -32,15 +28,32 @@ const getPermissions = (config: RuntimeConfig, request: FastifyRequest): string[
   return parsedProperties.permissions ?? []
 }
 
-export const extractAclContext = (
+export const extractAclContext = async (
   config: RuntimeConfig,
   request: FastifyRequest
-): AclContext => {
+): Promise<string[]> => {
+  if (config.ACL_CONTEXT_BUILDER !== undefined) {
+    const aclContext = await config.ACL_CONTEXT_BUILDER({
+      headers: request.headers,
+      method: request.method,
+      pathParams: request.params,
+      queryParams: request.query,
+      url: request.url,
+    })
+
+    // SAFETY: check the actual outcome of the function because is externally defined
+    return Array.isArray(aclContext)
+      ? aclContext.filter(element => typeof element === 'string')
+      : []
+  }
   // todo
   // @ts-expect-error this is a decorated request
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const groups = request.getGroups() as string[]
   const permissions = getPermissions(config, request)
 
-  return { groups, permissions }
+  const aclContext: string[] = []
+  aclContext.push(...groups.map(group => `groups.${group}`))
+  aclContext.push(...permissions.map(permission => `permissions.${permission}`))
+  return aclContext
 }

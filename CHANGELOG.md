@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- Support for user-defined custom function to generalize ACL context extraction
+
 ## [3.1.1] - 2024-04-05
 
 ### Fixed

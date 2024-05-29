@@ -29,6 +29,8 @@ import type {
   MenuItem,
   Mode,
   UserMenu,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore required for tests compilation
 } from '@micro-lc/layout/dist/types/web-components/mlc-layout/types'
 
 import type { WithAcl } from '../types'

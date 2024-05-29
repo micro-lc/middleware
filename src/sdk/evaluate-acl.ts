@@ -15,68 +15,60 @@
  */
 
 import { applyOperation, deepClone } from 'fast-json-patch'
+import type { FastifyBaseLogger } from 'fastify'
 import { JSONPath } from 'jsonpath-plus'
 
 import type { Json } from './types'
 
-type UserGroupsObject = Record<string, boolean>;
-
-type UserPermissionsObject = Record<string, boolean | object>;
+type AclContextObject = Record<string, boolean | object>;
 
 interface FilterableObject {
   aclExpression: string
 }
 
-const userGroupsObjectBuilder = (userGroups: string[]) => {
-  const userGroupsObject: UserGroupsObject = {}
-  for (const userGroup of userGroups) {
-    userGroupsObject[userGroup] = true
-  }
-  return userGroupsObject
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createUserPermissionsNestedObject = (originalObject: any, permissionPaths: string[]) => {
-  for (let i = 0; i < permissionPaths.length; i++) {
-    if (i < permissionPaths.length - 1) {
+const createAclContextNestedObject = (originalObject: any, paths: string[]) => {
+  for (let i = 0; i < paths.length; i++) {
+    if (i < paths.length - 1) {
       // eslint-disable-next-line no-param-reassign, no-multi-assign,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-      originalObject = originalObject[permissionPaths[i]] = originalObject[permissionPaths[i]] || {}
+      originalObject = originalObject[paths[i]] = originalObject[paths[i]] || {}
     } else {
       // eslint-disable-next-line no-multi-assign, no-param-reassign,@typescript-eslint/no-unsafe-member-access
-      originalObject = originalObject[permissionPaths[i]] = true
+      originalObject = originalObject[paths[i]] = true
     }
   }
 }
 
-const userPermissionsObjectBuilder = (userPermissions: string[]) => {
-  const userPermissionObject: UserPermissionsObject = {}
+const aclContextObjectBuilder = (aclContext: string[]): AclContextObject => {
+  const aclContextObject: AclContextObject = {}
 
-  for (const userPermission of userPermissions) {
-    const permissions = userPermission.split('.')
-    createUserPermissionsNestedObject(userPermissionObject, permissions)
+  for (const acl of aclContext) {
+    const paths = acl.split('.')
+    createAclContextNestedObject(aclContextObject, paths)
   }
 
-  return userPermissionObject
+  return aclContextObject
 }
 
-const buildPluginFunction = (plugin: FilterableObject) => {
+const buildPluginFunction = (plugin: FilterableObject, aclContextObject: AclContextObject) => {
   const bracketsNotationExpression = plugin.aclExpression
     .replace(/\.(.+?)(?=\.|$| |\))/g, (_, string) => `?.['${string as string}']`)
 
   const booleanEvaluationExpression = bracketsNotationExpression.replace(/'](?=]|$| )/g, `'] === true`)
 
   // eslint-disable-next-line no-new-func,@typescript-eslint/no-implied-eval
-  return new Function('groups', 'permissions', `return !!(${booleanEvaluationExpression})`)
+  return new Function(...Object.keys(aclContextObject), `return !!(${booleanEvaluationExpression})`)
 }
 
-const evaluatePluginExpression = (userGroupsObject: UserGroupsObject, userPermissionsObject: UserPermissionsObject) => {
+const evaluatePluginExpression = (logger: FastifyBaseLogger, aclContextObject: AclContextObject) => {
   return (plugin: FilterableObject): boolean => {
-    const expressionEvaluationFunction = buildPluginFunction(plugin)
+    const expressionEvaluationFunction = buildPluginFunction(plugin, aclContextObject)
 
     try {
-      return expressionEvaluationFunction(userGroupsObject, userPermissionsObject) as boolean
+      return expressionEvaluationFunction(...Object.values(aclContextObject)) as boolean
     } catch (err) {
-      throw new Error(`Error evaluating expression "${plugin.aclExpression}"`)
+      logger.warn({ aclContextObject }, `Error evaluating expression "${plugin.aclExpression}"`)
+      return false
     }
   }
 }
@@ -93,18 +85,17 @@ const jsonPathCallback = (valuesToAvoid: string[], expressionEvaluator: Function
 /**
  * This method [evaluates](#acl-application) `aclExpression` keys in input JSON. It does not modify the input object.
  *
+ * @param {FastifyBaseLogger} logger - Logger instance.
  * @param {(string | number | boolean | Object | Array | null)} json - Input JSON with ACL rules to be evaluated.
- * @param {string[]} userGroups - List of caller's groups.
- * @param {string[]} userPermissions - List of caller's permissions.
+ * @param {string[]} aclContext - List of caller's permissions.
  * @returns {Promise<string | number | boolean | Object | Array | null>} JSON with ACL rules evaluated.
  */
-export const evaluateAcl = (json: Json, userGroups: string[], userPermissions: string[]): Json => {
+export const evaluateAcl = (logger: FastifyBaseLogger, json: Json, aclContext: string[]): Json => {
   const clonedJsonToFilter = deepClone(json) as Json
 
-  const userGroupsObject = userGroupsObjectBuilder(userGroups)
-  const userPermissionsObject = userPermissionsObjectBuilder(userPermissions)
+  const aclContextObject = aclContextObjectBuilder(aclContext)
 
-  const expressionEvaluator = evaluatePluginExpression(userGroupsObject, userPermissionsObject)
+  const expressionEvaluator = evaluatePluginExpression(logger, aclContextObject)
   const valuesToAvoid: string[] = []
   const pathCallback = jsonPathCallback(valuesToAvoid, expressionEvaluator)
 

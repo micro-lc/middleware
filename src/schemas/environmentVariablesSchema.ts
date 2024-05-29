@@ -19,6 +19,10 @@ import type { FromSchema } from 'json-schema-to-ts'
 export const environmentVariablesSchema = {
   additionalProperties: false,
   properties: {
+    ACL_CONTEXT_BUILDER_PATH: {
+      description: 'Acl context builder file absolute path',
+      type: 'string',
+    },
     LANGUAGES_DIRECTORY_PATH: {
       description: 'Absolute path of the directory containing files to be used for translation',
       type: 'string',
