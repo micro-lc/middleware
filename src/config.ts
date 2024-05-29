@@ -120,7 +120,7 @@ const getAclContextBuilder = (aclContextBuilderPath: string): AclContextBuilderF
     return undefined
   }
   try {
-    const content = readFileSync(aclContextBuilderPath).toString()
+    const content = readFileSync(aclContextBuilderPath, { encoding: 'utf8' })
     const sandbox = _sandbox.getInstance(content)
     return sandbox.evalAclContextBuilder.bind(sandbox)
   } catch (err) {

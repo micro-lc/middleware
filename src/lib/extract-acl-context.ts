@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { deepClone } from 'fast-json-patch'
 import type { FastifyRequest } from 'fastify'
 
 import type { RuntimeConfig } from '../config'
@@ -29,8 +30,9 @@ const getPermissions = (config: RuntimeConfig, request: FastifyRequest): string[
 }
 
 const cleanHeaders = (headers: Record<string, string | string[] | undefined>): Record<string, string | string[] | undefined> => {
-  delete headers.cookie
-  return headers
+  const clonedHeaders = deepClone(headers) as Record<string, string | string[] | undefined>
+  delete clonedHeaders.cookie
+  return clonedHeaders
 }
 
 export const extractAclContext = async (
