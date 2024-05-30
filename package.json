@@ -33,7 +33,7 @@
     "_prepublish": "pinst --disable"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^11.1.0",
+    "@apidevtools/json-schema-ref-parser": "^11.2.0",
     "@fastify/accepts": "^4.3.0",
     "@mia-platform/custom-plugin-lib": "^6.0.0",
     "ajv": "^8.12.0",
