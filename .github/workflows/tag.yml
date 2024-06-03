@@ -27,7 +27,7 @@ jobs:
       - build
     uses: micro-lc/middleware/.github/workflows/docker-build.yml@main
     with:
-      version: ${GITHUB_REF#refs/tags/}
+      version: ${GITHUB_REF#refs/tags/v}
       push: true
     secrets:
       docker_username: ${{ secrets.BOT_DOCKER_USERNAME }}
