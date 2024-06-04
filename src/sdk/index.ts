@@ -18,3 +18,4 @@ export type { Json } from './types'
 
 export * from './evaluate-acl'
 export * from './resolve-references'
+export * from './evaluate-language'
