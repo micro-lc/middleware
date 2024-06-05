@@ -9,6 +9,13 @@
     "sdk",
     "package.json"
   ],
+  "exports": {
+    "./sdk": {
+      "import": "./dist/esm/sdk/index.js",
+      "types": "./dist/types/sdk/index.d.ts",
+      "require": "./dist/sdk/index.js"
+    }
+  },
   "scripts": {
     "_postinstall": "husky install",
     "cleanup": "rimraf .nyc_output coverage dist node_modules",
