@@ -16,7 +16,7 @@
 
 import { expect } from 'chai'
 
-import type { AclContextBuilderInput } from '../../config'
+import type { AclContextBuilderInput } from '../sandbox'
 import _sandbox from '../sandbox'
 
 describe('Sandbox', () => {
