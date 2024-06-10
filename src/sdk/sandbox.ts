@@ -17,7 +17,13 @@
 import type { QuickJSContext } from 'quickjs-emscripten'
 import { newAsyncRuntime } from 'quickjs-emscripten'
 
-import type { AclContextBuilderInput } from '../config'
+export interface AclContextBuilderInput {
+  headers: Record<string, string | string[] | undefined>
+  method: string
+  pathParams: unknown
+  queryParams: unknown
+  url: string
+}
 
 class Sandbox {
   context: Promise<QuickJSContext>

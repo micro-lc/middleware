@@ -4,6 +4,7 @@ import path from 'path'
 import * as defaults from './defaults'
 import type { ContentTypeMap } from './schemas'
 import type { EnvironmentVariables } from './schemas/environmentVariablesSchema'
+import type { AclContextBuilderInput } from './sdk/sandbox'
 import _sandbox from './sdk/sandbox'
 
 type HeadersMap = Record<`/${string}`, Record<string, string>>;
@@ -11,14 +12,6 @@ type HeadersMap = Record<`/${string}`, Record<string, string>>;
 interface LanguageConfig {
   labelsMap: Record<string, unknown>
   languageId: string
-}
-
-export interface AclContextBuilderInput {
-  headers: Record<string, string | string[] | undefined>
-  method: string
-  pathParams: unknown
-  queryParams: unknown
-  url: string
 }
 
 export type AclContextBuilderFunction = (input: AclContextBuilderInput) => Promise<string[]>
