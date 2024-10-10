@@ -40,6 +40,10 @@ const staticFileHandler = (context: FastifyContext) => async (
   reply: FastifyReply,
   payload: string | {filename: string},
 ) => {
+  // Since custom-plugin-lib does not support root-specific hooks, we need to exclude all the routes that do not serve
+  // static files
+  if (request.method !== 'GET') { return }
+
   // request context
   let filename = typeof payload === 'string' ? payload : payload.filename
   let { url } = request

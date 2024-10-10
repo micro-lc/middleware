@@ -109,4 +109,7 @@ async function configurationsHandler(request: FastifyRequest, filename: string, 
   }
 }
 
-export { configurationsHandler }
+export {
+  manipulateJson,
+  configurationsHandler,
+}
