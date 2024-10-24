@@ -30,6 +30,7 @@ describe('Sandbox', () => {
 
   it('Scripts throws error', async () => {
     const input: AclContextBuilderInput = {
+      body: {},
       // @ts-expect-error needed for test
       headers: undefined,
       method: 'GET',
@@ -43,6 +44,7 @@ describe('Sandbox', () => {
 
   it('Eval ACL context builder', async () => {
     const input: AclContextBuilderInput = {
+      body: {},
       headers: {
         userproperties: 'property',
       },

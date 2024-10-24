@@ -34,6 +34,7 @@ export const extractAclContext = async (
 ): Promise<string[]> => {
   if (config.ACL_CONTEXT_BUILDER !== undefined) {
     const aclContext = await config.ACL_CONTEXT_BUILDER({
+      body: request.body,
       headers: request.headers,
       method: request.method,
       pathParams: request.params,
@@ -46,7 +47,7 @@ export const extractAclContext = async (
       ? aclContext.filter(element => typeof element === 'string')
       : []
   }
-  // todo
+
   // @ts-expect-error this is a decorated request
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const groups = request.getGroups() as string[]
