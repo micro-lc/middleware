@@ -18,6 +18,7 @@ import type { QuickJSContext } from 'quickjs-emscripten'
 import { newAsyncRuntime } from 'quickjs-emscripten'
 
 export interface AclContextBuilderInput {
+  body?: unknown
   headers: Record<string, string | string[] | undefined>
   method: string
   pathParams: unknown
@@ -45,6 +46,7 @@ class Sandbox {
     if (cachedValue !== undefined) {
       return cachedValue
     }
+
     /* Follows an alternative if sandbox is too slow
     const script = `data:text/javascript;base64,${Buffer.from(CODE).toString('base64')}`
     const module = await import(script)
@@ -63,9 +65,11 @@ class Sandbox {
       const error = context.dump(wrappedResult.error) as { message?: string }
       throw new Error(`External ACL context builder failed: ${error.message}`)
     }
+
     context.unwrapResult(wrappedResult).dispose()
     const result = context.getProp(context.global, 'result').consume(context.dump.bind(context)) as string[]
     this.cache[hash] = result
+
     return result
   }
 }
