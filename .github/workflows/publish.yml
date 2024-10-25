@@ -1,7 +1,10 @@
-name: Linting
+name: Publish
 
 on:
   workflow_call:
+    secrets:
+      token:
+        required: true
 
 jobs:
   checks:
@@ -17,7 +20,14 @@ jobs:
         node-version-file: .nvmrc
         check-latest: true
         cache: npm
-    - name: Install Dependencies
-      run: npm ci
-    - name: Check Linting
-      run: npm run lint
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+      with:
+        name: build
+        path: dist
+    - name: Build
+      run: npm run build
+    - name: Publish
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.token }}
