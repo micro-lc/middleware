@@ -1,52 +1,44 @@
-name: Build
-
 on:
   workflow_call:
-    inputs:
-      node-version:
-        required: false
-        default: 20.x
-        type: string
 
 jobs:
-  build:
+  checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+      with:
+        show-progress: false
+    - name: Setup Node.js
+      uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+      with:
+        node-version-file: .nvmrc
+        check-latest: true
+        cache: npm
+    - name: Install
+      run: npm ci
+    - name: Compile file and build
+      run: npm run build
+    - name: Test Build
+      run: |
+        export WORKING_DIR=`pwd`
+        export ENV_DIR=$WORKING_DIR/.env
 
-      - name: Use Node.js ${{ inputs.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: npm
+        cp $WORKING_DIR/default.env $WORKING_DIR/.env.local
+        mkdir -p $ENV_DIR/public
 
-      - name: Install
-        run: npm ic
+        echo "PUBLIC_DIRECTORY_PATH=$ENV_DIR/public" >> $WORKING_DIR/.env.local
+        echo "RESOURCES_DIRECTORY_PATH=$ENV_DIR/configurations" >> $WORKING_DIR/.env.local
 
-      - name: Compile file and build
-        run: npm run build
+        npm run start:local &
 
-      - name: Save Build Cache
-        id: save-build-cache
-        uses: actions/cache/save@v3
-        with:
-          path: ./dist
-          key: ${{ runner.os }}-${{ github.sha }}-build
+        ./scripts/wait-for-it.sh localhost:3001 --timeout=20
 
-      - name: Test Build
-        run: |
-          export WORKING_DIR=`pwd`
-          export ENV_DIR=$WORKING_DIR/.env
-
-          cp $WORKING_DIR/default.env $WORKING_DIR/.env.local
-          mkdir -p $ENV_DIR/public
-
-          echo "PUBLIC_DIRECTORY_PATH=$ENV_DIR/public" >> $WORKING_DIR/.env.local
-          echo "RESOURCES_DIRECTORY_PATH=$ENV_DIR/configurations" >> $WORKING_DIR/.env.local
-
-          npm run start:local &
-
-          ./scripts/wait-for-it.sh localhost:3001 --timeout=20
-
-          curl -i "http://localhost:3001/-/ready" | grep "HTTP/1.1 200 OK"
-          exit `echo $?`
+        curl -i "http://localhost:3001/-/ready" | grep "HTTP/1.1 200 OK"
+        exit `echo $?`
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      with:
+        name: build
+        path: dist
+        if-no-files-found: error
