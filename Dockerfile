@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/library/node:20.18.0-alpine@sha256:c13b26e7e602ef2f1074aef304ce6e9b7dd284c419b35d89fcf3cc8e44a8def9 AS build
+FROM docker.io/library/node:23.0.0-alpine@sha256:b20f8fad528b0e768936cb88ccb7b0e37cf41587d177e2d6fcdbd48bb4e083ec AS build
 
 WORKDIR /build
 
@@ -12,7 +12,7 @@ COPY . .
 
 RUN npm run build
 
-FROM docker.io/library/node:20.18.0-alpine@sha256:c13b26e7e602ef2f1074aef304ce6e9b7dd284c419b35d89fcf3cc8e44a8def9 AS cleanup
+FROM docker.io/library/node:23.0.0-alpine@sha256:b20f8fad528b0e768936cb88ccb7b0e37cf41587d177e2d6fcdbd48bb4e083ec AS cleanup
 
 WORKDIR /build
 
@@ -29,7 +29,7 @@ COPY --from=build /build/dist dist
 
 ########################################################################################################################
 
-FROM docker.io/library/node:20.18.0-alpine@sha256:c13b26e7e602ef2f1074aef304ce6e9b7dd284c419b35d89fcf3cc8e44a8def9
+FROM docker.io/library/node:23.0.0-alpine@sha256:b20f8fad528b0e768936cb88ccb7b0e37cf41587d177e2d6fcdbd48bb4e083ec
 
 RUN apk add --no-cache --upgrade \
   tini
