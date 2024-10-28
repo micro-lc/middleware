@@ -3,31 +3,48 @@ name: Main
 on:
   push:
     branches:
-      - main
+    - main
+    tags:
+    - v*
+  pull_request:
+    branches:
+    - main
 
 jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
+
   tests:
-    uses: micro-lc/middleware/.github/workflows/tests.yml@main
+    uses: ./.github/workflows/tests.yml
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
-  lint:
-    uses: micro-lc/middleware/.github/workflows/lint.yml@main
-
   build:
-    uses: micro-lc/middleware/.github/workflows/build.yml@main
+    uses: ./.github/workflows/build.yml
 
   docker-build:
+    if: github.event_name == 'push'
     needs:
-      - tests
-      - lint
-      - build
-    uses: micro-lc/middleware/.github/workflows/docker-build.yml@main
-    with:
-      push: true
+    - tests
+    - lint
+    - build
+    uses: ./.github/workflows/docker-build.yml
     secrets:
       docker_username: ${{ secrets.BOT_DOCKER_USERNAME }}
       docker_token: ${{ secrets.BOT_DOCKER_TOKEN }}
       nexus_username: ${{ secrets.NEXUS_USER }}
       nexus_token: ${{ secrets.NEXUS_TOKEN }}
-      security_checks_token: ${{ secrets.SECURITY_CHECKS_TOKEN }}
+      sysdig_token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
+      kms_gcp_project: ${{ secrets.MIA_PLATFORM_KMS_GCP_PROJECT }}
+      gcp_wif: ${{ secrets.MIA_PLATFORM_WIF }}
+      cosign_key: ${{ secrets.MIA_PLATFORM_KEY_KMS }}
+
+  npm-publish:
+    if: github.ref_type == 'tag'
+    needs:
+    - tests
+    - lint
+    - build
+    uses: ./.github/workflows/publish.yml
+    secrets:
+      token: ${{ secrets.NPM_TOKEN }}
