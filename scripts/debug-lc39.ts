@@ -12,7 +12,7 @@ const main = async (override?: string[]) => {
   const promises = Array(paths.length).fill(0)
     .map((_, idx) => new Promise((resolve, reject) => {
       server.inject(paths[idx], (err: Error | null | undefined, response) => {
-        if (err) {
+        if (err || !response) {
           reject(err)
         } else if (response.statusCode > 299) {
           console.error(

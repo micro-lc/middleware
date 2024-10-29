@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Versioning
+
+- `jsonpath-plus` to version `10.1.0`
+
+### Added
+
+- Generating SBOM and signing docker images
+
 ## [3.3.1] - 2024-10-24
 
 ### Changed
