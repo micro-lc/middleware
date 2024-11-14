@@ -60,6 +60,7 @@ describe('Serve files', () => {
       PUBLIC_DIRECTORY_PATH: publicDir,
       RESOURCES_DIRECTORY_PATH: resourcesDir,
       SERVICE_CONFIG_PATH: configPath,
+      ENABLE_CACHE: '',
     })
   })
 

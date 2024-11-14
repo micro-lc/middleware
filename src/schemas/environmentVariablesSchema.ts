@@ -39,6 +39,10 @@ export const environmentVariablesSchema = {
       description: 'service configuration file absolute path',
       type: 'string',
     },
+    ENABLE_CACHE: {
+      description: 'Enable use of cache (default: true)',
+      type: 'string',
+    }
   },
   required: [],
   type: 'object',

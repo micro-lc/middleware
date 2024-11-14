@@ -32,6 +32,7 @@ describe('Extract Acl Context', () => {
     RESOURCES_DIRECTORY_PATH: '',
     SERVICE_CONFIG_PATH: '',
     USER_PROPERTIES_HEADER_KEY: 'userproperties',
+    ENABLE_CACHE: '',
   }
 
   const request = {

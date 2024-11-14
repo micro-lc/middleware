@@ -126,6 +126,7 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
     ACL_CONTEXT_BUILDER_PATH = defaults.ACL_CONTEXT_BUILDER_PATH,
     LANGUAGES_DIRECTORY_PATH = defaults.LANGUAGES_DIRECTORY_PATH,
     SERVICE_CONFIG_PATH = defaults.SERVICE_CONFIG_PATH,
+    ENABLE_CACHE = defaults.ENABLE_CACHE,
   } = config
   let serviceConfig: unknown = defaults.PUBLIC_HEADERS_MAP
 
@@ -164,6 +165,7 @@ const parseConfig = (config: EnvironmentVariables & Record<string, string>): Run
     RESOURCES_DIRECTORY_PATH: config.RESOURCES_DIRECTORY_PATH ?? defaults.RESOURCES_DIRECTORY_PATH,
     SERVICE_CONFIG_PATH,
     USER_PROPERTIES_HEADER_KEY: config.USER_PROPERTIES_HEADER_KEY,
+    ENABLE_CACHE,
   }
 }
 

@@ -22,6 +22,8 @@ const CONTENT_TYPE_MAP: Record<Extension | string, string> = {
   '.yml': 'text/yaml',
 }
 
+const ENABLE_CACHE = 'true'
+
 export {
   ACL_CONTEXT_BUILDER_PATH,
   CONTENT_TYPE_MAP,
@@ -30,4 +32,5 @@ export {
   PUBLIC_DIRECTORY_PATH,
   PUBLIC_HEADERS_MAP,
   LANGUAGES_DIRECTORY_PATH,
+  ENABLE_CACHE,
 }

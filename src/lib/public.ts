@@ -1,10 +1,17 @@
 import { readFile } from 'fs/promises'
+import { RuntimeConfig } from '../config'
 
 const fsCache = new Map<string, Promise<Buffer>>()
 
-async function publicHandler(filename: string, injectNonce: (input: string) => string): Promise<Buffer> {
-  const bufferPromise: Promise<Buffer> = fsCache.get(filename) ?? readFile(filename)
-  fsCache.set(filename, bufferPromise)
+async function publicHandler(filename: string, injectNonce: (input: string) => string, config: RuntimeConfig): Promise<Buffer> {
+  let bufferPromise: Promise<Buffer>
+  
+  if (config.ENABLE_CACHE === "true") {
+    bufferPromise = fsCache.get(filename) ?? readFile(filename)
+    fsCache.set(filename, bufferPromise)
+  } else {
+    bufferPromise = readFile(filename)
+  }
 
   // in case of html, parse variables
   if (filename.endsWith('.html')) {

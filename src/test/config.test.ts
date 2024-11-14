@@ -38,6 +38,7 @@ const defaults = {
   PUBLIC_DIRECTORY_PATH: '/usr/static/public',
   RESOURCES_DIRECTORY_PATH: '/usr/static/configurations',
   USER_PROPERTIES_HEADER_KEY: 'miauserproperties',
+  ENABLE_CACHE: defaultConfigs.ENABLE_CACHE,
 }
 
 describe('config injection tests', () => {
