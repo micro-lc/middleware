@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/library/node:20.18.0-alpine@sha256:c13b26e7e602ef2f1074aef304ce6e9b7dd284c419b35d89fcf3cc8e44a8def9 AS build
+FROM docker.io/library/node:20.18.1-alpine@sha256:b5b9467fe7b33aad47f1ec3f6e0646a658f85f05c18d4243024212a91f3b7554 AS build
 
 WORKDIR /build
 
@@ -12,7 +12,7 @@ COPY . .
 
 RUN npm run build
 
-FROM docker.io/library/node:20.18.0-alpine@sha256:c13b26e7e602ef2f1074aef304ce6e9b7dd284c419b35d89fcf3cc8e44a8def9 AS cleanup
+FROM docker.io/library/node:20.18.1-alpine@sha256:b5b9467fe7b33aad47f1ec3f6e0646a658f85f05c18d4243024212a91f3b7554 AS cleanup
 
 WORKDIR /build
 
@@ -29,7 +29,7 @@ COPY --from=build /build/dist dist
 
 ########################################################################################################################
 
-FROM docker.io/library/node:20.18.0-alpine@sha256:c13b26e7e602ef2f1074aef304ce6e9b7dd284c419b35d89fcf3cc8e44a8def9
+FROM docker.io/library/node:20.18.1-alpine@sha256:b5b9467fe7b33aad47f1ec3f6e0646a658f85f05c18d4243024212a91f3b7554
 
 # libcrypto3 for 3.3.2-r0 vulnerability
 RUN apk add --no-cache --upgrade \
