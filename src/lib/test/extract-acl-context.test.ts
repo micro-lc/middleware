@@ -25,6 +25,7 @@ describe('Extract Acl Context', () => {
     ACL_CONTEXT_BUILDER: undefined,
     ACL_CONTEXT_BUILDER_PATH: '',
     CONTENT_TYPE_MAP: {},
+    ENABLE_CACHE: '',
     LANGUAGES_CONFIG: [],
     LANGUAGES_DIRECTORY_PATH: '',
     PUBLIC_DIRECTORY_PATH: '',
@@ -32,7 +33,6 @@ describe('Extract Acl Context', () => {
     RESOURCES_DIRECTORY_PATH: '',
     SERVICE_CONFIG_PATH: '',
     USER_PROPERTIES_HEADER_KEY: 'userproperties',
-    ENABLE_CACHE: '',
   }
 
   const request = {

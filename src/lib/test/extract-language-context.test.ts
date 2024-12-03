@@ -25,6 +25,7 @@ describe('Extract Language Context', () => {
     ACL_CONTEXT_BUILDER: undefined,
     ACL_CONTEXT_BUILDER_PATH: '',
     CONTENT_TYPE_MAP: {},
+    ENABLE_CACHE: '',
     LANGUAGES_CONFIG: [
       {
         labelsMap: { hello: 'hello' },
@@ -45,7 +46,6 @@ describe('Extract Language Context', () => {
     RESOURCES_DIRECTORY_PATH: '',
     SERVICE_CONFIG_PATH: '',
     USER_PROPERTIES_HEADER_KEY: '',
-    ENABLE_CACHE: '',
   }
 
   interface Test {

@@ -90,8 +90,8 @@ const shouldManipulate = (extension: ExtensionOutput): extension is Extension =>
 
 async function configurationsHandler(request: FastifyRequest, filename: string, config: RuntimeConfig): Promise<ConfigurationResponse> {
   let bufferPromise: Promise<Buffer>
-  
-  if (config.ENABLE_CACHE === "true" ) {
+
+  if (config.ENABLE_CACHE === 'true') {
     bufferPromise = fsCache.get(filename) ?? fileLoader(filename)
     fsCache.set(filename, bufferPromise)
   } else {

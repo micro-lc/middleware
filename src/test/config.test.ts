@@ -33,12 +33,12 @@ const defaults = {
   ACL_CONTEXT_BUILDER: undefined,
   ACL_CONTEXT_BUILDER_PATH: '/usr/src/app/config/acl-context-builder.js',
   CONTENT_TYPE_MAP: defaultConfigs.CONTENT_TYPE_MAP,
+  ENABLE_CACHE: defaultConfigs.ENABLE_CACHE,
   LANGUAGES_CONFIG: [],
   LANGUAGES_DIRECTORY_PATH: '/usr/static/languages',
   PUBLIC_DIRECTORY_PATH: '/usr/static/public',
   RESOURCES_DIRECTORY_PATH: '/usr/static/configurations',
   USER_PROPERTIES_HEADER_KEY: 'miauserproperties',
-  ENABLE_CACHE: defaultConfigs.ENABLE_CACHE,
 }
 
 describe('config injection tests', () => {

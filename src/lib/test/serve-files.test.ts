@@ -28,7 +28,6 @@ import * as evaluateAcl from '../../sdk/evaluate-acl'
 import * as evaluateLanguage from '../../sdk/evaluate-language'
 import * as resolveReferences from '../../sdk/resolve-references'
 import { baseVariables, createConfigFile, createTmpDir, setupFastify } from '../../utils/test-utils'
-import { ENABLE_CACHE } from '../../defaults'
 
 describe('Serve files', () => {
   const sandbox = createSandbox()
@@ -64,9 +63,9 @@ describe('Serve files', () => {
     cleanup = () => Promise.all([confCleanup(), cpCleanup()])
 
     fastify = await setupFastify({
+      ENABLE_CACHE: '',
       RESOURCES_DIRECTORY_PATH: configurations,
       SERVICE_CONFIG_PATH: configPath,
-      ENABLE_CACHE: '',
     })
   })
 

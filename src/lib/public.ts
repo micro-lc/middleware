@@ -1,12 +1,13 @@
 import { readFile } from 'fs/promises'
-import { RuntimeConfig } from '../config'
+
+import type { RuntimeConfig } from '../config'
 
 const fsCache = new Map<string, Promise<Buffer>>()
 
 async function publicHandler(filename: string, injectNonce: (input: string) => string, config: RuntimeConfig): Promise<Buffer> {
   let bufferPromise: Promise<Buffer>
-  
-  if (config.ENABLE_CACHE === "true") {
+
+  if (config.ENABLE_CACHE === 'true') {
     bufferPromise = fsCache.get(filename) ?? readFile(filename)
     fsCache.set(filename, bufferPromise)
   } else {
