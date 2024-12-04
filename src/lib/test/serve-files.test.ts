@@ -63,6 +63,7 @@ describe('Serve files', () => {
     cleanup = () => Promise.all([confCleanup(), cpCleanup()])
 
     fastify = await setupFastify({
+      ENABLE_CACHE: '',
       RESOURCES_DIRECTORY_PATH: configurations,
       SERVICE_CONFIG_PATH: configPath,
     })

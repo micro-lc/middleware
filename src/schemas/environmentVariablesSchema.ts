@@ -23,6 +23,10 @@ export const environmentVariablesSchema = {
       description: 'Acl context builder file absolute path',
       type: 'string',
     },
+    ENABLE_CACHE: {
+      description: 'Enable use of cache (default: true)',
+      type: 'string',
+    },
     LANGUAGES_DIRECTORY_PATH: {
       description: 'Absolute path of the directory containing files to be used for translation',
       type: 'string',

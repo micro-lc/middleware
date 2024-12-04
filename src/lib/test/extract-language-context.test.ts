@@ -25,6 +25,7 @@ describe('Extract Language Context', () => {
     ACL_CONTEXT_BUILDER: undefined,
     ACL_CONTEXT_BUILDER_PATH: '',
     CONTENT_TYPE_MAP: {},
+    ENABLE_CACHE: '',
     LANGUAGES_CONFIG: [
       {
         labelsMap: { hello: 'hello' },

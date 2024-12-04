@@ -89,8 +89,15 @@ const shouldManipulate = (extension: ExtensionOutput): extension is Extension =>
   ['.json', '.yaml', '.yml'].includes(extension)
 
 async function configurationsHandler(request: FastifyRequest, filename: string, config: RuntimeConfig): Promise<ConfigurationResponse> {
-  const bufferPromise = fsCache.get(filename) ?? fileLoader(filename)
-  fsCache.set(filename, bufferPromise)
+  let bufferPromise: Promise<Buffer>
+
+  if (config.ENABLE_CACHE === 'true') {
+    bufferPromise = fsCache.get(filename) ?? fileLoader(filename)
+    fsCache.set(filename, bufferPromise)
+  } else {
+    bufferPromise = fileLoader(filename)
+  }
+
   const buffer = await bufferPromise
 
   const fileExtension = path.extname(filename) as ExtensionOutput

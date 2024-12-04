@@ -85,7 +85,7 @@ const staticFileHandler = (context: FastifyContext) => async (
     language && reply.header('content-language', language)
     buffer = fileBuffer
   } else if (isPublic(url)) {
-    const fileBuffer = await publicHandler(filename, injectNonce)
+    const fileBuffer = await publicHandler(filename, injectNonce, config)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     reply.header('content-length', fileBuffer.length)
     buffer = fileBuffer
