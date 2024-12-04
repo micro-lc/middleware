@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- Added env variable `ENABLE_CACHE` to toggle internal cache of config and public files
+
 ## [3.3.3] - 2024-10-29
 
 ## [3.3.2] - 2024-10-29
