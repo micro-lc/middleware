@@ -3,7 +3,12 @@
   "version": "3.4.0",
   "description": "micro-lc configuration server",
   "license": "Apache-2.0",
-  "bin": "./dist/cli/index.js",
+  "bin": {
+    "middleware": "dist/cli/index.js"
+  },
+  "repository": {
+    "url": "git+ssh://git@github.com/micro-lc/middleware.git"
+  },
   "files": [
     "dist",
     "sdk",
