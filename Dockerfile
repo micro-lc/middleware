@@ -36,6 +36,11 @@ RUN apk add --no-cache --upgrade \
   libcrypto3 \
   tini
 
+# upgrade the npm bundled with the Node image to fix the CVEs of its dependencies
+RUN npm install -g npm@12.2.3 \
+  && npm cache clean --force \
+  && rm -rf /root/.npm /tmp/*
+
 ENV LOG_LEVEL=info
 ENV SERVICE_PREFIX=/
 ENV HTTP_PORT=3000
