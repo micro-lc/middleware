@@ -36,6 +36,9 @@ RUN apk add --no-cache --upgrade \
   libcrypto3 \
   tini
 
+# npm/npx/corepack are not needed at runtime: remove them to drop the CVEs of the bundled npm dependencies
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
+
 ENV LOG_LEVEL=info
 ENV SERVICE_PREFIX=/
 ENV HTTP_PORT=3000
